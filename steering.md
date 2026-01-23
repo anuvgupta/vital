@@ -1,13 +1,27 @@
-# Vital project steering
+# Vital Project Steering
+
 
 ## Core Information
 
 - In the subfolder `vital` we have the codebase for open source synthesizer Vital, which is built using JUCE.
+- Vital is a spectral warping wavetable synthesizer with three oscillators, a sampler, and an extensive modulation matrix, using JSON-based .vital preset files that store wavetable data.
+- JUCE is a widely used framework for audio application and plug-in development, open source C++ codebase, for standalone software on cross-platform, and VST, AU, etc. plug-ins.
+
+
+## Project Proposal
+
+- We are building an AI agent/chatbot panel for Vital synth, where the user can describe a synth sound or a modification to a parameter/knob on the synthesizer in natural language. The chatbot will then generate a new preset or update the current preset with the desired settings.
+- Users primarily will give technical descriptions of parameters/settings to tweak, ie specific settings and numerical values: "increase the filter cutoff a bit, no more than 5%". This should be possible with knowledge of the codebase and maybe a handbook on sound design & the Vital software manual itself.
+- In future we can add support for non-technical descriptions, ie. "make it more dreamy" or "i want a mario video game blippy chiptuney coin sound".
+- Target audience is music producers, both professional and amateur
+
 
 ## Latest Updates
 
-- We recently added a sidepanel (via `side_panel.cpp`) where we will add functionality next
-- We added a textarea and a button to the sidepanel at the bottom
+- We drafted a document outlining the preset format/schema, based on the Vital codebase and some example presets: `vital/preset_schema.md`
+    - We learned that waveforms can be stored as "Wave Source" (base64, not really LLM-friendly) OR "Line Source" (control points / curves, very LLM-friendly). We will prefer line source for preset generation. We will deal with wave source later.
+- We recently added a sidepanel (via `side_panel.cpp`) where we will continue to add functionality
+- We added a textarea and a button to the sidepanel, near the bottom
 
 
 ## Key Learnings & Common Issues
