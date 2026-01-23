@@ -35,20 +35,20 @@ ChatPanelSection::ChatPanelSection(const String& name) : SynthSection(name),
   input_editor_->addListener(this);
   input_editor_->setMultiLine(true, true);
   input_editor_->setReturnKeyStartsNewLine(false);
-  addAndMakeVisible(input_editor_.get());
   addOpenGlComponent(input_editor_->getImageComponent());
+  addAndMakeVisible(input_editor_.get());
 #endif
 
   send_button_ = std::make_unique<OpenGlToggleButton>("Send");
   send_button_->setButtonText("Send");
   send_button_->setUiButton(true);
   send_button_->addListener(this);
-  addAndMakeVisible(send_button_.get());
   addOpenGlComponent(send_button_->getGlComponent());
+  addAndMakeVisible(send_button_.get());
 
   scroll_bar_ = std::make_unique<OpenGlScrollBar>();
-  addAndMakeVisible(scroll_bar_.get());
   addOpenGlComponent(scroll_bar_->getGlComponent());
+  addAndMakeVisible(scroll_bar_.get());
   scroll_bar_->addListener(this);
 }
 
