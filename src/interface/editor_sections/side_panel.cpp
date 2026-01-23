@@ -17,14 +17,24 @@
 #include "side_panel.h"
 
 #include "fonts.h"
+#include "open_gl_image_component.h"
 #include "skin.h"
 #include "synth_button.h"
 
 VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
-  action_button_ = std::make_unique<OpenGlToggleButton>("Action");
+#if !defined(NO_TEXT_ENTRY)
+  prompt_editor_ = std::make_unique<OpenGlTextEditor>("Prompt");
+  prompt_editor_->setJustification(Justification::topLeft);
+  addAndMakeVisible(prompt_editor_.get());
+  addOpenGlComponent(prompt_editor_->getImageComponent());
+  prompt_editor_->setMultiLine(true, true);
+  prompt_editor_->setReturnKeyStartsNewLine(true);
+#endif
+
+  action_button_ = std::make_unique<OpenGlToggleButton>("Send");
   addButton(action_button_.get());
   action_button_->setUiButton(true);
-  action_button_->setText("Action");
+  action_button_->setText("SEND");
 
   setSkinOverride(Skin::kNone);
 }
@@ -42,19 +52,36 @@ void VitalSidePanel::paintBackground(Graphics& g) {
   int title_height = 30;
   int padding = findValue(Skin::kLargePadding);
   Rectangle<int> title_bounds(padding, padding, getWidth() - 2 * padding, title_height);
-  g.drawText("SIDE PANEL", title_bounds, Justification::centredLeft);
+  g.drawText("CHAT", title_bounds, Justification::centredLeft);
 }
 
 void VitalSidePanel::resized() {
   int padding = findValue(Skin::kLargePadding);
   int widget_margin = findValue(Skin::kWidgetMargin);
   
-  int title_height = 30;
   int button_height = 30;
   int button_width = getWidth() - 2 * padding;
+  int textarea_height = 80;
   
-  int button_y = padding + title_height + widget_margin;
+  // Button at the bottom
+  int button_y = getHeight() - padding - button_height;
   action_button_->setBounds(padding, button_y, button_width, button_height);
+  
+  // Textarea above the button
+#if !defined(NO_TEXT_ENTRY)
+  if (prompt_editor_) {
+    int textarea_y = button_y - widget_margin - textarea_height;
+    prompt_editor_->setBounds(padding, textarea_y, button_width, textarea_height);
+    
+    Colour empty_color = findColour(Skin::kBodyText, true);
+    empty_color = empty_color.withAlpha(0.5f * empty_color.getFloatAlpha());
+    prompt_editor_->setTextToShowWhenEmpty("Describe your synth patch. What do you want to hear?", empty_color);
+    prompt_editor_->setColour(CaretComponent::caretColourId, findColour(Skin::kTextEditorCaret, true));
+    prompt_editor_->setColour(TextEditor::textColourId, findColour(Skin::kBodyText, true));
+    prompt_editor_->setColour(TextEditor::highlightedTextColourId, findColour(Skin::kBodyText, true));
+    prompt_editor_->setColour(TextEditor::highlightColourId, findColour(Skin::kTextEditorSelection, true));
+  }
+#endif
 
   SynthSection::resized();
 }

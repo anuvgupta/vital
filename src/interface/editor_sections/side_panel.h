@@ -20,6 +20,7 @@
 #include "synth_section.h"
 
 class OpenGlToggleButton;
+class OpenGlTextEditor;
 
 class VitalSidePanel : public SynthSection {
   public:
@@ -41,6 +42,7 @@ class VitalSidePanel : public SynthSection {
 
   private:
     std::vector<Listener*> listeners_;
+    std::unique_ptr<OpenGlTextEditor> prompt_editor_;
     std::unique_ptr<OpenGlToggleButton> action_button_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VitalSidePanel)
