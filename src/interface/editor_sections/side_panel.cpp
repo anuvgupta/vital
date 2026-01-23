@@ -80,6 +80,10 @@ void VitalSidePanel::resized() {
     prompt_editor_->setColour(TextEditor::textColourId, findColour(Skin::kBodyText, true));
     prompt_editor_->setColour(TextEditor::highlightedTextColourId, findColour(Skin::kBodyText, true));
     prompt_editor_->setColour(TextEditor::highlightColourId, findColour(Skin::kTextEditorSelection, true));
+    
+    float font_size = textarea_height * 0.18f;
+    prompt_editor_->setFont(Fonts::instance()->proportional_light().withPointHeight(font_size));
+    prompt_editor_->redoImage();
   }
 #endif
 
