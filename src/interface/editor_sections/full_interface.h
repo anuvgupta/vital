@@ -20,6 +20,7 @@
 
 #include "authentication.h"
 #include "authentication_section.h"
+#include "chat_panel_section.h"
 #include "download_section.h"
 #include "header_section.h"
 #include "effects_interface.h"
@@ -185,6 +186,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     std::unique_ptr<ModulationInterface> modulation_interface_;
     std::unique_ptr<ExtraModSection> extra_mod_section_;
     std::unique_ptr<EffectsInterface> effects_interface_;
+    std::unique_ptr<ChatPanelSection> chat_panel_;
     std::unique_ptr<WavetableEditSection> wavetable_edits_[vital::kNumOscillators];
     std::unique_ptr<KeyboardInterface> keyboard_interface_;
     std::unique_ptr<BendSection> bend_section_;

@@ -18,6 +18,7 @@
 #include "oscillator_advanced_section.cpp"
 #include "about_section.cpp"
 #include "authentication_section.cpp"
+#include "chat_panel_section.cpp"
 #include "delay_section.cpp"
 #include "extra_mod_section.cpp"
 #include "update_check_section.cpp"

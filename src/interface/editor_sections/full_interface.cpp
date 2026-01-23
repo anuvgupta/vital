@@ -109,6 +109,9 @@ FullInterface::FullInterface(SynthGuiData* synth_data) : SynthSection("full_inte
   voice_section_ = std::make_unique<VoiceSection>("VOICE");
   addSubSection(voice_section_.get());
 
+  chat_panel_ = std::make_unique<ChatPanelSection>("chat_panel");
+  addSubSection(chat_panel_.get());
+
   modulation_matrix_ = std::make_unique<ModulationMatrix>(synth_data->modulation_sources, synth_data->mono_modulations);
   addSubSection(modulation_matrix_.get());
   modulation_matrix_->setVisible(false);
@@ -185,6 +188,7 @@ FullInterface::FullInterface(SynthGuiData* synth_data) : SynthSection("full_inte
   bend_section_->toFront(true);
   portamento_section_->toFront(true);
   voice_section_->toFront(true);
+  chat_panel_->toFront(true);
   modulation_manager_->toFront(false);
   preset_browser_->toFront(false);
   bank_exporter_->toFront(false);
@@ -446,7 +450,8 @@ void FullInterface::resized() {
   int section_one_width = 350 * ratio;
   int section_two_width = section_one_width;
   int audio_width = section_one_width + section_two_width + padding;
-  int modulation_width = width - audio_width - extra_mod_width - 4 * voice_padding;
+  int chat_panel_width = 280 * ratio;
+  int modulation_width = width - audio_width - extra_mod_width - chat_panel_width - 5 * voice_padding;
 
   header_->setTabOffset(extra_mod_width + 2 * voice_padding);
   header_->setBounds(left, top, width, top_height);
@@ -459,6 +464,10 @@ void FullInterface::resized() {
   int modulation_height = voice_height - knob_section_height - padding;
   modulation_interface_->setBounds(main_bounds.getRight() + voice_padding,
                                    main_bounds.getY(), modulation_width, modulation_height);
+
+  // Chat panel on the right side
+  int chat_x = modulation_interface_->getRight() + voice_padding;
+  chat_panel_->setBounds(chat_x, top + top_height, chat_panel_width, voice_height);
 
   int voice_y = top + height - knob_section_height - keyboard_section_height;
 
@@ -771,6 +780,7 @@ void FullInterface::showFullScreenSection(SynthSection* full_screen) {
   voice_section_->setVisible(show_rest);
   bend_section_->setVisible(show_rest);
   portamento_section_->setVisible(show_rest);
+  chat_panel_->setVisible(show_rest);
   redoBackground();
 }
 
@@ -792,6 +802,7 @@ void FullInterface::showWavetableEditSection(int index) {
   voice_section_->setVisible(show_rest);
   bend_section_->setVisible(show_rest);
   portamento_section_->setVisible(show_rest);
+  chat_panel_->setVisible(show_rest);
   redoBackground();
 }
 
