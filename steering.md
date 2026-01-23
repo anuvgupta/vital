@@ -37,3 +37,26 @@
   - Must call `redoImage()` after setting colors/placeholder text to update the OpenGL texture.
   - Reference working examples: `SaveSection::setTextColors()`, `PresetBrowser` comments setup.
 
+
+## Key Files Reference
+
+**Core Serialization:**
+-   [load_save.cpp](vital/src/common/load_save.cpp) - JSON serialization/deserialization
+-   [synth_parameters.cpp](vital/src/common/synth_parameters.cpp) - All parameter definitions with ranges
+-   [synth_constants.h](vital/src/common/synth_constants.h) - Numeric constants
+-   [synth_strings.h](vital/src/interface/look_and_feel/synth_strings.h) - String values for enums
+
+**Line Generator (LFOs and Line Source wavetables):**
+-   [line_generator.cpp](vital/src/common/line_generator.cpp) - Line shape format and built-in waveform definitions
+-   [line_generator.h](vital/src/common/line_generator.h) - LineGenerator class with initSaw, initSquare, etc.
+
+**Wavetables:**
+-   [wave_line_source.cpp](vital/src/common/wavetable/wave_line_source.cpp) - **Line Source component (PREFERRED)**
+-   [wave_line_source.h](vital/src/common/wavetable/wave_line_source.h) - Line Source class definition
+-   [wave_source.cpp](vital/src/common/wavetable/wave_source.cpp) - Wave Source component (base64 encoded)
+-   [wavetable_creator.cpp](vital/src/common/wavetable/wavetable_creator.cpp) - Wavetable rendering and JSON handling
+-   [wavetable_component_factory.cpp](vital/src/common/wavetable/wavetable_component_factory.cpp) - Component type registry
+-   [wavetable_group.cpp](vital/src/common/wavetable/wavetable_group.cpp) - Default wavetable creation
+
+**Samples:**
+-   [sample_source.cpp](vital/src/synthesis/producers/sample_source.cpp) - Sample data format
