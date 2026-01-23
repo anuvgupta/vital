@@ -276,7 +276,7 @@ For Comb model:
 
 ### Envelopes (X = 1 to 6)
 
-``````json
+```json
 {
     "env_X_delay": 0.0, // 0-4 seconds (quartic)
     "env_X_attack": 0.1495, // 0-32 seconds (quartic)
@@ -288,7 +288,7 @@ For Comb model:
     "env_X_release": 0.5476, // 0-32 seconds (quartic)
     "env_X_release_power": -2.0 // -20 to +20
 }
-````
+```
 
 ### LFOs (X = 1 to 8)
 
