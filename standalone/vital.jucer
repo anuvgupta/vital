@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="GfsdNK" name="Vial" projectType="guiapp" version="1.0.6"
-              bundleIdentifier="audio.vital.standalone" includeBinaryInAppConfig="1"
+              bundleIdentifier="audio.vital.standalone.custom" includeBinaryInAppConfig="1"
               companyName="Matt Tytel" companyWebsite="vial.audio" companyEmail="matthewtytel@gmail.com"
               defines="" displaySplashScreen="0" reportAppUsage="0" splashScreenColour="Dark"
               companyCopyright="Matt Tytel" jucerFormatVersion="1" projectLineFeed="&#10;">
