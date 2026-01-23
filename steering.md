@@ -20,7 +20,8 @@
 
 - We drafted a document outlining the preset format/schema, based on the Vital codebase and some example presets: `vital/preset_schema.md`
     - We learned that waveforms can be stored as "Wave Source" (base64, not really LLM-friendly) OR "Line Source" (control points / curves, very LLM-friendly). We will prefer line source for preset generation. We will deal with wave source later.
-- We recently added a sidepanel (via `side_panel.cpp`) where we will continue to add functionality
+- We created a build script `vital/build_macos.sh` because we are developing on MacOS. This runs Projucer CLI to build the project to MacOS (Xcode) and other targets. Then it uses Xcode CLI to run the debug app. We can use this script with `--no-run` argument to verify that new changes build/compile successfully.
+- We added a sidepanel (via `side_panel.cpp`) where we will continue to add functionality
 - We added a textarea and a button to the sidepanel, near the bottom
 
 
