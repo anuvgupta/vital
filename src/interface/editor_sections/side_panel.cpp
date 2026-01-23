@@ -47,7 +47,7 @@ void VitalSidePanel::paintBackground(Graphics& g) {
 
   // Draw panel title
   g.setColour(findColour(Skin::kBodyText, true));
-  g.setFont(Fonts::instance()->proportional_regular().withPointHeight(14.0f));
+  g.setFont(Fonts::instance()->proportional_regular().withPointHeight(20.0f));
   
   int title_height = 30;
   int padding = findValue(Skin::kLargePadding);
@@ -59,13 +59,14 @@ void VitalSidePanel::resized() {
   int padding = findValue(Skin::kLargePadding);
   int widget_margin = findValue(Skin::kWidgetMargin);
   
-  int button_height = 30;
+  int button_height = 50;
   int button_width = getWidth() - 2 * padding;
-  int textarea_height = 80;
+  int textarea_height = 180;
   
   // Button at the bottom
   int button_y = getHeight() - padding - button_height;
   action_button_->setBounds(padding, button_y, button_width, button_height);
+  action_button_->getGlComponent()->text().setTextSize(18.0f);
   
   // Textarea above the button
 #if !defined(NO_TEXT_ENTRY)
@@ -81,7 +82,7 @@ void VitalSidePanel::resized() {
     prompt_editor_->setColour(TextEditor::highlightedTextColourId, findColour(Skin::kBodyText, true));
     prompt_editor_->setColour(TextEditor::highlightColourId, findColour(Skin::kTextEditorSelection, true));
     
-    float font_size = textarea_height * 0.18f;
+    float font_size = 20.0f;
     prompt_editor_->setFont(Fonts::instance()->proportional_light().withPointHeight(font_size));
     prompt_editor_->redoImage();
   }
