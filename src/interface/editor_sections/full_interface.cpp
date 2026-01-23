@@ -486,8 +486,8 @@ void FullInterface::resized() {
   int keyboard_width = modulation_interface_->getRight() - keyboard_x;
   keyboard_interface_->setBounds(keyboard_x, top + height - keyboard_height - padding, keyboard_width, keyboard_height);
 
-  // Side panel on the right edge
-  int side_panel_x = left + width - side_panel_width;
+  // Side panel on the right edge (with padding on right to match left side)
+  int side_panel_x = left + width - side_panel_width - voice_padding;
   int side_panel_height = height - top_height - padding;
   side_panel_->setBounds(side_panel_x, top + top_height, side_panel_width, side_panel_height);
 
