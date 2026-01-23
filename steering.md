@@ -60,3 +60,16 @@
 
 **Samples:**
 -   [sample_source.cpp](vital/src/synthesis/producers/sample_source.cpp) - Sample data format
+
+**UI / Interface:**
+-   [full_interface.h/cpp](vital/src/interface/editor_sections/full_interface.cpp) - Main UI container, manages all sections and layout
+-   [synth_section.h/cpp](vital/src/interface/editor_sections/synth_section.h) - Base class for all UI sections
+-   [synth_button.h](vital/src/interface/editor_components/synth_button.h) - OpenGlToggleButton, SynthButton components
+-   [side_panel.h/cpp](vital/src/interface/editor_sections/side_panel.cpp) - **Our custom AI chat panel (VitalSidePanel)**
+-   [open_gl_image_component.h](vital/src/interface/editor_components/open_gl_image_component.h) - OpenGlTextEditor, OpenGlAutoImageComponent for text input
+-   [open_gl_component.h/cpp](vital/src/interface/editor_components/open_gl_component.cpp) - Base OpenGL component, parent/findValue system
+-   [save_section.cpp](vital/src/interface/editor_sections/save_section.cpp) - Reference for OpenGlTextEditor setup patterns
+-   [preset_browser.cpp](vital/src/interface/editor_sections/preset_browser.cpp) - Reference for multiline text editor setup
+
+**Build System:**
+-   [interface_editor_sections.cpp](vital/src/unity_build/interface_editor_sections.cpp) - Unity build file for editor sections
