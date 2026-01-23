@@ -848,7 +848,7 @@
                hardenedRuntime="1" externalLibraries="gssapi_krb5" extraFrameworks="Security,GSS"
                frameworkSearchPaths="../../../third_party/firebase_cpp_sdk/frameworks/darwin/"
                extraCustomFrameworks="firebase.framework&#10;firebase_auth.framework"
-               iosDevelopmentTeamID="EFXDM6K3KJ" vstLegacyFolder="../third_party/VST_SDK/VST2_SDK"
+               iosDevelopmentTeamID="R4J45Y5SBH" vstLegacyFolder="../third_party/VST_SDK/VST2_SDK"
                xcodeValidArchs="arm64,arm64e,x86_64">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxCompatibility="10.12 SDK" osxArchitecture="64BitIntel"
