@@ -1118,61 +1118,7 @@ The sample object is stored inside `settings`. Unlike wavetables (which can use 
 
 ---
 
-## 6. Related File Formats
-
-### .vitallfo (LFO Shape Files)
-
-Standalone LFO shapes use the same format as items in the `lfos` array:
-
-```json
-{
-    "num_points": 3,
-    "points": [0.0, 1.0, 0.5, 0.0, 1.0, 1.0],
-    "powers": [0.0, 0.0, 0.0],
-    "smooth": false
-}
-```
-
-### .vitaltable (Wavetable Files)
-
-Standalone wavetable files use the same format as items in the `wavetables` array. **Use Line Source for programmatic generation:**
-
-```json
-{
-    "name": "My Wavetable",
-    "author": "Author Name",
-    "full_normalize": true,
-    "remove_all_dc": true,
-    "version": "1.0.7",
-    "groups": [
-        {
-            "components": [
-                {
-                    "type": "Line Source",
-                    "num_points": 3,
-                    "keyframes": [
-                        {
-                            "position": 0,
-                            "pull_power": 0.0,
-                            "line": {
-                                "name": "Triangle",
-                                "num_points": 3,
-                                "points": [0.0, 1.0, 0.5, 0.0, 1.0, 1.0],
-                                "powers": [0.0, 0.0, 0.0],
-                                "smooth": false
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
-```
-
----
-
-## Python Examples
+## 6. Python Examples
 
 ### Example 1: Modify an Existing Preset
 
@@ -1448,22 +1394,3 @@ cutoff_hz = 440 * 2**((stored - 69) / 12)
 env_time_seconds = (stored ** 4) * 32
 ```
 
----
-
-## 8. Constants Reference
-
-From the Vital codebase (`synth_constants.h`):
-
-```cpp
-kNumLfos = 8           // LFOs available
-kNumOscillators = 3    // Oscillators (osc_1, osc_2, osc_3)
-kNumOscillatorWaveFrames = 257  // Wavetable frames per oscillator
-kNumEnvelopes = 6      // Envelopes available
-kNumRandomLfos = 4     // Random LFOs
-kNumMacros = 4         // Macro controls
-kNumFilters = 2        // Voice filters (filter_1, filter_2) + filter_fx
-kMaxPolyphony = 33     // Maximum polyphony (32 + 1)
-kMaxModulationConnections = 64  // Modulation slots
-```
-
----
