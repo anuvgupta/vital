@@ -38,6 +38,7 @@
 #include "overlay.h"
 #include "portamento_section.h"
 #include "preset_browser.h"
+#include "side_panel.h"
 #include "synthesis_interface.h"
 #include "synth_gui_interface.h"
 #include "text_look_and_feel.h"
@@ -108,6 +109,9 @@ FullInterface::FullInterface(SynthGuiData* synth_data) : SynthSection("full_inte
 
   voice_section_ = std::make_unique<VoiceSection>("VOICE");
   addSubSection(voice_section_.get());
+
+  side_panel_ = std::make_unique<VitalSidePanel>();
+  addSubSection(side_panel_.get());
 
   modulation_matrix_ = std::make_unique<ModulationMatrix>(synth_data->modulation_sources, synth_data->mono_modulations);
   addSubSection(modulation_matrix_.get());
@@ -185,6 +189,7 @@ FullInterface::FullInterface(SynthGuiData* synth_data) : SynthSection("full_inte
   bend_section_->toFront(true);
   portamento_section_->toFront(true);
   voice_section_->toFront(true);
+  side_panel_->toFront(true);
   modulation_manager_->toFront(false);
   preset_browser_->toFront(false);
   bank_exporter_->toFront(false);
@@ -446,10 +451,11 @@ void FullInterface::resized() {
   int section_one_width = 350 * ratio;
   int section_two_width = section_one_width;
   int audio_width = section_one_width + section_two_width + padding;
-  int modulation_width = width - audio_width - extra_mod_width - 4 * voice_padding;
+  int side_panel_width = vital::kSidePanelWidth * ratio;
+  int modulation_width = width - audio_width - extra_mod_width - side_panel_width - 5 * voice_padding;
 
   header_->setTabOffset(extra_mod_width + 2 * voice_padding);
-  header_->setBounds(left, top, width, top_height);
+  header_->setBounds(left, top, width - side_panel_width - voice_padding, top_height);
   Rectangle<int> main_bounds(main_x, top + top_height, audio_width, voice_height);
 
   if (synthesis_interface_)
@@ -479,6 +485,11 @@ void FullInterface::resized() {
   int keyboard_x = extra_mod_section_->getRight() + voice_padding;
   int keyboard_width = modulation_interface_->getRight() - keyboard_x;
   keyboard_interface_->setBounds(keyboard_x, top + height - keyboard_height - padding, keyboard_width, keyboard_height);
+
+  // Side panel on the right edge
+  int side_panel_x = left + width - side_panel_width;
+  int side_panel_height = height - top_height - padding;
+  side_panel_->setBounds(side_panel_x, top + top_height, side_panel_width, side_panel_height);
 
   about_section_->setBounds(bounds);
   update_check_section_->setBounds(bounds);
@@ -771,6 +782,7 @@ void FullInterface::showFullScreenSection(SynthSection* full_screen) {
   voice_section_->setVisible(show_rest);
   bend_section_->setVisible(show_rest);
   portamento_section_->setVisible(show_rest);
+  side_panel_->setVisible(show_rest);
   redoBackground();
 }
 
@@ -792,6 +804,7 @@ void FullInterface::showWavetableEditSection(int index) {
   voice_section_->setVisible(show_rest);
   bend_section_->setVisible(show_rest);
   portamento_section_->setVisible(show_rest);
+  side_panel_->setVisible(show_rest);
   redoBackground();
 }
 

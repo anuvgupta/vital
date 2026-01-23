@@ -45,6 +45,7 @@ class ModulationManager;
 class PortamentoSection;
 class PresetBrowser;
 class SaveSection;
+class VitalSidePanel;
 class SynthesisInterface;
 struct SynthGuiData;
 class SynthSlider;
@@ -190,6 +191,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     std::unique_ptr<BendSection> bend_section_;
     std::unique_ptr<PortamentoSection> portamento_section_;
     std::unique_ptr<VoiceSection> voice_section_;
+    std::unique_ptr<VitalSidePanel> side_panel_;
     std::unique_ptr<PresetBrowser> preset_browser_;
     std::unique_ptr<PopupBrowser> popup_browser_;
     std::unique_ptr<SinglePopupSelector> popup_selector_;
