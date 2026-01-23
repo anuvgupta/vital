@@ -23,7 +23,7 @@
     <key>CFBundleIconFile</key>
     <string></string>
     <key>CFBundleIdentifier</key>
-    <string>audio.vital.standalone</string>
+    <string>audio.vital.standalone.custom</string>
     <key>CFBundleName</key>
     <string>Vial</string>
     <key>CFBundleDisplayName</key>

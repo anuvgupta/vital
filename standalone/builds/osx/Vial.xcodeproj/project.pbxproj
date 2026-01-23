@@ -1559,7 +1559,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../../third_party/JUCE/modules $(SRCROOT)/../../../src/common $(SRCROOT)/../../../src/common/wavetable $(SRCROOT)/../../../src/interface/editor_components $(SRCROOT)/../../../src/interface/editor_sections $(SRCROOT)/../../../src/interface/look_and_feel $(SRCROOT)/../../../src/interface/wavetable $(SRCROOT)/../../../src/interface/wavetable/editors $(SRCROOT)/../../../src/interface/wavetable/overlays $(SRCROOT)/../../../src/standalone $(SRCROOT)/../../../src/synthesis/synth_engine $(SRCROOT)/../../../src/synthesis/effects $(SRCROOT)/../../../src/synthesis/filters $(SRCROOT)/../../../src/synthesis/framework $(SRCROOT)/../../../src/synthesis/lookups $(SRCROOT)/../../../src/synthesis/modulators $(SRCROOT)/../../../src/synthesis/modules $(SRCROOT)/../../../src/synthesis/producers $(SRCROOT)/../../../src/synthesis/utilities $(SRCROOT)/../../../third_party";
 				OTHER_LDFLAGS = "-lgssapi_krb5";
-				PRODUCT_BUNDLE_IDENTIFIER = audio.vital.standalone;
+				PRODUCT_BUNDLE_IDENTIFIER = audio.vital.standalone.custom;
 				PRODUCT_NAME = "Vial";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				USE_HEADERMAP = NO;
@@ -1733,7 +1733,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../../third_party/JUCE/modules $(SRCROOT)/../../../src/common $(SRCROOT)/../../../src/common/wavetable $(SRCROOT)/../../../src/interface/editor_components $(SRCROOT)/../../../src/interface/editor_sections $(SRCROOT)/../../../src/interface/look_and_feel $(SRCROOT)/../../../src/interface/wavetable $(SRCROOT)/../../../src/interface/wavetable/editors $(SRCROOT)/../../../src/interface/wavetable/overlays $(SRCROOT)/../../../src/standalone $(SRCROOT)/../../../src/synthesis/synth_engine $(SRCROOT)/../../../src/synthesis/effects $(SRCROOT)/../../../src/synthesis/filters $(SRCROOT)/../../../src/synthesis/framework $(SRCROOT)/../../../src/synthesis/lookups $(SRCROOT)/../../../src/synthesis/modulators $(SRCROOT)/../../../src/synthesis/modules $(SRCROOT)/../../../src/synthesis/producers $(SRCROOT)/../../../src/synthesis/utilities $(SRCROOT)/../../../third_party";
 				OTHER_LDFLAGS = "-lgssapi_krb5";
-				PRODUCT_BUNDLE_IDENTIFIER = audio.vital.standalone;
+				PRODUCT_BUNDLE_IDENTIFIER = audio.vital.standalone.custom;
 				PRODUCT_NAME = "Vial";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				USE_HEADERMAP = NO;
