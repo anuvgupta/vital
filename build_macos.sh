@@ -1,24 +1,77 @@
 #!/bin/bash
 
 # build_macos.sh - Build Vital synthesizer on macOS
-# Usage: ./build_macos.sh [Debug|Release]
+# Usage: ./build_macos.sh [options]
+#
+# Options:
+#   --config=Debug|Release   Build configuration (default: Debug)
+#   --skip-regenerate        Skip Xcode project regeneration (faster builds)
+#   --team=TEAM_ID           Override development team ID for signing
+#   --no-run                 Build only, don't launch the app
+#   --clean                  Clean build before building
+#   --help                   Show this help message
 
 set -e  # Exit on error
 
-CONFIG="${1:-Release}"
+# Default values
+CONFIG="Debug"
+REGENERATE=true
+TEAM_ID=""
+RUN_APP=true
+CLEAN_BUILD=false
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JUCER_FILE="$SCRIPT_DIR/standalone/vital.jucer"
 XCODE_PROJECT="$SCRIPT_DIR/standalone/builds/osx/Vial.xcodeproj"
+DERIVED_DATA="$HOME/Library/Developer/Xcode/DerivedData"
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 echo_status() { echo -e "${GREEN}[✓]${NC} $1"; }
 echo_warn() { echo -e "${YELLOW}[!]${NC} $1"; }
 echo_error() { echo -e "${RED}[✗]${NC} $1"; }
+echo_info() { echo -e "${CYAN}[i]${NC} $1"; }
+
+show_help() {
+    head -n 12 "$0" | tail -n 10
+    exit 0
+}
+
+# Parse arguments
+for arg in "$@"; do
+    case $arg in
+        --config=*)
+            CONFIG="${arg#*=}"
+            ;;
+        --skip-regenerate)
+            REGENERATE=false
+            ;;
+        --team=*)
+            TEAM_ID="${arg#*=}"
+            ;;
+        --no-run)
+            RUN_APP=false
+            ;;
+        --clean)
+            CLEAN_BUILD=true
+            ;;
+        --help|-h)
+            show_help
+            ;;
+        Debug|Release)
+            CONFIG="$arg"
+            ;;
+        *)
+            echo_error "Unknown option: $arg"
+            show_help
+            ;;
+    esac
+done
 
 # ==============================================================================
 # Step 1: Verify dependencies
@@ -38,63 +91,65 @@ else
     exit 1
 fi
 
-# Check for Projucer - try common locations
-PROJUCER_PATHS=(
-    "/Applications/JUCE/Projucer.app/Contents/MacOS/Projucer"
-    "/Applications/Projucer.app/Contents/MacOS/Projucer"
-    "$HOME/JUCE/Projucer.app/Contents/MacOS/Projucer"
-    "$HOME/Applications/JUCE/Projucer.app/Contents/MacOS/Projucer"
-)
+# Check for Projucer (required unless --skip-regenerate)
+if [ "$REGENERATE" = true ]; then
+    PROJUCER_PATHS=(
+        "/Applications/JUCE/Projucer.app/Contents/MacOS/Projucer"
+        "/Applications/Projucer.app/Contents/MacOS/Projucer"
+        "$HOME/JUCE/Projucer.app/Contents/MacOS/Projucer"
+        "$HOME/Applications/JUCE/Projucer.app/Contents/MacOS/Projucer"
+    )
 
-PROJUCER_BIN=""
-for path in "${PROJUCER_PATHS[@]}"; do
-    if [ -x "$path" ]; then
-        PROJUCER_BIN="$path"
-        break
-    fi
-done
-
-# Also check if it's in PATH
-if [ -z "$PROJUCER_BIN" ] && command -v Projucer &> /dev/null; then
-    PROJUCER_BIN="Projucer"
-fi
-
-if [ -n "$PROJUCER_BIN" ]; then
-    echo_status "Projucer found: $PROJUCER_BIN"
-else
-    echo_error "Projucer not found. Please install JUCE and ensure Projucer is in one of:"
+    PROJUCER_BIN=""
     for path in "${PROJUCER_PATHS[@]}"; do
-        echo "    - $path"
+        if [ -x "$path" ]; then
+            PROJUCER_BIN="$path"
+            break
+        fi
     done
-    echo ""
-    echo "Download JUCE from: https://juce.com/get-juce/"
-    exit 1
+
+    if [ -z "$PROJUCER_BIN" ] && command -v Projucer &> /dev/null; then
+        PROJUCER_BIN="Projucer"
+    fi
+
+    if [ -n "$PROJUCER_BIN" ]; then
+        echo_status "Projucer found: $PROJUCER_BIN"
+    else
+        echo_error "Projucer not found. Install from: https://juce.com/get-juce/"
+        echo "       Or use --skip-regenerate to skip project regeneration"
+        exit 1
+    fi
 fi
 
-# Verify jucer file exists
-if [ -f "$JUCER_FILE" ]; then
-    echo_status "Found .jucer file: $JUCER_FILE"
-else
-    echo_error "Could not find .jucer file at: $JUCER_FILE"
-    exit 1
-fi
-
-# ==============================================================================
-# Step 2: Regenerate Xcode project with Projucer
-# ==============================================================================
-echo ""
-echo "========================================"
-echo "Step 2: Regenerating Xcode project"
-echo "========================================"
-
-echo "Running: $PROJUCER_BIN --resave \"$JUCER_FILE\""
-"$PROJUCER_BIN" --resave "$JUCER_FILE"
-
+# Verify Xcode project exists
 if [ -d "$XCODE_PROJECT" ]; then
-    echo_status "Xcode project regenerated successfully"
+    echo_status "Found Xcode project: $XCODE_PROJECT"
 else
-    echo_error "Failed to regenerate Xcode project"
+    echo_error "Xcode project not found. Run with --regenerate to create it."
     exit 1
+fi
+
+# ==============================================================================
+# Step 2: Regenerate Xcode project (optional)
+# ==============================================================================
+if [ "$REGENERATE" = true ]; then
+    echo ""
+    echo "========================================"
+    echo "Step 2: Regenerating Xcode project"
+    echo "========================================"
+
+    echo "Running: $PROJUCER_BIN --resave \"$JUCER_FILE\""
+    "$PROJUCER_BIN" --resave "$JUCER_FILE"
+
+    if [ -d "$XCODE_PROJECT" ]; then
+        echo_status "Xcode project regenerated successfully"
+    else
+        echo_error "Failed to regenerate Xcode project"
+        exit 1
+    fi
+else
+    echo ""
+    echo_info "Skipping Xcode project regeneration (--skip-regenerate)"
 fi
 
 # ==============================================================================
@@ -111,65 +166,96 @@ cd "$SCRIPT_DIR/standalone/builds/osx"
 SCHEME=$(xcodebuild -project Vial.xcodeproj -list 2>/dev/null | grep -A 100 "Schemes:" | tail -n +2 | head -n 1 | xargs)
 
 if [ -z "$SCHEME" ]; then
-    SCHEME="Vial - App"  # Default scheme name for JUCE standalone apps
+    SCHEME="Vial - App"
 fi
 
-echo "Using scheme: $SCHEME"
+echo_info "Using scheme: $SCHEME"
+
+# Build signing arguments
+SIGNING_ARGS=("-allowProvisioningUpdates")
+if [ -n "$TEAM_ID" ]; then
+    echo_info "Using team ID override: $TEAM_ID"
+    SIGNING_ARGS+=(
+        "DEVELOPMENT_TEAM=$TEAM_ID"
+        "CODE_SIGN_STYLE=Automatic"
+    )
+else
+    echo_info "Using project signing settings"
+fi
+
+# Clean if requested
+if [ "$CLEAN_BUILD" = true ]; then
+    echo_info "Cleaning build..."
+    xcodebuild -project Vial.xcodeproj -scheme "$SCHEME" -configuration "$CONFIG" clean >/dev/null 2>&1 || true
+fi
+
 echo "Building..."
 
+# Run xcodebuild
+BUILD_OUTPUT=$(mktemp)
 xcodebuild \
     -project Vial.xcodeproj \
     -scheme "$SCHEME" \
     -configuration "$CONFIG" \
-    CODE_SIGN_IDENTITY="" \
-    CODE_SIGNING_REQUIRED=NO \
-    CODE_SIGNING_ALLOWED=NO \
+    "${SIGNING_ARGS[@]}" \
     build \
-    2>&1 | while read line; do
+    2>&1 | tee "$BUILD_OUTPUT" | while read line; do
         # Show condensed output
         if [[ "$line" == *"error:"* ]]; then
             echo_error "$line"
-        elif [[ "$line" == *"warning:"* ]]; then
-            echo_warn "$line"
         elif [[ "$line" == *"BUILD SUCCEEDED"* ]]; then
             echo_status "$line"
         elif [[ "$line" == *"BUILD FAILED"* ]]; then
             echo_error "$line"
-        elif [[ "$line" == *"Compiling"* ]] || [[ "$line" == *"Linking"* ]]; then
+        elif [[ "$line" == *"Compiling"* ]]; then
+            # Show just the filename being compiled
+            FILE=$(echo "$line" | sed 's/.*Compiling //' | sed 's/ .*//')
+            echo "  Compiling $FILE"
+        elif [[ "$line" == *"Linking"* ]]; then
             echo "  $line"
         fi
     done
 
-# Check if build succeeded by looking for the app
-BUILD_DIR="$SCRIPT_DIR/standalone/builds/osx/build/$CONFIG"
-APP_PATH="$BUILD_DIR/Vial.app"
+# Check build result
+if grep -q "BUILD SUCCEEDED" "$BUILD_OUTPUT"; then
+    BUILD_SUCCESS=true
+else
+    BUILD_SUCCESS=false
+fi
+rm -f "$BUILD_OUTPUT"
 
-# Also check DerivedData location
-if [ ! -d "$APP_PATH" ]; then
-    # Try to find in DerivedData
-    DERIVED_DATA_APP=$(find ~/Library/Developer/Xcode/DerivedData -name "Vial.app" -path "*$CONFIG*" 2>/dev/null | head -n 1)
-    if [ -n "$DERIVED_DATA_APP" ]; then
-        APP_PATH="$DERIVED_DATA_APP"
+# Find the built app
+APP_PATH=$(find "$DERIVED_DATA" -name "Vial.app" -path "*Build/Products/$CONFIG*" -type d 2>/dev/null | head -n 1)
+
+# Fallback to local build directory
+if [ -z "$APP_PATH" ] || [ ! -d "$APP_PATH" ]; then
+    BUILD_DIR="$SCRIPT_DIR/standalone/builds/osx/build/$CONFIG"
+    if [ -d "$BUILD_DIR/Vial.app" ]; then
+        APP_PATH="$BUILD_DIR/Vial.app"
     fi
 fi
 
-if [ -d "$APP_PATH" ]; then
+if [ "$BUILD_SUCCESS" = true ] && [ -d "$APP_PATH" ]; then
     echo_status "Build successful: $APP_PATH"
 else
-    echo_error "Build may have failed - could not find Vial.app"
-    echo "Check xcodebuild output above for errors"
+    echo_error "Build failed or could not find Vial.app"
     exit 1
 fi
 
 # ==============================================================================
-# Step 4: Run the app
+# Step 4: Run the app (optional)
 # ==============================================================================
-echo ""
-echo "========================================"
-echo "Step 4: Launching Vial"
-echo "========================================"
+if [ "$RUN_APP" = true ]; then
+    echo ""
+    echo "========================================"
+    echo "Step 4: Launching Vial"
+    echo "========================================"
 
-echo "Opening: $APP_PATH"
-open "$APP_PATH"
-
-echo_status "Done!"
+    echo "Opening: $APP_PATH"
+    open "$APP_PATH"
+    echo_status "Done!"
+else
+    echo ""
+    echo_status "Build complete (--no-run specified)"
+    echo "App location: $APP_PATH"
+fi
