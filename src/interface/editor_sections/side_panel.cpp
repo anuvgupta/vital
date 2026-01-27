@@ -47,7 +47,7 @@ void VitalSidePanel::paintBackground(Graphics& g) {
 
   // Draw panel title
   g.setColour(findColour(Skin::kBodyText, true));
-  g.setFont(Fonts::instance()->proportional_regular().withPointHeight(20.0f));
+  g.setFont(Fonts::instance()->proportional_regular().withPointHeight(28.0f));
   
   int title_height = 30;
   int padding = findValue(Skin::kLargePadding);
