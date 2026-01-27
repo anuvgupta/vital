@@ -1,0 +1,6 @@
+{
+    "package": "vital",
+    "targets": {
+        "build": "./build_macos.sh"
+    }
+}
