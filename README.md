@@ -1,4 +1,4 @@
-# Vital with AI Agent
+# Vital AI Agent
 
 This is a fork of the open source synthesizer Vital (at version 1.0.6 or 1.0.7).
 
