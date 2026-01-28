@@ -121,12 +121,14 @@ if [ "$REGENERATE" = true ]; then
     fi
 fi
 
-# Verify Xcode project exists
-if [ -d "$XCODE_PROJECT" ]; then
-    echo_status "Found Xcode project: $XCODE_PROJECT"
-else
-    echo_error "Xcode project not found. Run with --regenerate to create it."
-    exit 1
+# Verify Xcode project exists (only if skipping regeneration)
+if [ "$REGENERATE" = false ]; then
+    if [ -d "$XCODE_PROJECT" ]; then
+        echo_status "Found Xcode project: $XCODE_PROJECT"
+    else
+        echo_error "Xcode project not found. Run without --skip-regenerate to create it."
+        exit 1
+    fi
 fi
 
 # ==============================================================================
