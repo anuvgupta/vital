@@ -20,6 +20,7 @@
 - We created a build script `vital/build_macos.sh` because we are developing on MacOS. This runs Projucer CLI to build the project to MacOS (Xcode) and other targets. Then it uses Xcode CLI to run the debug app. We can use this script with `--no-run` argument to verify that new changes build/compile successfully.
 - We added a sidepanel (via `side_panel.cpp`) where we will continue to add functionality
 - We added a textarea and a button to the sidepanel, near the bottom
+- We implemented a chat interface with scrollable message area, user message bubbles, and "Thinking..." indicator
 
 ## Key Learnings & Common Issues
 
@@ -33,6 +34,23 @@
     - For multiline editors, must explicitly call `setFont()` - the auto-font in `visibilityChanged()` only applies to single-line.
     - Must call `redoImage()` after setting colors/placeholder text to update the OpenGL texture.
     - Reference working examples: `SaveSection::setTextColors()`, `PresetBrowser` comments setup.
+
+- **Vital uses OpenGL-only rendering - standard JUCE paint() doesn't work**:
+    - Vital's UI is rendered entirely via OpenGL. Standard JUCE `Component::paint()` methods on child components **do not get called**.
+    - If you add a child Component with `addAndMakeVisible()` and implement `paint()`, it will NOT render.
+    - **Solution for dynamic UI content**: Draw directly in `paintBackground()` which IS called during the OpenGL render cycle (it renders to a texture).
+    - For scrollable content, handle scrolling manually with scroll position tracking rather than using `juce::Viewport`.
+    - Reference: Our chat message implementation in `side_panel.cpp` uses `paintChatMessages()` called from `paintBackground()`.
+
+- **Creating OpenGL components dynamically causes crashes**:
+    - `OpenGlQuad`, `PlainTextComponent`, and other OpenGL components require shader initialization in the OpenGL context.
+    - Creating these dynamically (e.g., when user submits a message) and trying to render them causes `EXC_BAD_ACCESS` because shaders aren't initialized yet.
+    - The shaders get initialized during the render cycle via `init(OpenGlWrapper&)`, but if you try to use the component before that, it crashes.
+    - **Solution**: Either pre-allocate OpenGL components at startup (like `ModulationMatrix` does with rows), or use direct `Graphics` drawing in `paintBackground()` instead.
+
+- **TextEditor::Listener for Enter key handling**:
+    - Implement `TextEditor::Listener` and override `textEditorReturnKeyPressed()` to handle Enter key submission.
+    - Set `setReturnKeyStartsNewLine(false)` so Enter submits instead of creating a newline (users can use Shift+Enter for newlines).
 
 ## Key Files Reference
 
@@ -64,11 +82,13 @@
 **UI / Interface:**
 
 - [full_interface.h/cpp](vital/src/interface/editor_sections/full_interface.cpp) - Main UI container, manages all sections and layout
-- [synth_section.h/cpp](vital/src/interface/editor_sections/synth_section.h) - Base class for all UI sections
+- [synth_section.h/cpp](vital/src/interface/editor_sections/synth_section.h) - Base class for all UI sections, includes `paintBackground()` for OpenGL rendering
 - [synth_button.h](vital/src/interface/editor_components/synth_button.h) - OpenGlToggleButton, SynthButton components
-- [side_panel.h/cpp](vital/src/interface/editor_sections/side_panel.cpp) - **Our custom AI chat panel (VitalSidePanel)**
-- [open_gl_image_component.h](vital/src/interface/editor_components/open_gl_image_component.h) - OpenGlTextEditor, OpenGlAutoImageComponent for text input
+- [side_panel.h/cpp](vital/src/interface/editor_sections/side_panel.cpp) - **Our custom AI chat panel (VitalSidePanel)** with chat messages, scrolling, Enter key handling
+- [open_gl_image_component.h](vital/src/interface/editor_components/open_gl_image_component.h) - OpenGlTextEditor, PlainTextComponent, OpenGlAutoImageComponent
+- [open_gl_multi_quad.h](vital/src/interface/editor_components/open_gl_multi_quad.h) - OpenGlQuad (rounded rectangles), OpenGlScrollBar
 - [open_gl_component.h/cpp](vital/src/interface/editor_components/open_gl_component.cpp) - Base OpenGL component, parent/findValue system
+- [modulation_matrix.h/cpp](vital/src/interface/editor_sections/modulation_matrix.cpp) - Reference for scrollable lists with OpenGL (pre-allocated rows pattern)
 - [save_section.cpp](vital/src/interface/editor_sections/save_section.cpp) - Reference for OpenGlTextEditor setup patterns
 - [preset_browser.cpp](vital/src/interface/editor_sections/preset_browser.cpp) - Reference for multiline text editor setup
 
