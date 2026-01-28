@@ -149,7 +149,7 @@ void VitalSidePanel::resized() {
   // Button at the bottom
   int button_y = getHeight() - padding - button_height;
   action_button_->setBounds(padding, button_y, button_width, button_height);
-  action_button_->getGlComponent()->text().setTextSize(18.0f);
+  action_button_->getGlComponent()->text().setTextSize(22.0f);
 
   // Textarea above the button
   int textarea_y = button_y - widget_margin - textarea_height;
@@ -165,7 +165,7 @@ void VitalSidePanel::resized() {
     prompt_editor_->setColour(TextEditor::highlightedTextColourId, findColour(Skin::kBodyText, true));
     prompt_editor_->setColour(TextEditor::highlightColourId, findColour(Skin::kTextEditorSelection, true));
 
-    float font_size = 20.0f;
+    float font_size = 24.0f;
     prompt_editor_->setFont(Fonts::instance()->proportional_light().withPointHeight(font_size));
     prompt_editor_->redoImage();
   }
