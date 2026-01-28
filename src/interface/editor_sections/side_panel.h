@@ -74,6 +74,9 @@ public:
     // ScrollBar::Listener
     void scrollBarMoved(ScrollBar *scrollBar, double newRangeStart) override;
 
+    // Mouse wheel scrolling
+    void mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) override;
+
     void addListener(Listener *listener) { listeners_.push_back(listener); }
 
     // Chat methods

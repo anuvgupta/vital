@@ -210,6 +210,23 @@ void VitalSidePanel::scrollBarMoved(ScrollBar* scrollBar, double newRangeStart) 
   repaintBackground();
 }
 
+void VitalSidePanel::mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) {
+  static constexpr float kScrollSensitivity = 200.0f;
+
+  // Only scroll if mouse is in chat area
+  if (!chat_bounds_.contains(e.getPosition()))
+    return;
+
+  int visible_height = chat_bounds_.getHeight();
+  int max_scroll = std::max(0, total_content_height_ - visible_height);
+
+  scroll_position_ -= (int)(wheel.deltaY * kScrollSensitivity);
+  scroll_position_ = std::max(0, std::min(scroll_position_, max_scroll));
+
+  setScrollBarRange();
+  repaintBackground();
+}
+
 void VitalSidePanel::submitMessage() {
 #if !defined(NO_TEXT_ENTRY)
   if (!prompt_editor_)
