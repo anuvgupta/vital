@@ -88,6 +88,7 @@ class SynthBase : public MidiManager::Listener {
     bool saveToFile(File preset);
     bool saveToActiveFile();
     json getStateAsJson() { return saveToJson(); }
+    bool loadStateFromJson(const json& state) { return loadFromJson(state); }
     void clearActiveFile() { active_file_ = File(); }
     File getActiveFile() { return active_file_; }
 

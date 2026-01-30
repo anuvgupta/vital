@@ -33,6 +33,7 @@
 - We added persistent conversation history (max 20 messages) to ClaudeApiClient: each new message is added to history, the API sends full conversation context, and responses are stored for multi-turn dialogue
 - We added a system prompt for the Vital AI assistant: `ClaudeApiClient` loads `SYSTEM_PROMPT.md` from the app bundle Resources dir (fallback to data dir), sent via the Anthropic API's top-level `"system"` field. The build script copies the prompt file into the bundle.
 - We added current preset JSON injection to Claude API chat: when user sends a message, the synth preset is serialized to JSON and injected as a user message before the actual message. Base64 data (wave_data, samples) is stripped to save tokens.
+- We switched from full preset JSON responses to a JSON diff/merge patch approach (RFC 7396 style): Claude returns only changed keys, which are recursively merged into the current preset via `mergeJson()`. This avoids token limits (full presets are 4000+ lines). Added `loadStateFromJson()` public wrapper on `SynthBase` to apply the merged result. Increased `kMaxTokens` to 4096.
 
 ## Key Learnings & Common Issues
 
@@ -81,7 +82,7 @@
 
 - **Accessing protected methods on SynthBase**:
     - `SynthBase::saveToJson()` is protected - can't call directly from UI code like `FullInterface`.
-    - **Solution**: Add a public wrapper method like `getStateAsJson()` that calls `saveToJson()` and returns the result.
+    - **Solution**: Add a public wrapper method like `getStateAsJson()` (wraps `saveToJson()`) or `loadStateFromJson()` (wraps `loadFromJson()`).
     - This project uses an older nlohmann json version - use `.count("key")` instead of `.contains("key")`.
 
 ## Key Files Reference
@@ -92,7 +93,7 @@
 - [synth_parameters.cpp](vital/src/common/synth_parameters.cpp) - All parameter definitions with ranges
 - [synth_constants.h](vital/src/common/synth_constants.h) - Numeric constants
 - [synth_strings.h](vital/src/interface/look_and_feel/synth_strings.h) - String values for enums
-- [synth_base.h](src/common/synth_base.h) - SynthBase with `getStateAsJson()` for preset export
+- [synth_base.h](src/common/synth_base.h) - SynthBase with `getStateAsJson()` / `loadStateFromJson()` wrappers
 
 **Line Generator (LFOs and Line Source wavetables):**
 
@@ -128,6 +129,7 @@
 **API Client:**
 
 - [claude_api_client.h/cpp](src/common/claude_api_client.cpp) - Singleton Claude API client with `sendMessage()` for async API calls
+- [SYSTEM_PROMPT.md](agents/vital-assistant/SYSTEM_PROMPT.md) - System prompt for Claude API assistant
 - [synth_preset_selector.cpp](src/interface/editor_components/synth_preset_selector.cpp) - Menu bar with preset loading, skin, and API key file selection
 
 **Build System:**

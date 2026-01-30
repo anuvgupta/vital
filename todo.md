@@ -5,6 +5,7 @@
 
 ### Open
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
+- Markdown support in responses
 
 ### Done
 - ...

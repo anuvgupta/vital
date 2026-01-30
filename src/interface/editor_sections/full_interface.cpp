@@ -982,6 +982,16 @@ void FullInterface::toggleFilter2Zoom() {
     showFullScreenSection(synthesis_interface_->getFilterSection2());
 }
 
+void FullInterface::mergeJson(json& target, const json& patch) {
+  for (auto it = patch.begin(); it != patch.end(); ++it) {
+    if (it.value().is_object() && target.count(it.key()) && target[it.key()].is_object()) {
+      mergeJson(target[it.key()], it.value());
+    } else {
+      target[it.key()] = it.value();
+    }
+  }
+}
+
 void FullInterface::sidePanelMessageSubmitted(const String& message) {
   VitalSidePanel* panel = side_panel_.get();
 
@@ -1025,14 +1035,49 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
       }
     }
 
+    // preset_json = String(state.dump(2)); // pretty-print for readability
     preset_json = String(state.dump());
   }
 
-  ClaudeApiClient::instance().sendMessage(message, [panel](const String& response, bool success) {
+  ClaudeApiClient::instance().sendMessage(message, [panel, this](const String& response, bool success) {
     // This callback is already on the message thread (handled by ClaudeApiClient)
-    if (panel) {
-      panel->clearThinkingMessage();
+    if (!panel)
+      return;
+
+    panel->clearThinkingMessage();
+
+    if (!success) {
       panel->addResponseMessage(response);
+      return;
     }
+
+    // Try to parse the response as a JSON preset diff
+    try {
+      json patch = json::parse(response.toStdString(), nullptr);
+
+      if (patch.count("settings")) {
+        SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
+        if (gui && gui->getSynth()) {
+          // Get current preset and merge the diff into it
+          json current = gui->getSynth()->getStateAsJson();
+          FullInterface::mergeJson(current, patch);
+
+          bool loaded = gui->getSynth()->loadStateFromJson(current);
+          if (loaded) {
+            gui->updateFullGui();
+            gui->notifyFresh();
+            panel->addResponseMessage("Preset updated.");
+            return;
+          }
+        }
+        panel->addResponseMessage("Failed to load preset from response.");
+        return;
+      }
+    }
+    catch (const json::exception&) {
+      // Not valid JSON - fall through to show as text
+    }
+
+    panel->addResponseMessage(response);
   }, preset_json);
 }
