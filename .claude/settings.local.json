@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(./build_macos.sh:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
