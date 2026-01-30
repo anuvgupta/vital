@@ -243,7 +243,7 @@ void VitalSidePanel::initializeApiClient() {
   if (api_client.initialize())
     addMessage("Ready to create!", ChatMessage::kSystem);
   else
-    addMessage("API key not con fig ur ed. Use the menu to set your API key path.", ChatMessage::kSystem);
+    addMessage("API key not configured. Use the menu to set your API key path.", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::submitMessage() {
