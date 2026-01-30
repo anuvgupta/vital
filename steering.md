@@ -5,6 +5,7 @@
 - In the subfolder `vital` we have the codebase for open source synthesizer Vital, which is built using JUCE.
 - Vital is a spectral warping wavetable synthesizer with three oscillators, a sampler, and an extensive modulation matrix, using JSON-based .vital preset files that store wavetable data.
 - JUCE is a widely used framework for audio application and plug-in development, open source C++ codebase, for standalone software on cross-platform, and VST, AU, etc. plug-ins.
+- JUCE version we are using is JUCE 6
 
 ## Project Proposal
 
