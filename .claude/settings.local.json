@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./build_macos.sh:*)"
+      "Bash(./build_macos.sh:*)",
+      "Bash(grep:*)"
     ]
   }
 }
