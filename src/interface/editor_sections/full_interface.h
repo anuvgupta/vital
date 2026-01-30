@@ -27,6 +27,7 @@
 #include "modulation_matrix.h"
 #include "open_gl_background.h"
 #include "shaders.h"
+#include "side_panel.h"
 #include "synth_section.h"
 #include "update_check_section.h"
 #include "wavetable_creator.h"
@@ -45,7 +46,6 @@ class ModulationManager;
 class PortamentoSection;
 class PresetBrowser;
 class SaveSection;
-class VitalSidePanel;
 class SynthesisInterface;
 struct SynthGuiData;
 class SynthSlider;
@@ -55,6 +55,7 @@ class VoiceSection;
 class FullInterface : public SynthSection, public AuthenticationSection::Listener, public HeaderSection::Listener,
                       public DownloadSection::Listener, public UpdateCheckSection::Listener,
                       public EffectsInterface::Listener, public ModulationMatrix::Listener,
+                      public VitalSidePanel::Listener,
                       public OpenGLRenderer, DragAndDropContainer {
   public:
     static constexpr double kMinOpenGlVersion = 1.4;
@@ -112,6 +113,10 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
 
     void effectsMoved() override;
     void modulationsScrolled() override;
+
+    // VitalSidePanel::Listener
+    void sidePanelButtonClicked() override {}
+    void sidePanelMessageSubmitted(const String& message) override;
 
     void setFocus();
     void notifyChange();

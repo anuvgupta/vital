@@ -19,6 +19,7 @@
 #include "about_section.h"
 #include "bank_exporter.h"
 #include "bend_section.h"
+#include "claude_api_client.h"
 #include "delete_section.h"
 #include "download_section.h"
 #include "expired_section.h"
@@ -38,7 +39,6 @@
 #include "overlay.h"
 #include "portamento_section.h"
 #include "preset_browser.h"
-#include "side_panel.h"
 #include "synthesis_interface.h"
 #include "synth_gui_interface.h"
 #include "text_look_and_feel.h"
@@ -112,6 +112,7 @@ FullInterface::FullInterface(SynthGuiData* synth_data) : SynthSection("full_inte
 
   side_panel_ = std::make_unique<VitalSidePanel>();
   addSubSection(side_panel_.get());
+  side_panel_->addListener(this);
 
   modulation_matrix_ = std::make_unique<ModulationMatrix>(synth_data->modulation_sources, synth_data->mono_modulations);
   addSubSection(modulation_matrix_.get());
@@ -979,4 +980,15 @@ void FullInterface::toggleFilter2Zoom() {
     showFullScreenSection(nullptr);
   else
     showFullScreenSection(synthesis_interface_->getFilterSection2());
+}
+
+void FullInterface::sidePanelMessageSubmitted(const String& message) {
+  VitalSidePanel* panel = side_panel_.get();
+  ClaudeApiClient::instance().sendMessage(message, [panel](const String& response, bool success) {
+    // This callback is already on the message thread (handled by ClaudeApiClient)
+    if (panel) {
+      panel->clearThinkingMessage();
+      panel->addResponseMessage(response);
+    }
+  });
 }

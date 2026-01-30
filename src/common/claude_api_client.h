@@ -18,9 +18,12 @@
 
 #include "JuceHeader.h"
 #include <string>
+#include <functional>
 
 class ClaudeApiClient {
   public:
+    using ResponseCallback = std::function<void(const String& response, bool success)>;
+
     static ClaudeApiClient& instance();
 
     bool initialize();
@@ -28,6 +31,8 @@ class ClaudeApiClient {
     bool hasInternetAccess() const { return internet_access_; }
     const std::string& getApiKey() const { return api_key_; }
     const std::string& getApiKeyPath() const { return api_key_path_; }
+
+    void sendMessage(const String& message, ResponseCallback callback);
 
   private:
     ClaudeApiClient();
@@ -37,6 +42,7 @@ class ClaudeApiClient {
 
     bool loadApiKey();
     bool checkInternetAccess();
+    void sendMessageAsync(const String& message, ResponseCallback callback);
 
     std::string api_key_path_;
     std::string api_key_;

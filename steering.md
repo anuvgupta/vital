@@ -23,7 +23,8 @@
 - We added a textarea and a button to the sidepanel, near the bottom
 - We implemented a chat interface with scrollable message area, user message bubbles, and "Thinking..." indicator
 - We added a menu option to save claude API key path in user settings (Vital json config stored in `Library/Application Support` or `APPDATA`, etc.) and load the path when the app starts
-- We added an API client for Claude (Anthropic/Claude Platform API). The side panel initializes the API client with the API key (if exists), checks internet access, and adds a "Ready" message to the chat window. 
+- We added an API client for Claude (Anthropic/Claude Platform API). The side panel initializes the API client with the API key (if exists), checks internet access, and adds a "Ready" message to the chat window.
+- We implemented chat message sending to Claude API with background threading: user submits message -> sidepanel notifies listeners -> `FullInterface::sidePanelMessageSubmitted()` calls `ClaudeApiClient::sendMessage()` -> background thread makes HTTP POST -> response delivered via `MessageManager::callAsync()` back to UI thread
 
 ## Key Learnings & Common Issues
 
@@ -63,6 +64,13 @@
     - Implement `TextEditor::Listener` and override `textEditorReturnKeyPressed()` to handle Enter key submission.
     - Set `setReturnKeyStartsNewLine(false)` so Enter submits instead of creating a newline (users can use Shift+Enter for newlines).
 
+- **Background threading for HTTP requests in JUCE**:
+    - Never make HTTP requests on the UI thread - it blocks the entire interface.
+    - Use `Thread::launch()` with a lambda to run HTTP work on a background thread.
+    - Use `MessageManager::callAsync()` to deliver results back to the UI thread for safe component access.
+    - Example pattern in `ClaudeApiClient::sendMessage()`: launches background thread, captures callback, invokes callback via `callAsync()`.
+    - When building JSON in JUCE, use `DynamicObject` for objects and `Array<var>` for arrays, then `JSON::toString(var(...))` to serialize.
+
 ## Key Files Reference
 
 **Core Serialization:**
@@ -92,10 +100,10 @@
 
 **UI / Interface:**
 
-- [full_interface.h/cpp](vital/src/interface/editor_sections/full_interface.cpp) - Main UI container, manages all sections and layout
+- [full_interface.h/cpp](src/interface/editor_sections/full_interface.cpp) - Main UI container, handles VitalSidePanel listener callbacks
 - [synth_section.h/cpp](vital/src/interface/editor_sections/synth_section.h) - Base class for all UI sections, includes `paintBackground()` for OpenGL rendering
 - [synth_button.h](vital/src/interface/editor_components/synth_button.h) - OpenGlToggleButton, SynthButton components
-- [side_panel.h/cpp](vital/src/interface/editor_sections/side_panel.cpp) - **Our custom AI chat panel (VitalSidePanel)** with chat messages, scrolling, Enter key handling
+- [side_panel.h/cpp](src/interface/editor_sections/side_panel.cpp) - **Our AI chat panel (VitalSidePanel)** with listener pattern for message submission
 - [open_gl_image_component.h](vital/src/interface/editor_components/open_gl_image_component.h) - OpenGlTextEditor, PlainTextComponent, OpenGlAutoImageComponent
 - [open_gl_multi_quad.h](vital/src/interface/editor_components/open_gl_multi_quad.h) - OpenGlQuad (rounded rectangles), OpenGlScrollBar
 - [open_gl_component.h/cpp](vital/src/interface/editor_components/open_gl_component.cpp) - Base OpenGL component, parent/findValue system
@@ -105,8 +113,8 @@
 
 **API Client:**
 
-- [claude_api_client.h/cpp](vital/src/common/claude_api_client.cpp) - Singleton Claude API client, loads API key, checks internet access
-- [synth_preset_selector.cpp](vital/src/interface/editor_components/synth_preset_selector.cpp) - Menu bar with preset loading, skin, and API key file selection
+- [claude_api_client.h/cpp](src/common/claude_api_client.cpp) - Singleton Claude API client with `sendMessage()` for async API calls
+- [synth_preset_selector.cpp](src/interface/editor_components/synth_preset_selector.cpp) - Menu bar with preset loading, skin, and API key file selection
 
 **Build System:**
 
