@@ -1,17 +1,12 @@
 # Documenter Agent's Short-Term Memory
 
-## Current Task: Persistent Conversation History (2026-01-30)
+## Current Task: System Prompt Integration (2026-01-30)
 
-Documented implementation of persistent conversation history to ClaudeApiClient:
-- Added ChatMessage struct to track message role and content
-- Conversation history limited to 20 messages (oldest trimmed when exceeded)
-- Full history sent with each API request for context retention
-- Updated steering.md Latest Updates section
-- Files affected: src/common/claude_api_client.h, src/common/claude_api_client.cpp
-
-Commit message ready for review:
-- Title: "Add persistent conversation history to Claude API client"
-- Body describes the changes and architectural reasoning
+Documented system prompt integration for Vital AI assistant:
+- ClaudeApiClient loads SYSTEM_PROMPT.md from app bundle Resources (fallback to data dir)
+- Sent via Anthropic API top-level "system" field
+- build_macos.sh copies prompt file into app bundle post-build
+- Files: src/common/claude_api_client.h, src/common/claude_api_client.cpp, build_macos.sh
 
 ## Note: File Path Inconsistency in steering.md
 

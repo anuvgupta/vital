@@ -31,6 +31,7 @@
 - We added an API client for Claude (Anthropic/Claude Platform API). The side panel initializes the API client with the API key (if exists), checks internet access, and adds a "Ready" message to the chat window.
 - We implemented chat message sending to Claude API with background threading: user submits message -> sidepanel notifies listeners -> `FullInterface::sidePanelMessageSubmitted()` calls `ClaudeApiClient::sendMessage()` -> background thread makes HTTP POST -> response delivered via `MessageManager::callAsync()` back to UI thread
 - We added persistent conversation history (max 20 messages) to ClaudeApiClient: each new message is added to history, the API sends full conversation context, and responses are stored for multi-turn dialogue
+- We added a system prompt for the Vital AI assistant: `ClaudeApiClient` loads `SYSTEM_PROMPT.md` from the app bundle Resources dir (fallback to data dir), sent via the Anthropic API's top-level `"system"` field. The build script copies the prompt file into the bundle.
 
 ## Key Learnings & Common Issues
 

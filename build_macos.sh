@@ -239,6 +239,16 @@ fi
 
 if [ "$BUILD_SUCCESS" = true ] && [ -d "$APP_PATH" ]; then
     echo_status "Build successful: $APP_PATH"
+
+    # Copy system prompt into app bundle Resources
+    SYSTEM_PROMPT_SRC="$SCRIPT_DIR/agents/vital-assistant/SYSTEM_PROMPT.md"
+    RESOURCES_DIR="$APP_PATH/Contents/Resources"
+    if [ -f "$SYSTEM_PROMPT_SRC" ]; then
+        cp "$SYSTEM_PROMPT_SRC" "$RESOURCES_DIR/SYSTEM_PROMPT.md"
+        echo_status "Copied SYSTEM_PROMPT.md to app bundle"
+    else
+        echo_warn "SYSTEM_PROMPT.md not found at $SYSTEM_PROMPT_SRC"
+    fi
 else
     echo_error "Build failed or could not find Vial.app"
     exit 1

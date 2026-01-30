@@ -54,8 +54,11 @@ class ClaudeApiClient {
     };
     std::vector<ChatMessage> conversation_history_;
 
+    bool loadSystemPrompt();
+
     std::string api_key_path_;
     std::string api_key_;
+    String system_prompt_;
     bool initialized_ = false;
     bool internet_access_ = false;
 };

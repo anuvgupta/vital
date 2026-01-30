@@ -40,6 +40,9 @@ bool ClaudeApiClient::initialize() {
     return false;
   }
 
+  if (!loadSystemPrompt())
+    DBG("ClaudeApiClient: Failed to load system prompt");
+
   internet_access_ = checkInternetAccess();
   if (!internet_access_)
     DBG("ClaudeApiClient: No internet access detected");
@@ -63,6 +66,31 @@ bool ClaudeApiClient::loadApiKey() {
 
   api_key_ = key_file.loadFileAsString().trim().toStdString();
   return !api_key_.empty();
+}
+
+bool ClaudeApiClient::loadSystemPrompt() {
+  // Look for SYSTEM_PROMPT.md relative to the executable or in known locations
+  File executable = File::getSpecialLocation(File::currentExecutableFile);
+  File prompt_file;
+
+  // Try alongside the executable's bundle (macOS: Contents/MacOS/../Resources)
+  File resources_dir = executable.getParentDirectory().getParentDirectory().getChildFile("Resources");
+  prompt_file = resources_dir.getChildFile("SYSTEM_PROMPT.md");
+
+  if (!prompt_file.existsAsFile()) {
+    // Try the user's application data directory
+    File app_data = LoadSave::getDataDirectory();
+    prompt_file = app_data.getChildFile("SYSTEM_PROMPT.md");
+  }
+
+  if (!prompt_file.existsAsFile()) {
+    DBG("ClaudeApiClient: System prompt file not found");
+    return false;
+  }
+
+  system_prompt_ = prompt_file.loadFileAsString().trim();
+  DBG("ClaudeApiClient: Loaded system prompt (" + String(system_prompt_.length()) + " chars)");
+  return system_prompt_.isNotEmpty();
 }
 
 bool ClaudeApiClient::checkInternetAccess() {
@@ -102,6 +130,9 @@ void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback c
   DynamicObject::Ptr requestBody = new DynamicObject();
   requestBody->setProperty("model", kModel);
   requestBody->setProperty("max_tokens", kMaxTokens);
+
+  if (system_prompt_.isNotEmpty())
+    requestBody->setProperty("system", system_prompt_);
 
   // Build messages array from conversation history
   Array<var> messages;
