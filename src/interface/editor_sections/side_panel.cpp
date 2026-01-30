@@ -25,7 +25,7 @@
 // ============================================================================
 
 int ChatMessage::calculateHeight(const String& text, int width, float fontSize) {
-  Font font = Fonts::instance()->proportional_light().withPointHeight(fontSize);
+  Font font = Fonts::instance()->proportional_regular().withPointHeight(fontSize);
   int text_width = width - 2 * kPadding;
 
   // Use JUCE's TextLayout to calculate wrapped text height
@@ -100,7 +100,7 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
   Graphics::ScopedSaveState save_state(g);
   g.reduceClipRegion(chat_bounds_);
 
-  Font font = Fonts::instance()->proportional_light().withPointHeight(ChatMessage::kFontSize);
+  Font font = Fonts::instance()->proportional_regular().withPointHeight(ChatMessage::kFontSize);
   g.setFont(font);
 
   Colour bubble_color = findColour(Skin::kWidgetPrimary1, true).darker(0.4f);
@@ -161,6 +161,8 @@ void VitalSidePanel::resized() {
   int button_y = getHeight() - padding - button_height;
   action_button_->setBounds(padding, button_y, button_width, button_height);
   action_button_->getGlComponent()->text().setTextSize(22.0f);
+  action_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
+  action_button_->getGlComponent()->text().redrawImage(true);
 
   // Textarea above the button
   int textarea_y = button_y - widget_margin - textarea_height;
@@ -177,7 +179,7 @@ void VitalSidePanel::resized() {
     prompt_editor_->setColour(TextEditor::highlightColourId, findColour(Skin::kTextEditorSelection, true));
 
     float font_size = 24.0f;
-    prompt_editor_->setFont(Fonts::instance()->proportional_light().withPointHeight(font_size));
+    prompt_editor_->setFont(Fonts::instance()->proportional_regular().withPointHeight(font_size));
     prompt_editor_->redoImage();
   }
 #endif
