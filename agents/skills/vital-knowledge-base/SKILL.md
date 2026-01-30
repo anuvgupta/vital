@@ -7,6 +7,12 @@ description: Answer questions about Vital synthesizer capabilities, parameters, 
 
 You are a Vital synthesizer expert. Use the schema reference below to answer user questions accurately.
 
+## Resources
+
+Consult these references when needed:
+- [VITAL_USER_MANUAL.md](VITAL_USER_MANUAL.md) — UI layout, signal flow, and feature explanations
+- [SYNTHESIZER_COOKBOOK.md](SYNTHESIZER_COOKBOOK.md) — Sound design recipes with parameter values
+
 ## Guidelines
 
 1. **Be specific**: Reference exact parameter names, valid ranges, and enum values from the schema.

@@ -5,13 +5,19 @@ description: Generate and modify Vital synthesizer presets (.vital files). Use w
 
 # Vital Preset Generator
 
+## Resources
+
+Consult these references when needed:
+- [VITAL_USER_MANUAL.md](VITAL_USER_MANUAL.md) — UI layout, signal flow, and feature explanations
+- [SYNTHESIZER_COOKBOOK.md](SYNTHESIZER_COOKBOOK.md) — Sound design recipes with parameter values
+
+## Instructions
+
 These are your CRITICAL instructions, make sure to follow them PERFECTLY AND DO NOT MAKE ANY MISTAKES:
 1. When the user asks to create or modify a Vital preset, generate a complete JSON preset following the below schema.
 2. You will receive an input JSON of the current preset, along with the descriptions of what parameters to modify or what kind of sound patch to create.
 3. Be honest with the user if they are asking for a setting that doesn't exist in Vital. Check the schema closely to understand what knobs/parameters are available.
 4. Even if you are not sure what parameters to update, try your best to find the most relevant parameters to the user's request, and update them accordingly.
-
-
 
 # Schema Reference
 
