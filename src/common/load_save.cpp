@@ -1693,6 +1693,19 @@ std::string LoadSave::getAuthor() {
   return "";
 }
 
+void LoadSave::saveApiKeyPath(const std::string& path) {
+  json data = getConfigJson();
+  data["api_key_path"] = path;
+  saveJsonToConfig(data);
+}
+
+std::string LoadSave::getApiKeyPath() {
+  json data = getConfigJson();
+  if (data.count("api_key_path"))
+    return data["api_key_path"];
+  return "";
+}
+
 std::pair<wchar_t, wchar_t> LoadSave::getComputerKeyboardOctaveControls() {
   std::pair<wchar_t, wchar_t> octave_controls(vital::kDefaultKeyboardOctaveDown, vital::kDefaultKeyboardOctaveUp);
   json data = getConfigJson();

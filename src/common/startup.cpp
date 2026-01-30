@@ -27,6 +27,12 @@ void Startup::doStartupChecks(MidiManager* midi_manager, vital::StringLayout* la
     LoadSave::saveVersionConfig();
 
   LoadSave::loadConfig(midi_manager, layout);
+
+  std::string api_key_path = LoadSave::getApiKeyPath();
+  if (!api_key_path.empty())
+    DBG("Claude API key path: " + String(api_key_path));
+  else
+    DBG("No Claude API key path configured.");
 }
 
 bool Startup::isComputerCompatible() {

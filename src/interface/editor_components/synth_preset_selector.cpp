@@ -58,6 +58,8 @@ namespace {
       preset_selector->signOut();
     else if (result == SynthPresetSelector::kLogIn)
       preset_selector->signIn();
+    else if (result == SynthPresetSelector::kLoadApiKey)
+      preset_selector->loadApiKeyFile();
   }
 
   String redactEmail(const String& email) {
@@ -212,6 +214,9 @@ void SynthPresetSelector::showPopupMenu(Component* anchor) {
   //   options.addItem(kLogIn, "Log in");
   // else
   //   options.addItem(kLogOut, "Log out - " + redactEmail(logged_in_as).toStdString());
+
+  options.addItem(-1, "");
+  options.addItem(kLoadApiKey, "Load Claude API Key");
 
   if (LoadSave::getDefaultSkin().exists()) {
     options.addItem(-1, "");
@@ -419,6 +424,14 @@ void SynthPresetSelector::clearSkin() {
 
   full_skin_->loadDefaultSkin();
   repaintWithSkin();
+}
+
+void SynthPresetSelector::loadApiKeyFile() {
+  FileChooser load_box("Select Claude API Key File", File(), "*");
+  if (load_box.browseForFileToOpen()) {
+    std::string path = load_box.getResult().getFullPathName().toStdString();
+    LoadSave::saveApiKeyPath(path);
+  }
 }
 
 void SynthPresetSelector::repaintWithSkin() {

@@ -52,6 +52,7 @@ class SynthPresetSelector : public SynthSection,
       kClearSkin,
       kLogOut,
       kLogIn,
+      kLoadApiKey,
       kNumMenuItems
     };
 
@@ -108,6 +109,7 @@ class SynthPresetSelector : public SynthSection,
     void openSkinDesigner();
     void loadSkin();
     void clearSkin();
+    void loadApiKeyFile();
     void repaintWithSkin();
     void browsePresets();
 

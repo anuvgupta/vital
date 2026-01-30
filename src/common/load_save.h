@@ -143,6 +143,8 @@ class LoadSave {
     static std::wstring getComputerKeyboardLayout();
     static std::string getPreferredTTWTLanguage();
     static std::string getAuthor();
+    static void saveApiKeyPath(const std::string& path);
+    static std::string getApiKeyPath();
     static std::pair<wchar_t, wchar_t> getComputerKeyboardOctaveControls();
     static void saveAdditionalFolders(const std::string& name, std::vector<std::string> folders);
     static std::vector<std::string> getAdditionalFolders(const std::string& name);
