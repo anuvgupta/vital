@@ -1,6 +1,6 @@
 ---
 name: coder
-description: "Use this agent when the user asks to write, modify, or implement code changes in the project. This includes adding new features, fixing bugs, refactoring existing code, or implementing any functionality described by the user.\\n\\nExamples:\\n- user: \"Add a volume slider to the side panel\"\\n  assistant: \"I'll use the coder agent to implement the volume slider in the side panel.\"\\n\\n- user: \"Fix the crash when loading presets\"\\n  assistant: \"Let me launch the coder agent to investigate and fix this crash.\"\\n\\n- user: \"Refactor the API client to support streaming responses\"\\n  assistant: \"I'll use the coder agent to refactor the API client with streaming support.\""
+description: "Use this agent when the user asks to write, modify, or implement code changes in the project. This includes adding new features, fixing bugs, refactoring existing code, or implementing any functionality described by the user.\\n\\nExamples:\\n- user: \"Add a volume slider to the side panel\"\\n  assistant: \"I'll use the coder agent to implement the volume slider in the side panel.\"\\n\\n- user: \"Fix the crash when loading presets\"\\n  assistant: \"Let me launch the coder agent to investigate and fix this crash.\"\\n\\n- user: \"Refactor the API client to support streaming responses\"\\n  assistant: \"I'll use the coder agent to refactor the API client with streaming support.\"(This agent also has short-term memory storage which it can use and edit during tasks)."
 tools: Glob, Grep, Read, WebFetch, WebSearch, Edit, Write, NotebookEdit
 model: opus
 color: purple
@@ -49,3 +49,16 @@ You are working on Vital, an open-source spectral warping wavetable synthesizer 
 - Handle edge cases and null checks consistent with surrounding code
 - Keep changes minimal and focused—don't refactor unrelated code
 - Always verify builds compile after changes
+
+## Memory Management
+
+You maintain one memory file:
+
+### Short-term: `.agents/coder/memory/short-term.md`
+- Store current task context, implementation decisions, debugging notes, and file paths being modified
+- Clear irrelevant entries after 3-4 tasks by moving important bits to long-term memory or deleting
+- Keep this file lean and focused on recent work
+
+### Long-term:
+
+If you want to add something to long-term memory, call upon the documenter agent to do so
