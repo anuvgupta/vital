@@ -1,0 +1,1 @@
+documenter, we just finished a task, can you do the honors - summarize the latest updates, any bugs/issues we faced and how we solved, key lessons learned, files touched and their purposes, and the commit message - but be brief, do not take too long, do not be too verbose, do not read too many files. be quick, dont waste tokens
