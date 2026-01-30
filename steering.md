@@ -21,6 +21,7 @@
 - We added a sidepanel (via `side_panel.cpp`) where we will continue to add functionality
 - We added a textarea and a button to the sidepanel, near the bottom
 - We implemented a chat interface with scrollable message area, user message bubbles, and "Thinking..." indicator
+- We added a menu option to save claude API key path in user settings (Vital json config stored in `Library/Application Support` or `APPDATA`, etc.) and load the path when the app starts
 
 ## Key Learnings & Common Issues
 
