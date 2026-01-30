@@ -105,7 +105,7 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
 
   Colour bubble_color = findColour(Skin::kWidgetPrimary1, true).darker(0.4f);
   Colour text_color = findColour(Skin::kBodyText, true);
-  Colour system_text_color = text_color.withAlpha(0.7f);
+  Colour system_text_color = text_color.withAlpha(0.98f);
 
   for (const auto& message : messages_) {
     // Calculate message position relative to chat area with scroll offset
