@@ -88,18 +88,29 @@ void ClaudeApiClient::sendMessage(const String& message, ResponseCallback callba
   });
 }
 
+void ClaudeApiClient::addMessage(const String& role, const String& content) {
+  while (conversation_history_.size() >= kMaxMessages)
+    conversation_history_.erase(conversation_history_.begin());
+  conversation_history_.push_back({ role, content });
+}
+
 void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback callback) {
+  // Add user message to conversation history
+  addMessage("user", message);
+
   // Build the JSON request body
   DynamicObject::Ptr requestBody = new DynamicObject();
   requestBody->setProperty("model", kModel);
   requestBody->setProperty("max_tokens", kMaxTokens);
 
-  // Build messages array
+  // Build messages array from conversation history
   Array<var> messages;
-  DynamicObject::Ptr userMessage = new DynamicObject();
-  userMessage->setProperty("role", "user");
-  userMessage->setProperty("content", message);
-  messages.add(var(userMessage.get()));
+  for (const auto& msg : conversation_history_) {
+    DynamicObject::Ptr msgObj = new DynamicObject();
+    msgObj->setProperty("role", msg.role);
+    msgObj->setProperty("content", msg.content);
+    messages.add(var(msgObj.get()));
+  }
   requestBody->setProperty("messages", messages);
 
   String jsonBody = JSON::toString(var(requestBody.get()));
@@ -185,6 +196,10 @@ void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback c
   }
 
   String responseText = firstContent["text"].toString();
+
+  // Add assistant response to conversation history
+  addMessage("assistant", responseText);
+
   MessageManager::callAsync([callback, responseText]() {
     callback(responseText, true);
   });

@@ -7,6 +7,11 @@
 - JUCE is a widely used framework for audio application and plug-in development, open source C++ codebase, for standalone software on cross-platform, and VST, AU, etc. plug-ins.
 - JUCE version we are using is JUCE 6
 
+## Code guidelines
+- Commits
+    - When committing changes, include any updates in steering.md file and .agents folder.
+    - Don't include co-author line on commits, ie. `Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"` - leave this out, not necessary for commit messages
+
 ## Project Proposal
 
 - We are building an AI agent/chatbot panel for Vital synth, where the user can describe a synth sound or a modification to a parameter/knob on the synthesizer in natural language. The chatbot will then generate a new preset or update the current preset with the desired settings.
@@ -25,6 +30,7 @@
 - We added a menu option to save claude API key path in user settings (Vital json config stored in `Library/Application Support` or `APPDATA`, etc.) and load the path when the app starts
 - We added an API client for Claude (Anthropic/Claude Platform API). The side panel initializes the API client with the API key (if exists), checks internet access, and adds a "Ready" message to the chat window.
 - We implemented chat message sending to Claude API with background threading: user submits message -> sidepanel notifies listeners -> `FullInterface::sidePanelMessageSubmitted()` calls `ClaudeApiClient::sendMessage()` -> background thread makes HTTP POST -> response delivered via `MessageManager::callAsync()` back to UI thread
+- We added persistent conversation history (max 20 messages) to ClaudeApiClient: each new message is added to history, the API sends full conversation context, and responses are stored for multi-turn dialogue
 
 ## Key Learnings & Common Issues
 

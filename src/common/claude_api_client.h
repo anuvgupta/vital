@@ -19,6 +19,7 @@
 #include "JuceHeader.h"
 #include <string>
 #include <functional>
+#include <vector>
 
 class ClaudeApiClient {
   public:
@@ -43,6 +44,15 @@ class ClaudeApiClient {
     bool loadApiKey();
     bool checkInternetAccess();
     void sendMessageAsync(const String& message, ResponseCallback callback);
+    void addMessage(const String& role, const String& content);
+
+    static const int kMaxMessages = 20;
+
+    struct ChatMessage {
+      String role;
+      String content;
+    };
+    std::vector<ChatMessage> conversation_history_;
 
     std::string api_key_path_;
     std::string api_key_;
