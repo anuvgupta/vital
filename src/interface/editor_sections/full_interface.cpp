@@ -984,11 +984,55 @@ void FullInterface::toggleFilter2Zoom() {
 
 void FullInterface::sidePanelMessageSubmitted(const String& message) {
   VitalSidePanel* panel = side_panel_.get();
+
+  // Get current preset state as JSON to provide context to Claude
+  String preset_json;
+  SynthGuiInterface* gui_interface = findParentComponentOfClass<SynthGuiInterface>();
+  if (gui_interface && gui_interface->getSynth()) {
+    json state = gui_interface->getSynth()->getStateAsJson();
+
+    // Strip base64 data that wastes tokens and isn't useful for the LLM
+    if (state.count("settings")) {
+      auto& settings = state["settings"];
+
+      // Strip sample base64 data
+      if (settings.count("sample")) {
+        auto& sample = settings["sample"];
+        if (sample.count("samples"))
+          sample["samples"] = "(base64 data removed)";
+        if (sample.count("samples_stereo"))
+          sample["samples_stereo"] = "(base64 data removed)";
+      }
+
+      // Strip Wave Source base64 wave_data from wavetables
+      if (settings.count("wavetables") && settings["wavetables"].is_array()) {
+        for (auto& wavetable : settings["wavetables"]) {
+          if (wavetable.count("groups") && wavetable["groups"].is_array()) {
+            for (auto& group : wavetable["groups"]) {
+              if (group.count("components") && group["components"].is_array()) {
+                for (auto& component : group["components"]) {
+                  if (component.count("keyframes") && component["keyframes"].is_array()) {
+                    for (auto& keyframe : component["keyframes"]) {
+                      if (keyframe.count("wave_data"))
+                        keyframe["wave_data"] = "(base64 data removed)";
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    preset_json = String(state.dump());
+  }
+
   ClaudeApiClient::instance().sendMessage(message, [panel](const String& response, bool success) {
     // This callback is already on the message thread (handled by ClaudeApiClient)
     if (panel) {
       panel->clearThinkingMessage();
       panel->addResponseMessage(response);
     }
-  });
+  }, preset_json);
 }

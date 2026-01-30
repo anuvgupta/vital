@@ -33,7 +33,8 @@ class ClaudeApiClient {
     const std::string& getApiKey() const { return api_key_; }
     const std::string& getApiKeyPath() const { return api_key_path_; }
 
-    void sendMessage(const String& message, ResponseCallback callback);
+    void sendMessage(const String& message, ResponseCallback callback,
+                     const String& preset_json = String());
 
   private:
     ClaudeApiClient();
@@ -43,7 +44,8 @@ class ClaudeApiClient {
 
     bool loadApiKey();
     bool checkInternetAccess();
-    void sendMessageAsync(const String& message, ResponseCallback callback);
+    void sendMessageAsync(const String& message, ResponseCallback callback,
+                          const String& preset_json);
     void addMessage(const String& role, const String& content);
 
     static const int kMaxMessages = 20;

@@ -87,6 +87,7 @@ class SynthBase : public MidiManager::Listener {
     void renderAudioForResynthesis(float* data, int samples, int note);
     bool saveToFile(File preset);
     bool saveToActiveFile();
+    json getStateAsJson() { return saveToJson(); }
     void clearActiveFile() { active_file_ = File(); }
     File getActiveFile() { return active_file_; }
 

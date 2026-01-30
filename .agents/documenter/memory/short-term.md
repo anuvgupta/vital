@@ -1,12 +1,13 @@
 # Documenter Agent's Short-Term Memory
 
-## Current Task: System Prompt Integration (2026-01-30)
+## Current Task: Preset JSON Injection (2026-01-30)
 
-Documented system prompt integration for Vital AI assistant:
-- ClaudeApiClient loads SYSTEM_PROMPT.md from app bundle Resources (fallback to data dir)
-- Sent via Anthropic API top-level "system" field
-- build_macos.sh copies prompt file into app bundle post-build
-- Files: src/common/claude_api_client.h, src/common/claude_api_client.cpp, build_macos.sh
+Added current preset JSON context to Claude API chat:
+- When user sends a message, synth preset JSON is injected as a context message before the user's message
+- Format: "This is the current preset JSON:\n```json\n{...}\n```"
+- Base64 data (wave_data, samples/samples_stereo) is stripped before sending to save tokens
+- Added public `SynthBase::getStateAsJson()` wrapper for protected `saveToJson()`
+- Files: src/common/synth_base.h, src/common/claude_api_client.h/cpp, src/interface/editor_sections/full_interface.cpp
 
 ## Note: File Path Inconsistency in steering.md
 
@@ -17,4 +18,4 @@ The Key Files Reference section has inconsistent file paths:
 Files are located at `/Users/anuv/Documents/Code/Workspace/vital/workspace/vital/src/...`
 The working directory is `/Users/anuv/Documents/Code/Workspace/vital/workspace/vital/`
 
-I updated a few paths when touching those entries, but a full cleanup should be done in a future task.
+A full cleanup should be done in a future task.

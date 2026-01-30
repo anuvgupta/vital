@@ -99,7 +99,8 @@ bool ClaudeApiClient::checkInternetAccess() {
   return stream != nullptr;
 }
 
-void ClaudeApiClient::sendMessage(const String& message, ResponseCallback callback) {
+void ClaudeApiClient::sendMessage(const String& message, ResponseCallback callback,
+                                   const String& preset_json) {
   if (!initialized_) {
     callback("API client not initialized. Please configure your API key.", false);
     return;
@@ -111,8 +112,8 @@ void ClaudeApiClient::sendMessage(const String& message, ResponseCallback callba
   }
 
   // Run on background thread to avoid blocking UI
-  Thread::launch([this, message, callback]() {
-    sendMessageAsync(message, callback);
+  Thread::launch([this, message, callback, preset_json]() {
+    sendMessageAsync(message, callback, preset_json);
   });
 }
 
@@ -122,7 +123,14 @@ void ClaudeApiClient::addMessage(const String& role, const String& content) {
   conversation_history_.push_back({ role, content });
 }
 
-void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback callback) {
+void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback callback,
+                                        const String& preset_json) {
+  // If preset JSON is provided, inject it as a user message before the actual message
+  if (preset_json.isNotEmpty()) {
+    String preset_context = "This is the current preset JSON:\n```json\n" + preset_json + "\n```";
+    addMessage("user", preset_context);
+  }
+
   // Add user message to conversation history
   addMessage("user", message);
 

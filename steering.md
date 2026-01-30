@@ -32,6 +32,7 @@
 - We implemented chat message sending to Claude API with background threading: user submits message -> sidepanel notifies listeners -> `FullInterface::sidePanelMessageSubmitted()` calls `ClaudeApiClient::sendMessage()` -> background thread makes HTTP POST -> response delivered via `MessageManager::callAsync()` back to UI thread
 - We added persistent conversation history (max 20 messages) to ClaudeApiClient: each new message is added to history, the API sends full conversation context, and responses are stored for multi-turn dialogue
 - We added a system prompt for the Vital AI assistant: `ClaudeApiClient` loads `SYSTEM_PROMPT.md` from the app bundle Resources dir (fallback to data dir), sent via the Anthropic API's top-level `"system"` field. The build script copies the prompt file into the bundle.
+- We added current preset JSON injection to Claude API chat: when user sends a message, the synth preset is serialized to JSON and injected as a user message before the actual message. Base64 data (wave_data, samples) is stripped to save tokens.
 
 ## Key Learnings & Common Issues
 
@@ -78,6 +79,11 @@
     - Example pattern in `ClaudeApiClient::sendMessage()`: launches background thread, captures callback, invokes callback via `callAsync()`.
     - When building JSON in JUCE, use `DynamicObject` for objects and `Array<var>` for arrays, then `JSON::toString(var(...))` to serialize.
 
+- **Accessing protected methods on SynthBase**:
+    - `SynthBase::saveToJson()` is protected - can't call directly from UI code like `FullInterface`.
+    - **Solution**: Add a public wrapper method like `getStateAsJson()` that calls `saveToJson()` and returns the result.
+    - This project uses an older nlohmann json version - use `.count("key")` instead of `.contains("key")`.
+
 ## Key Files Reference
 
 **Core Serialization:**
@@ -86,6 +92,7 @@
 - [synth_parameters.cpp](vital/src/common/synth_parameters.cpp) - All parameter definitions with ranges
 - [synth_constants.h](vital/src/common/synth_constants.h) - Numeric constants
 - [synth_strings.h](vital/src/interface/look_and_feel/synth_strings.h) - String values for enums
+- [synth_base.h](src/common/synth_base.h) - SynthBase with `getStateAsJson()` for preset export
 
 **Line Generator (LFOs and Line Source wavetables):**
 
