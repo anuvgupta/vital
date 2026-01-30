@@ -43,6 +43,11 @@ bool ClaudeApiClient::initialize() {
   if (!loadSystemPrompt())
     DBG("ClaudeApiClient: Failed to load system prompt");
 
+  if (!loadPresetSchema())
+    DBG("ClaudeApiClient: Failed to load preset schema");
+  else if (system_prompt_.isNotEmpty())
+    system_prompt_ += "\n\n" + preset_schema_;
+
   internet_access_ = checkInternetAccess();
   if (!internet_access_)
     DBG("ClaudeApiClient: No internet access detected");
@@ -91,6 +96,28 @@ bool ClaudeApiClient::loadSystemPrompt() {
   system_prompt_ = prompt_file.loadFileAsString().trim();
   DBG("ClaudeApiClient: Loaded system prompt (" + String(system_prompt_.length()) + " chars)");
   return system_prompt_.isNotEmpty();
+}
+
+bool ClaudeApiClient::loadPresetSchema() {
+  File executable = File::getSpecialLocation(File::currentExecutableFile);
+  File prompt_file;
+
+  File resources_dir = executable.getParentDirectory().getParentDirectory().getChildFile("Resources");
+  prompt_file = resources_dir.getChildFile("PRESET_SCHEMA.md");
+
+  if (!prompt_file.existsAsFile()) {
+    File app_data = LoadSave::getDataDirectory();
+    prompt_file = app_data.getChildFile("PRESET_SCHEMA.md");
+  }
+
+  if (!prompt_file.existsAsFile()) {
+    DBG("ClaudeApiClient: Preset schema file not found");
+    return false;
+  }
+
+  preset_schema_ = prompt_file.loadFileAsString().trim();
+  DBG("ClaudeApiClient: Loaded preset schema (" + String(preset_schema_.length()) + " chars)");
+  return preset_schema_.isNotEmpty();
 }
 
 bool ClaudeApiClient::checkInternetAccess() {

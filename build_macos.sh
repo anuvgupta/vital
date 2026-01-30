@@ -249,6 +249,15 @@ if [ "$BUILD_SUCCESS" = true ] && [ -d "$APP_PATH" ]; then
     else
         echo_warn "SYSTEM_PROMPT.md not found at $SYSTEM_PROMPT_SRC"
     fi
+
+    # Copy preset schema into app bundle Resources
+    PRESET_SCHEMA_SRC="$SCRIPT_DIR/agents/vital-assistant/PRESET_SCHEMA.md"
+    if [ -f "$PRESET_SCHEMA_SRC" ]; then
+        cp "$PRESET_SCHEMA_SRC" "$RESOURCES_DIR/PRESET_SCHEMA.md"
+        echo_status "Copied PRESET_SCHEMA.md to app bundle"
+    else
+        echo_warn "PRESET_SCHEMA.md not found at $PRESET_SCHEMA_SRC"
+    fi
 else
     echo_error "Build failed or could not find Vial.app"
     exit 1

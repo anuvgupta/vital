@@ -34,6 +34,7 @@
 - We added a system prompt for the Vital AI assistant: `ClaudeApiClient` loads `SYSTEM_PROMPT.md` from the app bundle Resources dir (fallback to data dir), sent via the Anthropic API's top-level `"system"` field. The build script copies the prompt file into the bundle.
 - We added current preset JSON injection to Claude API chat: when user sends a message, the synth preset is serialized to JSON and injected as a user message before the actual message. Base64 data (wave_data, samples) is stripped to save tokens.
 - We switched from full preset JSON responses to a JSON diff/merge patch approach (RFC 7396 style): Claude returns only changed keys, which are recursively merged into the current preset via `mergeJson()`. This avoids token limits (full presets are 4000+ lines). Added `loadStateFromJson()` public wrapper on `SynthBase` to apply the merged result. Increased `kMaxTokens` to 4096.
+- We added preset schema loading to ClaudeApiClient: `PRESET_SCHEMA.md` (documenting all parameters, value ranges, and scaling formulas like quadratic/exponential) is loaded at init and appended to the system prompt. This gives the AI assistant accurate knowledge of how to compute stored values from user-facing percentages (e.g., quadratic: stored = sqrt(UI_value)).
 
 ## Key Learnings & Common Issues
 
@@ -130,6 +131,7 @@
 
 - [claude_api_client.h/cpp](src/common/claude_api_client.cpp) - Singleton Claude API client with `sendMessage()` for async API calls
 - [SYSTEM_PROMPT.md](agents/vital-assistant/SYSTEM_PROMPT.md) - System prompt for Claude API assistant
+- [PRESET_SCHEMA.md](agents/vital-assistant/PRESET_SCHEMA.md) - Parameter schema with scaling formulas
 - [synth_preset_selector.cpp](src/interface/editor_components/synth_preset_selector.cpp) - Menu bar with preset loading, skin, and API key file selection
 
 **Build System:**

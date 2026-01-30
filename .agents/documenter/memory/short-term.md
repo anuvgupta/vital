@@ -1,13 +1,12 @@
 # Documenter Agent's Short-Term Memory
 
-## Current Task: JSON Diff-Based Preset Updates (2026-01-30)
+## Current Task: Preset Schema Loading (2026-01-30)
 
-Switched from full preset JSON responses to diff/merge patch approach:
-- Claude returns only changed keys as JSON diff
-- `mergeJson()` recursively merges diff into current preset
-- Added `loadStateFromJson()` on SynthBase to apply merged result
-- Increased kMaxTokens from 1024 to 4096
-- Files: SYSTEM_PROMPT.md, full_interface.cpp/h, claude_api_client.cpp, synth_base.h
+Added PRESET_SCHEMA.md loading to ClaudeApiClient:
+- `loadPresetSchema()` loads schema file from app bundle Resources (same pattern as system prompt)
+- Schema appended to system_prompt_ in `initialize()`
+- Build script updated to copy PRESET_SCHEMA.md into bundle
+- Files: claude_api_client.h/cpp, build_macos.sh
 
 ## Note: File Path Inconsistency in steering.md
 
