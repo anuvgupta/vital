@@ -61,4 +61,5 @@ You maintain one memory file:
 
 ### Long-term:
 
-If you want to add something to long-term memory, call upon the documenter agent to do so
+If you want to add something to long-term memory, call upon the documenter agent to do so.
+You can read the documenter's memory to assist you in coding tasks. It has memory in the files `.agents/coder/documenter/short-term.md` and `.agents/coder/documenter/long-term.md`
