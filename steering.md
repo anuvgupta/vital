@@ -51,6 +51,14 @@
     - The shaders get initialized during the render cycle via `init(OpenGlWrapper&)`, but if you try to use the component before that, it crashes.
     - **Solution**: Either pre-allocate OpenGL components at startup (like `ModulationMatrix` does with rows), or use direct `Graphics` drawing in `paintBackground()` instead.
 
+- **Use `TextLayout` for both measuring and drawing text, never `drawFittedText`**:
+    - `drawFittedText` and `TextLayout` use different word-wrapping algorithms. If you calculate height with `TextLayout` but draw with `drawFittedText`, they disagree on line breaks.
+    - When `drawFittedText` needs more lines than the allocated height, it **shrinks the font** to fit, causing tiny unreadable text.
+    - **Solution**: Use `TextLayout::createLayout()` + `TextLayout::draw()` for rendering. This matches the wrapping used in `ChatMessage::calculateHeight()`.
+    - Fixed in `VitalSidePanel::paintChatMessages()` in `side_panel.cpp`.
+
+- **JUCE 6 API differences**: This project uses JUCE 6. Newer APIs like `URL::InputStreamOptions` and `URL::ParameterHandling` (JUCE 7+) don't exist. Use legacy overloads, e.g. `url.createInputStream(false, nullptr, nullptr, "", 5000)`.
+
 - **TextEditor::Listener for Enter key handling**:
     - Implement `TextEditor::Listener` and override `textEditorReturnKeyPressed()` to handle Enter key submission.
     - Set `setReturnKeyStartsNewLine(false)` so Enter submits instead of creating a newline (users can use Shift+Enter for newlines).
@@ -95,6 +103,12 @@
 - [save_section.cpp](vital/src/interface/editor_sections/save_section.cpp) - Reference for OpenGlTextEditor setup patterns
 - [preset_browser.cpp](vital/src/interface/editor_sections/preset_browser.cpp) - Reference for multiline text editor setup
 
+**API Client:**
+
+- [claude_api_client.h/cpp](vital/src/common/claude_api_client.cpp) - Singleton Claude API client, loads API key, checks internet access
+- [synth_preset_selector.cpp](vital/src/interface/editor_components/synth_preset_selector.cpp) - Menu bar with preset loading, skin, and API key file selection
+
 **Build System:**
 
+- [common.cpp](vital/src/unity_build/common.cpp) - Unity build file for common/utility classes
 - [interface_editor_sections.cpp](vital/src/unity_build/interface_editor_sections.cpp) - Unity build file for editor sections
