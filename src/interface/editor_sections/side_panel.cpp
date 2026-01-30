@@ -128,12 +128,21 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
       g.setColour(system_text_color);
     }
 
-    // Draw text with padding
-    Rectangle<int> text_bounds(msg_bounds.getX() + ChatMessage::kPadding,
-                                msg_bounds.getY() + ChatMessage::kPadding,
-                                msg_bounds.getWidth() - 2 * ChatMessage::kPadding,
-                                msg_bounds.getHeight() - 2 * ChatMessage::kPadding);
-    g.drawFittedText(message.text, text_bounds, Justification::topLeft, 100, 1.0f);
+    // Draw text with padding using TextLayout (consistent with height calculation)
+    Rectangle<float> text_bounds((float)(msg_bounds.getX() + ChatMessage::kPadding),
+                                  (float)(msg_bounds.getY() + ChatMessage::kPadding),
+                                  (float)(msg_bounds.getWidth() - 2 * ChatMessage::kPadding),
+                                  (float)(msg_bounds.getHeight() - 2 * ChatMessage::kPadding));
+
+    AttributedString attr_text;
+    attr_text.setText(message.text);
+    attr_text.setFont(font);
+    attr_text.setColour(message.type == ChatMessage::kUser ? text_color : system_text_color);
+    attr_text.setJustification(Justification::topLeft);
+
+    TextLayout text_layout;
+    text_layout.createLayout(attr_text, text_bounds.getWidth());
+    text_layout.draw(g, text_bounds);
   }
 }
 
@@ -234,7 +243,7 @@ void VitalSidePanel::initializeApiClient() {
   if (api_client.initialize())
     addMessage("Ready to create!", ChatMessage::kSystem);
   else
-    addMessage("API key not configured. Use the menu to set your API key path.", ChatMessage::kSystem);
+    addMessage("API key not con fig ur ed. Use the menu to set your API key path.", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::submitMessage() {
