@@ -179,6 +179,7 @@
 		3D8C77186D4AA5A4A470F383 /* folder.svg */ /* folder.svg */ = {isa = PBXFileReference; lastKnownFileType = file.svg; name = folder.svg; path = ../../../icons/folder.svg; sourceTree = SOURCE_ROOT; };
 		3E156A83D9BE7445A4C3C91D /* value.h */ /* value.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = value.h; path = ../../../src/synthesis/framework/value.h; sourceTree = SOURCE_ROOT; };
 		3EC26E273A12B9F57D27EBBF /* portamento_slope.h */ /* portamento_slope.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = portamento_slope.h; path = ../../../src/synthesis/utilities/portamento_slope.h; sourceTree = SOURCE_ROOT; };
+		3F010AC1A0FC272E4790F0EF /* claude_api_client.h */ /* claude_api_client.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = claude_api_client.h; path = ../../../src/common/claude_api_client.h; sourceTree = SOURCE_ROOT; };
 		3FE0576E2323DB33569B6A05 /* flanger.svg */ /* flanger.svg */ = {isa = PBXFileReference; lastKnownFileType = file.svg; name = flanger.svg; path = ../../../icons/flanger.svg; sourceTree = SOURCE_ROOT; };
 		40EFE00C544F1F1B815338B8 /* incrementer_buttons.h */ /* incrementer_buttons.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = incrementer_buttons.h; path = ../../../src/interface/editor_components/incrementer_buttons.h; sourceTree = SOURCE_ROOT; };
 		4123C6695AFD5D8089D695DC /* synth_computer_keyboard.cpp */ /* synth_computer_keyboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = synth_computer_keyboard.cpp; path = ../../../src/standalone/synth_computer_keyboard.cpp; sourceTree = SOURCE_ROOT; };
@@ -533,6 +534,7 @@
 		F42F2E34269BB03E30D5C7FC /* pitch_detector.cpp */ /* pitch_detector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = pitch_detector.cpp; path = ../../../src/common/wavetable/pitch_detector.cpp; sourceTree = SOURCE_ROOT; };
 		F479CF22149F01C033951EFE /* juce_gui_extra */ /* juce_gui_extra */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_gui_extra; path = ../../../third_party/JUCE/modules/juce_gui_extra; sourceTree = SOURCE_ROOT; };
 		F516DB15733061FA2656F285 /* midi_manager.cpp */ /* midi_manager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = midi_manager.cpp; path = ../../../src/common/midi_manager.cpp; sourceTree = SOURCE_ROOT; };
+		F5978596C2FE9D9992A90007 /* claude_api_client.cpp */ /* claude_api_client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = claude_api_client.cpp; path = ../../../src/common/claude_api_client.cpp; sourceTree = SOURCE_ROOT; };
 		F64BA03A1C1FBCDF38724077 /* vital_icon_64.png */ /* vital_icon_64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = vital_icon_64.png; path = ../../../images/vital_icon_64.png; sourceTree = SOURCE_ROOT; };
 		F7573476A217B5295788FBA9 /* sallen_key_filter.h */ /* sallen_key_filter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = sallen_key_filter.h; path = ../../../src/synthesis/filters/sallen_key_filter.h; sourceTree = SOURCE_ROOT; };
 		F7AF7556976B253A5BECA986 /* delay_section.h */ /* delay_section.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = delay_section.h; path = ../../../src/interface/editor_sections/delay_section.h; sourceTree = SOURCE_ROOT; };
@@ -1358,6 +1360,8 @@
 				82020CC4A48AC0E0BD1AF0F5,
 				2B2DAF77E529EF609CE07E03,
 				AB079907889060B891C4E778,
+				F5978596C2FE9D9992A90007,
+				3F010AC1A0FC272E4790F0EF,
 				F516DB15733061FA2656F285,
 				CA98FDA2AD5552AFD96D3ACD,
 				D0258E93F451A1A44636A6A4,

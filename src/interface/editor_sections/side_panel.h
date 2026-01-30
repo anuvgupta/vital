@@ -19,6 +19,7 @@
 #include "JuceHeader.h"
 #include "synth_section.h"
 #include "open_gl_multi_quad.h"
+#include "claude_api_client.h"
 
 class OpenGlToggleButton;
 class OpenGlTextEditor;
@@ -78,6 +79,9 @@ public:
     void mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) override;
 
     void addListener(Listener *listener) { listeners_.push_back(listener); }
+
+    // API client
+    void initializeApiClient();
 
     // Chat methods
     void submitMessage();

@@ -604,6 +604,9 @@
     <ClCompile Include="..\..\..\src\common\load_save.cpp">
       <Filter>Vial\src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\common\claude_api_client.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\common\midi_manager.cpp">
       <Filter>Vial\src\common</Filter>
     </ClCompile>
@@ -3382,6 +3385,9 @@
       <Filter>Vial\src\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\common\load_save.h">
+      <Filter>Vial\src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\common\claude_api_client.h">
       <Filter>Vial\src\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\common\midi_manager.h">

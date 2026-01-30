@@ -22,6 +22,7 @@
 #include "fonts.h"
 #include "load_save.h"
 #include "full_interface.h"
+#include "side_panel.h"
 #include "save_section.h"
 #include "synth_gui_interface.h"
 #include "tuning.h"
@@ -431,6 +432,9 @@ void SynthPresetSelector::loadApiKeyFile() {
   if (load_box.browseForFileToOpen()) {
     std::string path = load_box.getResult().getFullPathName().toStdString();
     LoadSave::saveApiKeyPath(path);
+    FullInterface* full_interface = findParentComponentOfClass<FullInterface>();
+    if (full_interface && full_interface->getSidePanel())
+      full_interface->getSidePanel()->initializeApiClient();
   }
 }
 

@@ -25,6 +25,7 @@
 #include "synth_gui_interface.cpp"
 #include "synth_parameters.cpp"
 #include "load_save.cpp"
+#include "claude_api_client.cpp"
 #include "synth_types.cpp"
 #include "synth_base.cpp"
 #include "wavetable_component_factory.cpp"

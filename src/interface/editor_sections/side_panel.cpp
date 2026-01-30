@@ -67,6 +67,8 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   action_button_->setText("SEND");
 
   setSkinOverride(Skin::kNone);
+
+  initializeApiClient();
 }
 
 VitalSidePanel::~VitalSidePanel() {
@@ -225,6 +227,14 @@ void VitalSidePanel::mouseWheelMove(const MouseEvent& e, const MouseWheelDetails
 
   setScrollBarRange();
   repaintBackground();
+}
+
+void VitalSidePanel::initializeApiClient() {
+  ClaudeApiClient& api_client = ClaudeApiClient::instance();
+  if (api_client.initialize())
+    addMessage("Ready to create!", ChatMessage::kSystem);
+  else
+    addMessage("API key not configured. Use the menu to set your API key path.", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::submitMessage() {

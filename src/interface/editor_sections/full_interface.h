@@ -153,6 +153,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
         resized();
     }
 
+    VitalSidePanel* getSidePanel() { return side_panel_.get(); }
     float getResizingScale() const { return width_ * 1.0f / resized_width_; }
     float getPixelScaling() const override { return display_scale_; }
     int getPixelMultiple() const override { return pixel_multiple_; }

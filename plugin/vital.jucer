@@ -137,6 +137,8 @@
               file="../src/common/line_generator.h"/>
         <FILE id="BmmJGJ" name="load_save.cpp" compile="0" resource="0" file="../src/common/load_save.cpp"/>
         <FILE id="rhjD80" name="load_save.h" compile="0" resource="0" file="../src/common/load_save.h"/>
+        <FILE id="cAcL01" name="claude_api_client.cpp" compile="0" resource="0" file="../src/common/claude_api_client.cpp"/>
+        <FILE id="cAcL02" name="claude_api_client.h" compile="0" resource="0" file="../src/common/claude_api_client.h"/>
         <FILE id="qPtfwL" name="midi_manager.cpp" compile="0" resource="0"
               file="../src/common/midi_manager.cpp"/>
         <FILE id="UO39JL" name="midi_manager.h" compile="0" resource="0" file="../src/common/midi_manager.h"/>

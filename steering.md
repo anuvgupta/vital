@@ -23,6 +23,7 @@
 - We added a textarea and a button to the sidepanel, near the bottom
 - We implemented a chat interface with scrollable message area, user message bubbles, and "Thinking..." indicator
 - We added a menu option to save claude API key path in user settings (Vital json config stored in `Library/Application Support` or `APPDATA`, etc.) and load the path when the app starts
+- We added an API client for Claude (Anthropic/Claude Platform API). The side panel initializes the API client with the API key (if exists), checks internet access, and adds a "Ready" message to the chat window. 
 
 ## Key Learnings & Common Issues
 

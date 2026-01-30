@@ -219,6 +219,9 @@
     <ClCompile Include="..\..\..\src\common\load_save.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\common\claude_api_client.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\common\midi_manager.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -2804,6 +2807,7 @@
     <ClInclude Include="..\..\..\src\common\fourier_transform.h"/>
     <ClInclude Include="..\..\..\src\common\line_generator.h"/>
     <ClInclude Include="..\..\..\src\common\load_save.h"/>
+    <ClInclude Include="..\..\..\src\common\claude_api_client.h"/>
     <ClInclude Include="..\..\..\src\common\midi_manager.h"/>
     <ClInclude Include="..\..\..\src\common\startup.h"/>
     <ClInclude Include="..\..\..\src\common\synth_base.h"/>
