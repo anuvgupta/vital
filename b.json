@@ -1,6 +1,7 @@
 {
     "package": "vital",
     "targets": {
-        "build": "./build_macos.sh"
+        "build": "./build_macos.sh Debug",
+        "release": "./build_macos.sh Release"
     }
 }
