@@ -23,6 +23,9 @@ class Fonts {
     virtual ~Fonts() { }
 
     Font& proportional_regular() { return proportional_regular_; }
+    Font& proportional_bold() { return proportional_bold_; }
+    Font& proportional_italic() { return proportional_italic_; }
+    Font& proportional_bold_italic() { return proportional_bold_italic_; }
     Font& proportional_light() { return proportional_light_; }
     Font& proportional_title() { return proportional_title_; }
     Font& proportional_title_regular() { return proportional_title_regular_; }
@@ -37,6 +40,9 @@ class Fonts {
     Fonts();
 
     Font proportional_regular_;
+    Font proportional_bold_;
+    Font proportional_italic_;
+    Font proportional_bold_italic_;
     Font proportional_light_;
     Font proportional_title_;
     Font proportional_title_regular_;

@@ -19,6 +19,12 @@
 Fonts::Fonts() :
     proportional_regular_(Typeface::createSystemTypefaceFor(
         BinaryData::LatoRegular_ttf, BinaryData::LatoRegular_ttfSize)),
+    proportional_bold_(Typeface::createSystemTypefaceFor(
+        BinaryData::LatoBold_ttf, BinaryData::LatoBold_ttfSize)),
+    proportional_italic_(Typeface::createSystemTypefaceFor(
+        BinaryData::LatoItalic_ttf, BinaryData::LatoItalic_ttfSize)),
+    proportional_bold_italic_(Typeface::createSystemTypefaceFor(
+        BinaryData::LatoBoldItalic_ttf, BinaryData::LatoBoldItalic_ttfSize)),
     proportional_light_(Typeface::createSystemTypefaceFor(
         BinaryData::LatoLight_ttf, BinaryData::LatoLight_ttfSize)),
     proportional_title_(Typeface::createSystemTypefaceFor(
@@ -31,6 +37,9 @@ Fonts::Fonts() :
   Array<int> glyphs;
   Array<float> x_offsets;
   proportional_regular_.getGlyphPositions("test", glyphs, x_offsets);
+  proportional_bold_.getGlyphPositions("test", glyphs, x_offsets);
+  proportional_italic_.getGlyphPositions("test", glyphs, x_offsets);
+  proportional_bold_italic_.getGlyphPositions("test", glyphs, x_offsets);
   proportional_light_.getGlyphPositions("test", glyphs, x_offsets);
   proportional_title_.getGlyphPositions("test", glyphs, x_offsets);
   monospace_.getGlyphPositions("test", glyphs, x_offsets);

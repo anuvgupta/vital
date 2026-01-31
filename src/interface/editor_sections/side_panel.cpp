@@ -38,7 +38,7 @@ Font getRegularFont(float size) {
 }
 
 Font getBoldFont(float size) {
-    return Fonts::instance()->proportional_regular().withPointHeight(size).boldened();
+    return Fonts::instance()->proportional_bold().withPointHeight(size);
 }
 
 Font getMonoFont(float size) {
@@ -46,7 +46,11 @@ Font getMonoFont(float size) {
 }
 
 Font getItalicFont(float size) {
-    return Fonts::instance()->proportional_regular().withPointHeight(size).italicised();
+    return Fonts::instance()->proportional_italic().withPointHeight(size);
+}
+
+Font getBoldItalicFont(float size) {
+    return Fonts::instance()->proportional_bold_italic().withPointHeight(size);
 }
 
 AttributedString buildStyledString(const std::vector<StyledRun>& runs, float fontSize, Colour textColour) {
@@ -58,7 +62,7 @@ AttributedString buildStyledString(const std::vector<StyledRun>& runs, float fon
         if (run.code) {
             font = getMonoFont(fontSize * 0.9f);
         } else if (run.bold && run.italic) {
-            font = getBoldFont(fontSize).italicised();
+            font = getBoldItalicFont(fontSize);
         } else if (run.bold) {
             font = getBoldFont(fontSize);
         } else if (run.italic) {

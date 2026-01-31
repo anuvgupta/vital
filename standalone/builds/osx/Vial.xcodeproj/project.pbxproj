@@ -160,6 +160,7 @@
 		34121CF20D6FDC1E951163DC /* vital_v.svg */ /* vital_v.svg */ = {isa = PBXFileReference; lastKnownFileType = file.svg; name = vital_v.svg; path = ../../../icons/vital_v.svg; sourceTree = SOURCE_ROOT; };
 		349140280AAD915E7AFC269D /* juce_opengl */ /* juce_opengl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_opengl; path = ../../../third_party/JUCE/modules/juce_opengl; sourceTree = SOURCE_ROOT; };
 		34CD153211F9D24FFBE81A73 /* wave_frame.h */ /* wave_frame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = wave_frame.h; path = ../../../src/synthesis/lookups/wave_frame.h; sourceTree = SOURCE_ROOT; };
+		35203F8B50F9C83A7881EE31 /* Lato-Bold.ttf */ /* Lato-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "Lato-Bold.ttf"; path = "../../../fonts/Lato-Bold.ttf"; sourceTree = SOURCE_ROOT; };
 		352D8791CEDF4403D6752073 /* expired_section.h */ /* expired_section.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = expired_section.h; path = ../../../src/interface/editor_sections/expired_section.h; sourceTree = SOURCE_ROOT; };
 		356529F5991F089F551E8DE8 /* wave_frame.cpp */ /* wave_frame.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = wave_frame.cpp; path = ../../../src/synthesis/lookups/wave_frame.cpp; sourceTree = SOURCE_ROOT; };
 		35980235BE17DD3DEDE403B2 /* reverb.cpp */ /* reverb.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = reverb.cpp; path = ../../../src/synthesis/effects/reverb.cpp; sourceTree = SOURCE_ROOT; };
@@ -249,6 +250,7 @@
 		5E25667E819D66D9374789FB /* synth_editor.h */ /* synth_editor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = synth_editor.h; path = ../../../src/standalone/synth_editor.h; sourceTree = SOURCE_ROOT; };
 		5E9A49BFFEE384E0AA24E67F /* juce_data_structures */ /* juce_data_structures */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_data_structures; path = ../../../third_party/JUCE/modules/juce_data_structures; sourceTree = SOURCE_ROOT; };
 		5EC9F2BBF33A53731E4C84A7 /* frequency_filter_modifier.cpp */ /* frequency_filter_modifier.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = frequency_filter_modifier.cpp; path = ../../../src/common/wavetable/frequency_filter_modifier.cpp; sourceTree = SOURCE_ROOT; };
+		5FF6131F3C95850588DAC1C1 /* Lato-BoldItalic.ttf */ /* Lato-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "Lato-BoldItalic.ttf"; path = "../../../fonts/Lato-BoldItalic.ttf"; sourceTree = SOURCE_ROOT; };
 		6041A9C77D57EF87FBDF4C46 /* synthesis.cpp */ /* synthesis.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = synthesis.cpp; path = ../../../src/unity_build/synthesis.cpp; sourceTree = SOURCE_ROOT; };
 		60D572983F59EB9C8F4CFCF5 /* tab_selector.cpp */ /* tab_selector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = tab_selector.cpp; path = ../../../src/interface/editor_components/tab_selector.cpp; sourceTree = SOURCE_ROOT; };
 		60FA18DFA36FC4E236942909 /* bend_section.h */ /* bend_section.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = bend_section.h; path = ../../../src/interface/editor_sections/bend_section.h; sourceTree = SOURCE_ROOT; };
@@ -519,6 +521,7 @@
 		E85F54DC186D2CE06F8BAE3F /* header_section.cpp */ /* header_section.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = header_section.cpp; path = ../../../src/interface/editor_sections/header_section.cpp; sourceTree = SOURCE_ROOT; };
 		E874128CE0D4C7AEB0B4B7C8 /* open_gl_image.cpp */ /* open_gl_image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = open_gl_image.cpp; path = ../../../src/interface/editor_components/open_gl_image.cpp; sourceTree = SOURCE_ROOT; };
 		E8CBC1255D1B332842BBBE78 /* value.cpp */ /* value.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = value.cpp; path = ../../../src/synthesis/framework/value.cpp; sourceTree = SOURCE_ROOT; };
+		E92FDE10EEC162D372A1C4B6 /* Lato-Italic.ttf */ /* Lato-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; name = "Lato-Italic.ttf"; path = "../../../fonts/Lato-Italic.ttf"; sourceTree = SOURCE_ROOT; };
 		E9AEB39A1020F39CCDF2180C /* fourier_transform.h */ /* fourier_transform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = fourier_transform.h; path = ../../../src/common/fourier_transform.h; sourceTree = SOURCE_ROOT; };
 		EA170B8B6946E4F4B51585CC /* QuartzCore.framework */ /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		EA9AA304032965F31C2DB5C9 /* wavetable_component_factory.h */ /* wavetable_component_factory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = wavetable_component_factory.h; path = ../../../src/common/wavetable/wavetable_component_factory.h; sourceTree = SOURCE_ROOT; };
@@ -1195,6 +1198,9 @@
 				C42D60BE3E7AC46A65CF80EA,
 				1D141A649FB30F8FA91EA2A2,
 				B60861142ABAE5479BBAC19C,
+				35203F8B50F9C83A7881EE31,
+				E92FDE10EEC162D372A1C4B6,
+				5FF6131F3C95850588DAC1C1,
 				846765F070D79D9C0C65D40B,
 				7E851FAE5A3A3281C7D34895,
 			);

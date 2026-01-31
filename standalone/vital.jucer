@@ -21,6 +21,10 @@
       <FILE id="dqtp5j" name="Lato-Light.ttf" compile="0" resource="1" file="../fonts/Lato-Light.ttf"/>
       <FILE id="q4tr9s" name="Lato-Regular.ttf" compile="0" resource="1"
             file="../fonts/Lato-Regular.ttf"/>
+      <FILE id="lBd01" name="Lato-Bold.ttf" compile="0" resource="1" file="../fonts/Lato-Bold.ttf"/>
+      <FILE id="lIt01" name="Lato-Italic.ttf" compile="0" resource="1" file="../fonts/Lato-Italic.ttf"/>
+      <FILE id="lBI01" name="Lato-BoldItalic.ttf" compile="0" resource="1"
+            file="../fonts/Lato-BoldItalic.ttf"/>
       <FILE id="TJoyLD" name="Montserrat-Light.otf" compile="0" resource="1"
             file="../fonts/Montserrat-Light.otf"/>
       <FILE id="RytfHh" name="Montserrat-Regular.ttf" compile="0" resource="1"

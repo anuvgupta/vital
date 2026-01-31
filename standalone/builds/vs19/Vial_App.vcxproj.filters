@@ -6389,6 +6389,15 @@
     <None Include="..\..\..\fonts\Lato-Regular.ttf">
       <Filter>Vial\fonts</Filter>
     </None>
+    <None Include="..\..\..\fonts\Lato-Bold.ttf">
+      <Filter>Vial\fonts</Filter>
+    </None>
+    <None Include="..\..\..\fonts\Lato-Italic.ttf">
+      <Filter>Vial\fonts</Filter>
+    </None>
+    <None Include="..\..\..\fonts\Lato-BoldItalic.ttf">
+      <Filter>Vial\fonts</Filter>
+    </None>
     <None Include="..\..\..\fonts\Montserrat-Light.otf">
       <Filter>Vial\fonts</Filter>
     </None>

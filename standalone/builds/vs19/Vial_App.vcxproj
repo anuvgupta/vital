@@ -3811,6 +3811,9 @@
     <None Include="..\..\..\fonts\DroidSansMono.ttf"/>
     <None Include="..\..\..\fonts\Lato-Light.ttf"/>
     <None Include="..\..\..\fonts\Lato-Regular.ttf"/>
+    <None Include="..\..\..\fonts\Lato-Bold.ttf"/>
+    <None Include="..\..\..\fonts\Lato-Italic.ttf"/>
+    <None Include="..\..\..\fonts\Lato-BoldItalic.ttf"/>
     <None Include="..\..\..\fonts\Montserrat-Light.otf"/>
     <None Include="..\..\..\fonts\Montserrat-Regular.ttf"/>
     <None Include="..\..\..\icons\chorus.svg"/>

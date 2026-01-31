@@ -29,6 +29,15 @@ namespace BinaryData
     extern const char*   LatoRegular_ttf;
     const int            LatoRegular_ttfSize = 75136;
 
+    extern const char*   LatoBold_ttf;
+    const int            LatoBold_ttfSize = 73332;
+
+    extern const char*   LatoItalic_ttf;
+    const int            LatoItalic_ttfSize = 75792;
+
+    extern const char*   LatoBoldItalic_ttf;
+    const int            LatoBoldItalic_ttfSize = 77732;
+
     extern const char*   MontserratLight_otf;
     const int            MontserratLight_otfSize = 228068;
 
@@ -90,7 +99,7 @@ namespace BinaryData
     const int            vital_word_ring_svgSize = 1888;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 27;
+    const int namedResourceListSize = 30;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];
