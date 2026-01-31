@@ -982,6 +982,18 @@ void FullInterface::toggleFilter2Zoom() {
     showFullScreenSection(synthesis_interface_->getFilterSection2());
 }
 
+String FullInterface::getCompletionPhrase() {
+    static const char *phrases[] = {
+        "Dialed it in.", "Cooked it up.", "Tuned it up.", "Locked it in.", 
+        "Sculpted it.", "Tweaked it.", "Shaped it.", "Mixed it down.",
+        "Spliced it.", "Warped it.", "Patched it.", "Wired it up.",
+        "Sauced it up.", "Baked it in.", "Juiced it up.", "Done and dusted.",
+        "Crunched it.", "Nailed it.", "Cranked it.", "Punched it in.",
+        "Tightened it up.", "Spiced it up.", "Whipped it up."
+    };
+    return phrases[Random::getSystemRandom().nextInt(20)];
+}
+
 void FullInterface::mergeJson(json& target, const json& patch) {
   static const std::string kPlaceholder = "(base64 data removed)";
   for (auto it = patch.begin(); it != patch.end(); ++it) {
@@ -1084,7 +1096,7 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
           if (loaded) {
             gui->updateFullGui();
             gui->notifyFresh();
-            panel->addResponseMessage("Preset updated.");
+            panel->addResponseMessage(getCompletionPhrase());
             return;
           }
         }

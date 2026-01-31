@@ -118,6 +118,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     void sidePanelButtonClicked() override {}
     void sidePanelMessageSubmitted(const String& message) override;
 
+    static String getCompletionPhrase();
     static void mergeJson(json& target, const json& patch);
 
     void setFocus();
