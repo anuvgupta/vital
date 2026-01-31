@@ -31,7 +31,27 @@
 
 ## Core Architecture
 
-TODO: summarize and update section with latest updates in current core architecture of the project & codebase. Include significant design decisions.
+### Original Vital Synth
+
+**Synthesis Engine:** Vital is a spectral warping wavetable synth with 3 oscillators, a sampler, filter routing, effects chain, and a flexible modulation matrix. The synthesis code lives in `src/synthesis/` with producers (oscillators, sample source), processors (filters, effects), and a voice/polyphony framework.
+
+**Preset System:** Presets are JSON files (`.vital` extension) serialized via `load_save.cpp` using nlohmann JSON. Each preset contains all parameter values plus embedded wavetable data. Wavetables can be stored as "Wave Source" (base64-encoded raw samples) or "Line Source" (control points and curves -- much more compact and LLM-friendly). Parameters are defined in `synth_parameters.cpp` with min/max ranges and scaling types (linear, quadratic, exponential, etc.). `SynthBase` provides the core `saveToJson()`/`loadFromJson()` methods (protected; we added public wrappers `getStateAsJson()`/`loadStateFromJson()`).
+
+**UI / Rendering:** The entire UI is rendered via OpenGL -- standard JUCE `paint()` calls on child components do NOT work. All visual content must go through `paintBackground()` (rendered to texture during the OpenGL cycle) or use Vital's OpenGL component classes (`OpenGlQuad`, `PlainTextComponent`, `OpenGlTextEditor`, etc.). These components require shader initialization during the render cycle, so they cannot be created dynamically at runtime without crashes. The pattern used throughout is to pre-allocate components at startup. UI sections inherit from `SynthSection` which provides the OpenGL rendering infrastructure.
+
+**Build System:** Uses JUCE 6 with Projucer-generated Xcode/VS projects. The project uses **unity builds** -- individual `.cpp` files have `compile="0"` in `vital.jucer` and are `#include`d into aggregate files under `src/unity_build/`. New source files must be added to the appropriate unity build file or they will produce linker errors.
+
+### AI Chatbot Addition
+
+**Side Panel (`side_panel.h/cpp`):** `VitalSidePanel` extends `SynthSection` and provides the chat UI. It contains a scrollable message area (manual scroll tracking, no `juce::Viewport`), an `OpenGlTextEditor` for input, and a submit button. Messages are rendered directly in `paintBackground()` -> `paintChatMessages()` using `TextLayout` for word-wrapped text. System messages support markdown rendering.
+
+**Listener Pattern:** `VitalSidePanel` defines an inner `Listener` class. `FullInterface` implements this listener and handles `sidePanelMessageSubmitted()` -- it serializes the current preset to JSON (stripping base64 data), passes it along with the user message to the API client, and applies the returned JSON diff to the live preset.
+
+**API Client (`claude_api_client.h/cpp`):** Singleton (`ClaudeApiClient::instance()`) that manages the Anthropic Claude API integration. Loads API key from a user-configured file path (stored in Vital's app settings). Loads `SYSTEM_PROMPT.md` and `PRESET_SCHEMA.md` from the app bundle Resources directory at init. Maintains conversation history (max 20 messages). HTTP requests run on a background thread via `Thread::launch()`; responses are delivered back to the UI thread via `MessageManager::callAsync()`.
+
+**Preset Manipulation Flow:** User message -> current preset serialized to JSON (base64 stripped) -> injected as context in API call -> Claude returns a JSON merge patch (RFC 7396 style, only changed keys) -> `mergeJson()` recursively applies the diff to the current preset -> `loadStateFromJson()` applies the result to the live synth engine. Array elements are merged element-by-element; placeholder strings from base64 stripping are preserved (not overwritten).
+
+**Markdown Rendering (`markdown_parser.h/cpp`):** Uses vendored md4c (C library, MIT license, in `third_party/md4c/`) with a SAX callback approach. Parses markdown into `MarkdownBlock`/`StyledRun` structs. The side panel renders these blocks with support for headings, bold/italic/monospace, fenced code blocks, bullet/numbered lists, block quotes, and horizontal rules. Uses Vital's `Fonts::instance()->proportional_regular()` (Lato) with `.boldened()` for bold text.
 
 ## Key Files Reference
 
