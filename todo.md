@@ -9,6 +9,7 @@
 - Integrate with wispr flow for voice to text
 - Autosave presets, checkpointing & restore chat at certain point
 - Chat clearing
+- Queue messages when sent while agent is already thinking (request already in progress)
 - Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
     - architecture details
         - first, run just the latest user message through sonnet to have it decide which "skill" to call
