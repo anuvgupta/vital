@@ -991,7 +991,8 @@ String FullInterface::getCompletionPhrase() {
         "Crunched it.", "Nailed it.", "Cranked it.", "Punched it in.",
         "Tightened it up.", "Spiced it up.", "Whipped it up."
     };
-    return phrases[Random::getSystemRandom().nextInt(20)];
+    int count = sizeof(phrases) / sizeof(phrases[0]);
+    return phrases[Random::getSystemRandom().nextInt(count)];
 }
 
 void FullInterface::mergeJson(json& target, const json& patch) {
