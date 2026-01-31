@@ -24,11 +24,112 @@
 // ChatMessage Implementation
 // ============================================================================
 
+namespace {
+
+static constexpr int kBlockSpacing = 6;
+static constexpr int kCodeBlockPadding = 8;
+static constexpr int kListIndent = 16;
+static constexpr int kQuoteBorderWidth = 3;
+static constexpr int kQuoteIndent = 10;
+static constexpr float kHeadingScale[] = { 1.5f, 1.3f, 1.15f, 1.0f, 0.9f, 0.85f };
+
+Font getRegularFont(float size) {
+    return Fonts::instance()->proportional_regular().withPointHeight(size);
+}
+
+Font getBoldFont(float size) {
+    return Fonts::instance()->proportional_regular().withPointHeight(size).boldened();
+}
+
+Font getMonoFont(float size) {
+    return Fonts::instance()->monospace().withPointHeight(size);
+}
+
+Font getItalicFont(float size) {
+    return Fonts::instance()->proportional_regular().withPointHeight(size).italicised();
+}
+
+AttributedString buildStyledString(const std::vector<StyledRun>& runs, float fontSize, Colour textColour) {
+    AttributedString attr;
+    attr.setJustification(Justification::topLeft);
+
+    for (const auto& run : runs) {
+        Font font;
+        if (run.code) {
+            font = getMonoFont(fontSize * 0.9f);
+        } else if (run.bold && run.italic) {
+            font = getBoldFont(fontSize).italicised();
+        } else if (run.bold) {
+            font = getBoldFont(fontSize);
+        } else if (run.italic) {
+            font = getItalicFont(fontSize);
+        } else {
+            font = getRegularFont(fontSize);
+        }
+        attr.append(run.text, font, textColour);
+    }
+
+    return attr;
+}
+
+int measureBlockHeight(const MarkdownBlock& block, int width, float fontSize) {
+    switch (block.type) {
+        case MarkdownBlock::kHeading: {
+            int level = jlimit(1, 6, block.level);
+            float scale = kHeadingScale[level - 1];
+            auto attr = buildStyledString(block.runs, fontSize * scale, Colours::white);
+            TextLayout layout;
+            layout.createLayout(attr, (float)width);
+            return (int)layout.getHeight();
+        }
+
+        case MarkdownBlock::kCodeBlock: {
+            Font mono = getMonoFont(fontSize * 0.85f);
+            AttributedString attr;
+            attr.setText(block.code_text);
+            attr.setFont(mono);
+            attr.setJustification(Justification::topLeft);
+            TextLayout layout;
+            layout.createLayout(attr, (float)(width - 2 * kCodeBlockPadding));
+            return (int)layout.getHeight() + 2 * kCodeBlockPadding;
+        }
+
+        case MarkdownBlock::kListItem: {
+            int indent = kListIndent * block.level;
+            int text_width = width - indent;
+            auto attr = buildStyledString(block.runs, fontSize, Colours::white);
+            TextLayout layout;
+            layout.createLayout(attr, (float)text_width);
+            return (int)layout.getHeight();
+        }
+
+        case MarkdownBlock::kBlockQuote: {
+            int indent = kQuoteBorderWidth + kQuoteIndent;
+            auto attr = buildStyledString(block.runs, fontSize, Colours::white);
+            TextLayout layout;
+            layout.createLayout(attr, (float)(width - indent));
+            return (int)layout.getHeight();
+        }
+
+        case MarkdownBlock::kHorizontalRule:
+            return 8;
+
+        case MarkdownBlock::kParagraph:
+        default: {
+            auto attr = buildStyledString(block.runs, fontSize, Colours::white);
+            TextLayout layout;
+            layout.createLayout(attr, (float)width);
+            return (int)layout.getHeight();
+        }
+    }
+}
+
+} // anonymous namespace
+
 int ChatMessage::calculateHeight(const String& text, int width, float fontSize) {
   Font font = Fonts::instance()->proportional_regular().withPointHeight(fontSize);
   int text_width = width - 2 * kPadding;
 
-  // Use JUCE's TextLayout to calculate wrapped text height
   AttributedString attr_string;
   attr_string.setText(text);
   attr_string.setFont(font);
@@ -38,6 +139,19 @@ int ChatMessage::calculateHeight(const String& text, int width, float fontSize) 
   layout.createLayout(attr_string, (float)text_width);
 
   return (int)layout.getHeight() + 2 * kPadding;
+}
+
+int ChatMessage::calculateMarkdownHeight(const std::vector<MarkdownBlock>& blocks, int width, float fontSize) {
+  int text_width = width - 2 * kPadding;
+  int total = 0;
+
+  for (size_t i = 0; i < blocks.size(); ++i) {
+      if (i > 0)
+          total += kBlockSpacing;
+      total += measureBlockHeight(blocks[i], text_width, fontSize);
+  }
+
+  return total + 2 * kPadding;
 }
 
 // ============================================================================
@@ -96,7 +210,6 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
   if (chat_bounds_.isEmpty())
     return;
 
-  // Set up clipping region for chat area
   Graphics::ScopedSaveState save_state(g);
   g.reduceClipRegion(chat_bounds_);
 
@@ -106,13 +219,14 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
   Colour bubble_color = findColour(Skin::kWidgetPrimary1, true).darker(0.4f);
   Colour text_color = findColour(Skin::kBodyText, true);
   Colour system_text_color = text_color.withAlpha(0.98f);
+  Colour code_bg_color = Colours::black.withAlpha(0.3f);
+  Colour quote_border_color = text_color.withAlpha(0.3f);
+  Colour hr_color = text_color.withAlpha(0.2f);
 
   for (const auto& message : messages_) {
-    // Calculate message position relative to chat area with scroll offset
     int msg_y = chat_bounds_.getY() + message.y_position - scroll_position_;
     int msg_bottom = msg_y + message.height;
 
-    // Skip if completely outside visible area
     if (msg_bottom < chat_bounds_.getY() || msg_y > chat_bounds_.getBottom())
       continue;
 
@@ -120,29 +234,130 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
                                chat_bounds_.getWidth(), message.height);
 
     if (message.type == ChatMessage::kUser) {
-      // Draw rounded rectangle background for user messages
       g.setColour(bubble_color);
       g.fillRoundedRectangle(msg_bounds.toFloat(), ChatMessage::kCornerRadius);
-      g.setColour(text_color);
-    } else {
-      g.setColour(system_text_color);
     }
 
-    // Draw text with padding using TextLayout (consistent with height calculation)
     Rectangle<float> text_bounds((float)(msg_bounds.getX() + ChatMessage::kPadding),
                                   (float)(msg_bounds.getY() + ChatMessage::kPadding),
                                   (float)(msg_bounds.getWidth() - 2 * ChatMessage::kPadding),
                                   (float)(msg_bounds.getHeight() - 2 * ChatMessage::kPadding));
 
-    AttributedString attr_text;
-    attr_text.setText(message.text);
-    attr_text.setFont(font);
-    attr_text.setColour(message.type == ChatMessage::kUser ? text_color : system_text_color);
-    attr_text.setJustification(Justification::topLeft);
+    // User messages and non-markdown system messages: plain text
+    if (message.type == ChatMessage::kUser || message.blocks.empty()) {
+      Colour col = (message.type == ChatMessage::kUser) ? text_color : system_text_color;
+      AttributedString attr_text;
+      attr_text.setText(message.text);
+      attr_text.setFont(font);
+      attr_text.setColour(col);
+      attr_text.setJustification(Justification::topLeft);
 
-    TextLayout text_layout;
-    text_layout.createLayout(attr_text, text_bounds.getWidth());
-    text_layout.draw(g, text_bounds);
+      TextLayout text_layout;
+      text_layout.createLayout(attr_text, text_bounds.getWidth());
+      text_layout.draw(g, text_bounds);
+      continue;
+    }
+
+    // Markdown rendering for system messages
+    float y = text_bounds.getY();
+    float width = text_bounds.getWidth();
+    float x = text_bounds.getX();
+    float fontSize = ChatMessage::kFontSize;
+
+    for (size_t i = 0; i < message.blocks.size(); ++i) {
+      if (i > 0)
+        y += kBlockSpacing;
+
+      const auto& block = message.blocks[i];
+
+      switch (block.type) {
+        case MarkdownBlock::kHeading: {
+          int level = jlimit(1, 6, block.level);
+          float scale = kHeadingScale[level - 1];
+          auto attr = buildStyledString(block.runs, fontSize * scale, system_text_color);
+          TextLayout layout;
+          layout.createLayout(attr, width);
+          layout.draw(g, Rectangle<float>(x, y, width, layout.getHeight()));
+          y += layout.getHeight();
+          break;
+        }
+
+        case MarkdownBlock::kCodeBlock: {
+          Font mono = getMonoFont(fontSize * 0.85f);
+          AttributedString attr;
+          attr.setText(block.code_text);
+          attr.setFont(mono);
+          attr.setColour(system_text_color);
+          attr.setJustification(Justification::topLeft);
+          TextLayout layout;
+          float inner_width = width - 2 * kCodeBlockPadding;
+          layout.createLayout(attr, inner_width);
+          float block_height = layout.getHeight() + 2 * kCodeBlockPadding;
+
+          g.setColour(code_bg_color);
+          g.fillRoundedRectangle(x, y, width, block_height, 4.0f);
+
+          layout.draw(g, Rectangle<float>(x + kCodeBlockPadding, y + kCodeBlockPadding,
+                                           inner_width, layout.getHeight()));
+          y += block_height;
+          break;
+        }
+
+        case MarkdownBlock::kListItem: {
+          int indent = kListIndent * block.level;
+          float item_x = x + indent;
+          float item_width = width - indent;
+
+          // Draw bullet or number
+          String marker = block.ordered ? String(block.list_index) + ". " : String(CharPointer_UTF8("\xe2\x80\xa2 "));
+          Font marker_font = getRegularFont(fontSize);
+          g.setColour(system_text_color);
+          g.setFont(marker_font);
+          float marker_width = marker_font.getStringWidthFloat(marker);
+          g.drawText(marker, Rectangle<float>(item_x, y, marker_width, fontSize), Justification::topLeft);
+
+          auto attr = buildStyledString(block.runs, fontSize, system_text_color);
+          TextLayout layout;
+          layout.createLayout(attr, item_width - marker_width);
+          layout.draw(g, Rectangle<float>(item_x + marker_width, y,
+                                           item_width - marker_width, layout.getHeight()));
+          y += layout.getHeight();
+          break;
+        }
+
+        case MarkdownBlock::kBlockQuote: {
+          g.setColour(quote_border_color);
+          g.fillRect(x, y, (float)kQuoteBorderWidth, (float)measureBlockHeight(block, (int)width, fontSize));
+
+          float quote_x = x + kQuoteBorderWidth + kQuoteIndent;
+          float quote_width = width - kQuoteBorderWidth - kQuoteIndent;
+          Colour quote_color = system_text_color.withAlpha(0.7f);
+          auto attr = buildStyledString(block.runs, fontSize, quote_color);
+          TextLayout layout;
+          layout.createLayout(attr, quote_width);
+          layout.draw(g, Rectangle<float>(quote_x, y, quote_width, layout.getHeight()));
+          y += layout.getHeight();
+          break;
+        }
+
+        case MarkdownBlock::kHorizontalRule: {
+          g.setColour(hr_color);
+          g.fillRect(x, y + 3.0f, width, 2.0f);
+          y += 8.0f;
+          break;
+        }
+
+        case MarkdownBlock::kParagraph:
+        default: {
+          auto attr = buildStyledString(block.runs, fontSize, system_text_color);
+          TextLayout layout;
+          layout.createLayout(attr, width);
+          layout.draw(g, Rectangle<float>(x, y, width, layout.getHeight()));
+          y += layout.getHeight();
+          break;
+        }
+      }
+    }
   }
 }
 
@@ -307,7 +522,11 @@ void VitalSidePanel::layoutMessages() {
   int y_position = 0;
 
   for (auto& message : messages_) {
-    int height = ChatMessage::calculateHeight(message.text, message_width, ChatMessage::kFontSize);
+    int height;
+    if (message.type == ChatMessage::kSystem && !message.blocks.empty())
+      height = ChatMessage::calculateMarkdownHeight(message.blocks, message_width, ChatMessage::kFontSize);
+    else
+      height = ChatMessage::calculateHeight(message.text, message_width, ChatMessage::kFontSize);
     message.y_position = y_position;
     message.height = height;
     y_position += height + kMessageSpacing;

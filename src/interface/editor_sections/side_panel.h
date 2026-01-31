@@ -20,6 +20,7 @@
 #include "synth_section.h"
 #include "open_gl_multi_quad.h"
 #include "claude_api_client.h"
+#include "markdown_parser.h"
 
 class OpenGlToggleButton;
 class OpenGlTextEditor;
@@ -35,13 +36,18 @@ struct ChatMessage
     };
 
     String text;
+    std::vector<MarkdownBlock> blocks;  // parsed markdown (system messages only)
     Type type;
     int y_position = 0;
     int height = 0;
 
-    ChatMessage(const String &t, Type tp) : text(t), type(tp) {}
+    ChatMessage(const String &t, Type tp) : text(t), type(tp) {
+        if (tp == kSystem)
+            blocks = parseMarkdown(t);
+    }
 
     static int calculateHeight(const String &text, int width, float fontSize);
+    static int calculateMarkdownHeight(const std::vector<MarkdownBlock>& blocks, int width, float fontSize);
 
     static constexpr int kPadding = 12;
     static constexpr float kFontSize = 25.0f;

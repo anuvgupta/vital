@@ -29,6 +29,7 @@
 		71A777762F4A4594095F5095 /* interface_editor_components.cpp */ = {isa = PBXBuildFile; fileRef = BFF60E297F41FD4012C3CB79; };
 		7A16EA4C42496F1CA2D22FEF /* Carbon.framework */ = {isa = PBXBuildFile; fileRef = 4AB2689C3D055D9A2763E2AC; };
 		7D6D0CD378796DC83C3FB70D /* App */ = {isa = PBXBuildFile; fileRef = 63D2A4095552897C12EB6445; };
+		9157D86ED5D7E4D0126A733D /* md4c.c */ = {isa = PBXBuildFile; fileRef = 156890BBC2398DA0C9B29E60; };
 		9614A735367E6AAC6DFC2D85 /* include_juce_audio_processors.mm */ = {isa = PBXBuildFile; fileRef = D473DD94B50940CE0D2C1A06; };
 		9742BF4DD8C91343C3278747 /* include_juce_audio_basics.mm */ = {isa = PBXBuildFile; fileRef = 960B92C3C44FA4F1846C6985; };
 		9973331B571A72B7F6DB5B14 /* AudioToolbox.framework */ = {isa = PBXBuildFile; fileRef = E26755374577FFB5E707A9F5; };
@@ -85,6 +86,7 @@
 		1486262161F4FEFB7CFE23C3 /* ladder_filter.h */ /* ladder_filter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ladder_filter.h; path = ../../../src/synthesis/filters/ladder_filter.h; sourceTree = SOURCE_ROOT; };
 		151FC9EEA4B744DACDB42CC0 /* Foundation.framework */ /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1531E747D7C2C8BC67A6B960 /* transpose_quantize.h */ /* transpose_quantize.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = transpose_quantize.h; path = ../../../src/interface/editor_components/transpose_quantize.h; sourceTree = SOURCE_ROOT; };
+		156890BBC2398DA0C9B29E60 /* md4c.c */ /* md4c.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = md4c.c; path = ../../../third_party/md4c/md4c.c; sourceTree = SOURCE_ROOT; };
 		15AAA1ACF5A84443DE6A8C65 /* trigger_random.cpp */ /* trigger_random.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = trigger_random.cpp; path = ../../../src/synthesis/modulators/trigger_random.cpp; sourceTree = SOURCE_ROOT; };
 		16213572261310B33882DD01 /* text_selector.h */ /* text_selector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = text_selector.h; path = ../../../src/interface/editor_components/text_selector.h; sourceTree = SOURCE_ROOT; };
 		16CE62C4EA921F92531CD038 /* synth_oscillator.h */ /* synth_oscillator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = synth_oscillator.h; path = ../../../src/synthesis/producers/synth_oscillator.h; sourceTree = SOURCE_ROOT; };
@@ -147,6 +149,7 @@
 		2E3D7DF237FB711C5E78613D /* preset_browser.h */ /* preset_browser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = preset_browser.h; path = ../../../src/interface/editor_sections/preset_browser.h; sourceTree = SOURCE_ROOT; };
 		2FE8C749DF7F36E29F601572 /* filter_section.h */ /* filter_section.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = filter_section.h; path = ../../../src/interface/editor_sections/filter_section.h; sourceTree = SOURCE_ROOT; };
 		303FB7B5273832AB2FEC4C3F /* AppConfig.h */ /* AppConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppConfig.h; path = ../../JuceLibraryCode/AppConfig.h; sourceTree = SOURCE_ROOT; };
+		30701071007B617F9FCD7DB1 /* markdown_parser.cpp */ /* markdown_parser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = markdown_parser.cpp; path = ../../../src/common/markdown_parser.cpp; sourceTree = SOURCE_ROOT; };
 		311CD815D74F7B2FD68B5C17 /* compressor_section.h */ /* compressor_section.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = compressor_section.h; path = ../../../src/interface/editor_sections/compressor_section.h; sourceTree = SOURCE_ROOT; };
 		3209EAEC69A3ADD75A23371C /* download_section.h */ /* download_section.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = download_section.h; path = ../../../src/interface/editor_sections/download_section.h; sourceTree = SOURCE_ROOT; };
 		322CD843A3FB12F245FE731B /* shaders.cpp */ /* shaders.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = shaders.cpp; path = ../../../src/interface/look_and_feel/shaders.cpp; sourceTree = SOURCE_ROOT; };
@@ -362,6 +365,7 @@
 		9798465F8C0D9F8FB8634687 /* wave_window_editor.h */ /* wave_window_editor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = wave_window_editor.h; path = ../../../src/interface/wavetable/editors/wave_window_editor.h; sourceTree = SOURCE_ROOT; };
 		97B53B766DADE0947971965B /* comb_module.h */ /* comb_module.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = comb_module.h; path = ../../../src/synthesis/modules/comb_module.h; sourceTree = SOURCE_ROOT; };
 		97CB5BF3D13161B7508BF63F /* tuning.h */ /* tuning.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tuning.h; path = ../../../src/common/tuning.h; sourceTree = SOURCE_ROOT; };
+		97D4A41DA0D618224A313D2C /* md4c.h */ /* md4c.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = md4c.h; path = ../../../third_party/md4c/md4c.h; sourceTree = SOURCE_ROOT; };
 		98002A5C5184EB034F8061CF /* operators.cpp */ /* operators.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = operators.cpp; path = ../../../src/synthesis/framework/operators.cpp; sourceTree = SOURCE_ROOT; };
 		980143928EEC6A03CDCC3098 /* synth_button.cpp */ /* synth_button.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = synth_button.cpp; path = ../../../src/interface/editor_components/synth_button.cpp; sourceTree = SOURCE_ROOT; };
 		989E76CBBD4D928F7904C486 /* decimator.h */ /* decimator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = decimator.h; path = ../../../src/synthesis/filters/decimator.h; sourceTree = SOURCE_ROOT; };
@@ -452,6 +456,7 @@
 		C4C772D9C3F472259A2210E3 /* RecentFilesMenuTemplate.nib */ /* RecentFilesMenuTemplate.nib */ = {isa = PBXFileReference; lastKnownFileType = file.nib; name = RecentFilesMenuTemplate.nib; path = RecentFilesMenuTemplate.nib; sourceTree = SOURCE_ROOT; };
 		C4F37BE73A25881A2590A1A5 /* open_gl_component.h */ /* open_gl_component.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = open_gl_component.h; path = ../../../src/interface/editor_components/open_gl_component.h; sourceTree = SOURCE_ROOT; };
 		C5020C95E642AC4B2CDD2981 /* vital_word.svg */ /* vital_word.svg */ = {isa = PBXFileReference; lastKnownFileType = file.svg; name = vital_word.svg; path = ../../../icons/vital_word.svg; sourceTree = SOURCE_ROOT; };
+		C52FC31E56B224450011C7EF /* markdown_parser.h */ /* markdown_parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = markdown_parser.h; path = ../../../src/common/markdown_parser.h; sourceTree = SOURCE_ROOT; };
 		C554D1CC0D6F4F3A5A9F4F77 /* text_selector.cpp */ /* text_selector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = text_selector.cpp; path = ../../../src/interface/editor_components/text_selector.cpp; sourceTree = SOURCE_ROOT; };
 		C67AAEF9CBC82C076D34886D /* wave_fold_overlay.cpp */ /* wave_fold_overlay.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = wave_fold_overlay.cpp; path = ../../../src/interface/wavetable/overlays/wave_fold_overlay.cpp; sourceTree = SOURCE_ROOT; };
 		C6E4019AC59CB8671148EB9C /* synth_preset_selector.h */ /* synth_preset_selector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = synth_preset_selector.h; path = ../../../src/interface/editor_components/synth_preset_selector.h; sourceTree = SOURCE_ROOT; };
@@ -1362,6 +1367,10 @@
 				AB079907889060B891C4E778,
 				F5978596C2FE9D9992A90007,
 				3F010AC1A0FC272E4790F0EF,
+				30701071007B617F9FCD7DB1,
+				C52FC31E56B224450011C7EF,
+				156890BBC2398DA0C9B29E60,
+				97D4A41DA0D618224A313D2C,
 				F516DB15733061FA2656F285,
 				CA98FDA2AD5552AFD96D3ACD,
 				D0258E93F451A1A44636A6A4,
@@ -1469,6 +1478,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9157D86ED5D7E4D0126A733D,
 				6648E3304493CE6F4A77F814,
 				71A777762F4A4594095F5095,
 				AC5922B8A1504012BE165F03,
@@ -1555,13 +1565,14 @@
 					"$(SRCROOT)/../../../src/synthesis/producers",
 					"$(SRCROOT)/../../../src/synthesis/utilities",
 					"$(SRCROOT)/../../../third_party",
+					"$(SRCROOT)/../../../third_party/md4c",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info-App.plist;
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../../third_party/JUCE/modules $(SRCROOT)/../../../src/common $(SRCROOT)/../../../src/common/wavetable $(SRCROOT)/../../../src/interface/editor_components $(SRCROOT)/../../../src/interface/editor_sections $(SRCROOT)/../../../src/interface/look_and_feel $(SRCROOT)/../../../src/interface/wavetable $(SRCROOT)/../../../src/interface/wavetable/editors $(SRCROOT)/../../../src/interface/wavetable/overlays $(SRCROOT)/../../../src/standalone $(SRCROOT)/../../../src/synthesis/synth_engine $(SRCROOT)/../../../src/synthesis/effects $(SRCROOT)/../../../src/synthesis/filters $(SRCROOT)/../../../src/synthesis/framework $(SRCROOT)/../../../src/synthesis/lookups $(SRCROOT)/../../../src/synthesis/modulators $(SRCROOT)/../../../src/synthesis/modules $(SRCROOT)/../../../src/synthesis/producers $(SRCROOT)/../../../src/synthesis/utilities $(SRCROOT)/../../../third_party";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../../third_party/JUCE/modules $(SRCROOT)/../../../src/common $(SRCROOT)/../../../src/common/wavetable $(SRCROOT)/../../../src/interface/editor_components $(SRCROOT)/../../../src/interface/editor_sections $(SRCROOT)/../../../src/interface/look_and_feel $(SRCROOT)/../../../src/interface/wavetable $(SRCROOT)/../../../src/interface/wavetable/editors $(SRCROOT)/../../../src/interface/wavetable/overlays $(SRCROOT)/../../../src/standalone $(SRCROOT)/../../../src/synthesis/synth_engine $(SRCROOT)/../../../src/synthesis/effects $(SRCROOT)/../../../src/synthesis/filters $(SRCROOT)/../../../src/synthesis/framework $(SRCROOT)/../../../src/synthesis/lookups $(SRCROOT)/../../../src/synthesis/modulators $(SRCROOT)/../../../src/synthesis/modules $(SRCROOT)/../../../src/synthesis/producers $(SRCROOT)/../../../src/synthesis/utilities $(SRCROOT)/../../../third_party $(SRCROOT)/../../../third_party/md4c";
 				OTHER_LDFLAGS = "-lgssapi_krb5";
 				PRODUCT_BUNDLE_IDENTIFIER = audio.vital.standalone.custom;
 				PRODUCT_NAME = "Vial";
@@ -1728,6 +1739,7 @@
 					"$(SRCROOT)/../../../src/synthesis/producers",
 					"$(SRCROOT)/../../../src/synthesis/utilities",
 					"$(SRCROOT)/../../../third_party",
+					"$(SRCROOT)/../../../third_party/md4c",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info-App.plist;
@@ -1735,7 +1747,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../../third_party/JUCE/modules $(SRCROOT)/../../../src/common $(SRCROOT)/../../../src/common/wavetable $(SRCROOT)/../../../src/interface/editor_components $(SRCROOT)/../../../src/interface/editor_sections $(SRCROOT)/../../../src/interface/look_and_feel $(SRCROOT)/../../../src/interface/wavetable $(SRCROOT)/../../../src/interface/wavetable/editors $(SRCROOT)/../../../src/interface/wavetable/overlays $(SRCROOT)/../../../src/standalone $(SRCROOT)/../../../src/synthesis/synth_engine $(SRCROOT)/../../../src/synthesis/effects $(SRCROOT)/../../../src/synthesis/filters $(SRCROOT)/../../../src/synthesis/framework $(SRCROOT)/../../../src/synthesis/lookups $(SRCROOT)/../../../src/synthesis/modulators $(SRCROOT)/../../../src/synthesis/modules $(SRCROOT)/../../../src/synthesis/producers $(SRCROOT)/../../../src/synthesis/utilities $(SRCROOT)/../../../third_party";
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../../third_party/JUCE/modules $(SRCROOT)/../../../src/common $(SRCROOT)/../../../src/common/wavetable $(SRCROOT)/../../../src/interface/editor_components $(SRCROOT)/../../../src/interface/editor_sections $(SRCROOT)/../../../src/interface/look_and_feel $(SRCROOT)/../../../src/interface/wavetable $(SRCROOT)/../../../src/interface/wavetable/editors $(SRCROOT)/../../../src/interface/wavetable/overlays $(SRCROOT)/../../../src/standalone $(SRCROOT)/../../../src/synthesis/synth_engine $(SRCROOT)/../../../src/synthesis/effects $(SRCROOT)/../../../src/synthesis/filters $(SRCROOT)/../../../src/synthesis/framework $(SRCROOT)/../../../src/synthesis/lookups $(SRCROOT)/../../../src/synthesis/modulators $(SRCROOT)/../../../src/synthesis/modules $(SRCROOT)/../../../src/synthesis/producers $(SRCROOT)/../../../src/synthesis/utilities $(SRCROOT)/../../../third_party $(SRCROOT)/../../../third_party/md4c";
 				OTHER_LDFLAGS = "-lgssapi_krb5";
 				PRODUCT_BUNDLE_IDENTIFIER = audio.vital.standalone.custom;
 				PRODUCT_NAME = "Vial";

@@ -607,6 +607,12 @@
     <ClCompile Include="..\..\..\src\common\claude_api_client.cpp">
       <Filter>Vial\src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\common\markdown_parser.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\md4c\md4c.c">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\common\midi_manager.cpp">
       <Filter>Vial\src\common</Filter>
     </ClCompile>
@@ -3388,6 +3394,12 @@
       <Filter>Vial\src\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\common\claude_api_client.h">
+      <Filter>Vial\src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\common\markdown_parser.h">
+      <Filter>Vial\src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\third_party\md4c\md4c.h">
       <Filter>Vial\src\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\common\midi_manager.h">

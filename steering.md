@@ -39,6 +39,7 @@ List:
 - We added current preset JSON injection to Claude API chat: when user sends a message, the synth preset is serialized to JSON and injected as a user message before the actual message. Base64 data (wave_data, samples) is stripped to save tokens.
 - We switched from full preset JSON responses to a JSON diff/merge patch approach (RFC 7396 style): Claude returns only changed keys, which are recursively merged into the current preset via `mergeJson()`. This avoids token limits (full presets are 4000+ lines). Added `loadStateFromJson()` public wrapper on `SynthBase` to apply the merged result. Increased `kMaxTokens` to 4096.
 - We added preset schema loading to ClaudeApiClient: `PRESET_SCHEMA.md` (documenting all parameters, value ranges, and scaling formulas like quadratic/exponential) is loaded at init and appended to the system prompt. This gives the AI assistant accurate knowledge of how to compute stored values from user-facing percentages (e.g., quadratic: stored = sqrt(UI_value)).
+- We added markdown rendering for chat messages: vendored md4c (C markdown parser, MIT) in `third_party/md4c/`, created `markdown_parser.h/cpp` that parses markdown into `MarkdownBlock`/`StyledRun` structs via SAX callbacks, and updated `side_panel.cpp` to render paragraphs with bold/italic/mono, headings, fenced code blocks, bullet/numbered lists, block quotes, and horizontal rules. System messages are parsed as markdown; user messages stay plain text.
 
 ## Key Learnings & Common Issues
 
@@ -84,6 +85,10 @@ List:
     - Use `MessageManager::callAsync()` to deliver results back to the UI thread for safe component access.
     - Example pattern in `ClaudeApiClient::sendMessage()`: launches background thread, captures callback, invokes callback via `callAsync()`.
     - When building JSON in JUCE, use `DynamicObject` for objects and `Array<var>` for arrays, then `JSON::toString(var(...))` to serialize.
+
+- **Font selection for styled text in Vital's OpenGL rendering**:
+    - Vital provides `Fonts::instance()->proportional_regular()` (Lato) and `proportional_title()` (Montserrat Light). When creating bold text, use `proportional_regular().boldened()` rather than `proportional_title()` which is a completely different font family and weight.
+    - Root cause: `proportional_title()` looks nothing like a bold variant of the body font, causing jarring visual inconsistency in markdown rendering.
 
 - **Accessing protected methods on SynthBase**:
     - `SynthBase::saveToJson()` is protected - can't call directly from UI code like `FullInterface`.
@@ -137,6 +142,11 @@ List:
 - [SYSTEM_PROMPT.md](agents/vital-assistant/SYSTEM_PROMPT.md) - System prompt for Claude API assistant
 - [PRESET_SCHEMA.md](agents/vital-assistant/PRESET_SCHEMA.md) - Parameter schema with scaling formulas
 - [synth_preset_selector.cpp](src/interface/editor_components/synth_preset_selector.cpp) - Menu bar with preset loading, skin, and API key file selection
+
+**Markdown Rendering:**
+
+- [markdown_parser.h/cpp](src/common/markdown_parser.cpp) - md4c-based parser producing MarkdownBlock/StyledRun structs
+- [md4c.h/md4c.c](third_party/md4c/) - Vendored C markdown parser (MIT)
 
 **Build System:**
 
