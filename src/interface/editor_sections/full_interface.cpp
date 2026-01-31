@@ -1082,24 +1082,40 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
       return;
     }
 
-    // Strip markdown code fences if present
-    String trimmed = response.trim();
-    if (trimmed.startsWith("```json"))
-      trimmed = trimmed.fromFirstOccurrenceOf("```json", false, false);
-    else if (trimmed.startsWith("```"))
-      trimmed = trimmed.fromFirstOccurrenceOf("```", false, false);
-    if (trimmed.endsWith("```"))
-      trimmed = trimmed.upToLastOccurrenceOf("```", false, false);
-    trimmed = trimmed.trim();
+    // Extract JSON from markdown code fences if present, preserving surrounding text
+    String jsonBlock;
+    String textMessage;
+    int fenceStart = response.indexOf("```");
+    if (fenceStart >= 0) {
+      // Text before the first fence
+      textMessage = response.substring(0, fenceStart).trim();
 
-    // Try to parse the response as a JSON preset diff
+      // Find the end of the opening fence line (skip ```json or ``` marker)
+      int contentStart = response.indexOf("\n", fenceStart);
+      if (contentStart >= 0) {
+        contentStart += 1; // skip the newline
+        int fenceEnd = response.indexOf("```", contentStart);
+        if (fenceEnd >= 0) {
+          jsonBlock = response.substring(contentStart, fenceEnd).trim();
+          // Text after the closing fence
+          String trailing = response.substring(fenceEnd + 3).trim();
+          if (trailing.isNotEmpty()) {
+            if (textMessage.isNotEmpty())
+              textMessage += " ";
+            textMessage += trailing;
+          }
+        }
+      }
+    }
+
+    // Try to parse JSON (from code fence, or the whole response as fallback)
+    String jsonToParse = jsonBlock.isNotEmpty() ? jsonBlock : response.trim();
     try {
-      json patch = json::parse(trimmed.toStdString(), nullptr);
+      json patch = json::parse(jsonToParse.toStdString(), nullptr);
 
       if (patch.count("settings")) {
         SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
         if (gui && gui->getSynth()) {
-          // Get current preset and merge the diff into it
           json current = gui->getSynth()->getStateAsJson();
           FullInterface::mergeJson(current, patch);
 
@@ -1107,7 +1123,9 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
           if (loaded) {
             gui->updateFullGui();
             gui->notifyFresh();
-            panel->addResponseMessage(getCompletionPhrase());
+            // Show surrounding text if any, otherwise a random completion phrase
+            String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
+            panel->addResponseMessage(msg);
             return;
           }
         }
