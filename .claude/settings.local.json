@@ -5,7 +5,9 @@
       "Bash(grep:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }
