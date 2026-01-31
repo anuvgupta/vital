@@ -7,7 +7,7 @@
 - Updated side_panel to render markdown blocks (headings, code blocks, lists, quotes, etc.)
 - Bug fix: bold font was using wrong font family (Montserrat vs Lato)
 
-## Note: File Path Inconsistency in steering.md
+## Note: File Path Inconsistency in `STEERING.md`
 
 The Key Files Reference section has inconsistent file paths:
 - Some use `vital/src/...` (incorrect - this path doesn't exist)

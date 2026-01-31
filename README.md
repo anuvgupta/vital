@@ -14,8 +14,8 @@ This fork adds an AI agentic sidepanel to Vital.
 
 ## Developer information
 
-- Steering doc is `steering.md`
-    - `CLAUDE.md` and `AGENTS.md` are symlinks to to steering.md created with `ln -s` on macOS. Be careful on Windows.
+- Steering doc is `STEERING.md`
+    - `CLAUDE.md` and `AGENTS.md` are symlinks to to `STEERING.md` created with `ln -s` on macOS. Be careful on Windows.
 - Additional agent config is in `./agents`
 
 ## Vital (Original Readme)
