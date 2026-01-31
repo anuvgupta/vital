@@ -5,7 +5,6 @@
 
 ### Open
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
-- Markdown support in responses
 - Integrate with wispr flow for voice to text
 - Autosave presets, checkpointing & restore chat at certain point
 - Chat clearing
@@ -21,6 +20,7 @@
 ### Done
 - Move away from Opus because its too expensive
 - Support for mixed messages (containing markdown fences for code ie three backticks, alongside natural language descriptions)
+- Markdown support in responses
 
 
 ## Bugs
