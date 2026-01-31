@@ -1082,9 +1082,19 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
       return;
     }
 
+    // Strip markdown code fences if present
+    String trimmed = response.trim();
+    if (trimmed.startsWith("```json"))
+      trimmed = trimmed.fromFirstOccurrenceOf("```json", false, false);
+    else if (trimmed.startsWith("```"))
+      trimmed = trimmed.fromFirstOccurrenceOf("```", false, false);
+    if (trimmed.endsWith("```"))
+      trimmed = trimmed.upToLastOccurrenceOf("```", false, false);
+    trimmed = trimmed.trim();
+
     // Try to parse the response as a JSON preset diff
     try {
-      json patch = json::parse(response.toStdString(), nullptr);
+      json patch = json::parse(trimmed.toStdString(), nullptr);
 
       if (patch.count("settings")) {
         SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
