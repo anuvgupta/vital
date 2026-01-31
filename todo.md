@@ -26,8 +26,8 @@
 ## Bugs
 
 ### Open
-- Limit messages to a certain character & word limit
 - Placeholder text in textarea doesn't wrap when window is shrunk (resized to be smaller) even though actual text in textarea does
 
 ### Done
 - Limit output tokens to prevent wasting money
+- Limit messages to a certain character limit
