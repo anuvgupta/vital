@@ -1085,17 +1085,18 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
     // Extract JSON from markdown code fences if present, preserving surrounding text
     String jsonBlock;
     String textMessage;
-    int fenceStart = response.indexOf("```");
+    int fenceStart = response.indexOf(String("```"));
     if (fenceStart >= 0) {
       // Text before the first fence
       textMessage = response.substring(0, fenceStart).trim();
 
       // Find the end of the opening fence line (skip ```json or ``` marker)
-      int contentStart = response.indexOf("\n", fenceStart);
+      int contentStart = response.substring(fenceStart).indexOf(String("\n"));
       if (contentStart >= 0) {
-        contentStart += 1; // skip the newline
-        int fenceEnd = response.indexOf("```", contentStart);
+        contentStart += fenceStart + 1; // adjust to absolute position and skip newline
+        int fenceEnd = response.substring(contentStart).indexOf(String("```"));
         if (fenceEnd >= 0) {
+          fenceEnd += contentStart; // adjust to absolute position
           jsonBlock = response.substring(contentStart, fenceEnd).trim();
           // Text after the closing fence
           String trailing = response.substring(fenceEnd + 3).trim();
