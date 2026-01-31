@@ -49,6 +49,11 @@
     - Vital provides `Fonts::instance()->proportional_regular()` (Lato) and `proportional_title()` (Montserrat Light). When creating bold text, use `proportional_regular().boldened()` rather than `proportional_title()` which is a completely different font family and weight.
     - Root cause: `proportional_title()` looks nothing like a bold variant of the body font, causing jarring visual inconsistency in markdown rendering.
 
+- **Claude API model selection - NEVER use Opus 4 (non-4.5)**:
+    - Use `claude-sonnet-4-5-20241022` (Sonnet 4.5) or `claude-opus-4-5-20251101` (Opus 4.5) only.
+    - **NEVER use Opus 4** (`claude-opus-4-*`) - it is extremely expensive compared to Sonnet 4 and not worth the cost difference for this use case. Opus 4.5 is the correct choice if you need the highest capability tier.
+    - Constants `kModelSonnet` and `kModelOpus` are defined in `claude_api_client.cpp`. Default is Sonnet.
+
 - **Accessing protected methods on SynthBase**:
     - `SynthBase::saveToJson()` is protected - can't call directly from UI code like `FullInterface`.
     - **Solution**: Add a public wrapper method like `getStateAsJson()` (wraps `saveToJson()`) or `loadStateFromJson()` (wraps `loadFromJson()`).
