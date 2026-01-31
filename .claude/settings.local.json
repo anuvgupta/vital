@@ -4,7 +4,8 @@
       "Bash(./build_macos.sh:*)",
       "Bash(grep:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebSearch"
     ]
   }
 }
