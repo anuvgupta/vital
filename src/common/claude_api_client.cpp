@@ -147,7 +147,12 @@ void ClaudeApiClient::sendMessage(const String& message, ResponseCallback callba
 void ClaudeApiClient::addMessage(const String& role, const String& content) {
   while (conversation_history_.size() >= kMaxMessages)
     conversation_history_.erase(conversation_history_.begin());
-  conversation_history_.push_back({ role, content });
+
+  String truncated = content;
+  if (role == "user" && content.length() > 1024)
+    truncated = content.substring(0, 1024);
+
+  conversation_history_.push_back({ role, truncated });
 }
 
 void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback callback,
