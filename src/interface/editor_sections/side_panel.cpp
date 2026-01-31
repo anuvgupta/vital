@@ -19,6 +19,7 @@
 #include "fonts.h"
 #include "skin.h"
 #include "synth_button.h"
+#include <cmath>
 
 // ============================================================================
 // ChatMessage Implementation
@@ -84,7 +85,7 @@ int measureBlockHeight(const MarkdownBlock& block, int width, float fontSize) {
             auto attr = buildStyledString(block.runs, fontSize * scale, Colours::white);
             TextLayout layout;
             layout.createLayout(attr, (float)width);
-            return (int)layout.getHeight();
+            return (int)std::ceil(layout.getHeight());
         }
 
         case MarkdownBlock::kCodeBlock: {
@@ -95,7 +96,7 @@ int measureBlockHeight(const MarkdownBlock& block, int width, float fontSize) {
             attr.setJustification(Justification::topLeft);
             TextLayout layout;
             layout.createLayout(attr, (float)(width - 2 * kCodeBlockPadding));
-            return (int)layout.getHeight() + 2 * kCodeBlockPadding;
+            return (int)std::ceil(layout.getHeight()) + 2 * kCodeBlockPadding;
         }
 
         case MarkdownBlock::kListItem: {
@@ -104,7 +105,7 @@ int measureBlockHeight(const MarkdownBlock& block, int width, float fontSize) {
             auto attr = buildStyledString(block.runs, fontSize, Colours::white);
             TextLayout layout;
             layout.createLayout(attr, (float)text_width);
-            return (int)layout.getHeight();
+            return (int)std::ceil(layout.getHeight());
         }
 
         case MarkdownBlock::kBlockQuote: {
@@ -112,7 +113,7 @@ int measureBlockHeight(const MarkdownBlock& block, int width, float fontSize) {
             auto attr = buildStyledString(block.runs, fontSize, Colours::white);
             TextLayout layout;
             layout.createLayout(attr, (float)(width - indent));
-            return (int)layout.getHeight();
+            return (int)std::ceil(layout.getHeight());
         }
 
         case MarkdownBlock::kHorizontalRule:
@@ -123,7 +124,7 @@ int measureBlockHeight(const MarkdownBlock& block, int width, float fontSize) {
             auto attr = buildStyledString(block.runs, fontSize, Colours::white);
             TextLayout layout;
             layout.createLayout(attr, (float)width);
-            return (int)layout.getHeight();
+            return (int)std::ceil(layout.getHeight());
         }
     }
 }
@@ -142,20 +143,30 @@ int ChatMessage::calculateHeight(const String& text, int width, float fontSize) 
   TextLayout layout;
   layout.createLayout(attr_string, (float)text_width);
 
-  return (int)layout.getHeight() + 2 * kPadding;
+  return (int)std::ceil(layout.getHeight()) + 2 * kPadding;
 }
 
 int ChatMessage::calculateMarkdownHeight(const std::vector<MarkdownBlock>& blocks, int width, float fontSize) {
   int text_width = width - 2 * kPadding;
   int total = 0;
+  int total_chars = 0;
 
   for (size_t i = 0; i < blocks.size(); ++i) {
       if (i > 0)
           total += kBlockSpacing;
       total += measureBlockHeight(blocks[i], text_width, fontSize);
+      for (const auto& run : blocks[i].runs)
+          total_chars += run.text.length();
+      total_chars += blocks[i].code_text.length();
   }
 
-  return total + 2 * kPadding;
+  int height = total + 2 * kPadding;
+
+  // Extra buffer for long messages to prevent cutoff
+  if (total_chars > 200)
+      height += (int)(fontSize * 0.5f);
+
+  return height;
 }
 
 // ============================================================================
