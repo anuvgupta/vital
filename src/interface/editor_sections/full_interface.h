@@ -168,6 +168,8 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     void toggleFilter1Zoom();
     void toggleFilter2Zoom();
 
+    void stripBase64DataForLLM(json& state);
+
   private:
     bool wavetableEditorsInitialized() {
       for (int i = 0; i < vital::kNumOscillators; ++i) {
