@@ -4,6 +4,7 @@
 ## Features
 
 ### Open
+- Move away from Opus because its too expensive
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Markdown support in responses
 - Integrate with wispr flow for voice to text
