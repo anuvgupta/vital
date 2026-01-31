@@ -170,8 +170,21 @@ void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback c
   requestBody->setProperty("model", kModel);
   requestBody->setProperty("max_tokens", kMaxTokens);
 
-  if (system_prompt_.isNotEmpty())
-    requestBody->setProperty("system", system_prompt_);
+  if (system_prompt_.isNotEmpty()) {
+    // Send system prompt as array with cache_control for prompt caching
+    DynamicObject::Ptr cacheControl = new DynamicObject();
+    cacheControl->setProperty("type", "ephemeral");
+    cacheControl->setProperty("ttl", "1h");
+
+    DynamicObject::Ptr systemBlock = new DynamicObject();
+    systemBlock->setProperty("type", "text");
+    systemBlock->setProperty("text", system_prompt_);
+    systemBlock->setProperty("cache_control", var(cacheControl.get()));
+
+    Array<var> systemArray;
+    systemArray.add(var(systemBlock.get()));
+    requestBody->setProperty("system", systemArray);
+  }
 
   // Build messages array from conversation history
   Array<var> messages;
@@ -189,6 +202,7 @@ void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback c
   // Build headers
   String headers = "x-api-key: " + String(api_key_) + "\r\n"
                    "anthropic-version: 2023-06-01\r\n"
+                   "anthropic-beta: extended-cache-ttl-2025-04-11\r\n"
                    "content-type: application/json";
 
   // Create URL and add POST data

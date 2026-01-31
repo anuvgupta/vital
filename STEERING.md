@@ -47,7 +47,7 @@
 
 **Listener Pattern:** `VitalSidePanel` defines an inner `Listener` class. `FullInterface` implements this listener and handles `sidePanelMessageSubmitted()` -- it serializes the current preset to JSON (stripping base64 data), passes it along with the user message to the API client, and applies the returned JSON diff to the live preset.
 
-**API Client (`claude_api_client.h/cpp`):** Singleton (`ClaudeApiClient::instance()`) that manages the Anthropic Claude API integration. Loads API key from a user-configured file path (stored in Vital's app settings). Loads `SYSTEM_PROMPT.md` and `PRESET_SCHEMA.md` from the app bundle Resources directory at init. Maintains conversation history (max 20 messages). HTTP requests run on a background thread via `Thread::launch()`; responses are delivered back to the UI thread via `MessageManager::callAsync()`.
+**API Client (`claude_api_client.h/cpp`):** Singleton (`ClaudeApiClient::instance()`) that manages the Anthropic Claude API integration. Loads API key from a user-configured file path (stored in Vital's app settings). Loads `SYSTEM_PROMPT.md` and `PRESET_SCHEMA.md` from the app bundle Resources directory at init. Maintains conversation history (max 20 messages). HTTP requests run on a background thread via `Thread::launch()`; responses are delivered back to the UI thread via `MessageManager::callAsync()`. Implements Anthropic API prompt caching: the system prompt (including preset schema) is sent as a cacheable content block with 1-hour ephemeral TTL, reducing subsequent request costs by ~90% on the cached portion.
 
 **Preset Manipulation Flow:** User message -> current preset serialized to JSON (base64 stripped) -> injected as context in API call -> Claude returns a JSON merge patch (RFC 7396 style, only changed keys) -> `mergeJson()` recursively applies the diff to the current preset -> `loadStateFromJson()` applies the result to the live synth engine. Array elements are merged element-by-element; placeholder strings from base64 stripping are preserved (not overwritten).
 
@@ -96,7 +96,7 @@
 
 **API Client:**
 
-- [claude_api_client.h/cpp](src/common/claude_api_client.cpp) - Singleton Claude API client with `sendMessage()` for async API calls
+- [claude_api_client.h/cpp](src/common/claude_api_client.cpp) - Singleton Claude API client with prompt caching, async API calls
 - [SYSTEM_PROMPT.md](agents/vital-assistant/SYSTEM_PROMPT.md) - System prompt for Claude API assistant
 - [PRESET_SCHEMA.md](agents/vital-assistant/PRESET_SCHEMA.md) - Parameter schema with scaling formulas
 - [synth_preset_selector.cpp](src/interface/editor_components/synth_preset_selector.cpp) - Menu bar with preset loading, skin, and API key file selection
