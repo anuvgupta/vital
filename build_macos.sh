@@ -240,24 +240,35 @@ fi
 if [ "$BUILD_SUCCESS" = true ] && [ -d "$APP_PATH" ]; then
     echo_status "Build successful: $APP_PATH"
 
-    # Copy system prompt into app bundle Resources
-    SYSTEM_PROMPT_SRC="$SCRIPT_DIR/agents/vital-assistant/SYSTEM_PROMPT.md"
-    RESOURCES_DIR="$APP_PATH/Contents/Resources"
-    if [ -f "$SYSTEM_PROMPT_SRC" ]; then
-        cp "$SYSTEM_PROMPT_SRC" "$RESOURCES_DIR/SYSTEM_PROMPT.md"
-        echo_status "Copied SYSTEM_PROMPT.md to app bundle"
-    else
-        echo_warn "SYSTEM_PROMPT.md not found at $SYSTEM_PROMPT_SRC"
-    fi
+    # Copy resource files into all existing app bundles (Debug and Release)
+    RESOURCE_FILES=("SYSTEM_PROMPT.md" "PRESET_SCHEMA.md")
+    RESOURCE_SRC_DIR="$SCRIPT_DIR/agents/vital-assistant"
 
-    # Copy preset schema into app bundle Resources
-    PRESET_SCHEMA_SRC="$SCRIPT_DIR/agents/vital-assistant/PRESET_SCHEMA.md"
-    if [ -f "$PRESET_SCHEMA_SRC" ]; then
-        cp "$PRESET_SCHEMA_SRC" "$RESOURCES_DIR/PRESET_SCHEMA.md"
-        echo_status "Copied PRESET_SCHEMA.md to app bundle"
-    else
-        echo_warn "PRESET_SCHEMA.md not found at $PRESET_SCHEMA_SRC"
-    fi
+    # Collect all Vial.app paths (DerivedData + local build dir, both configs)
+    APP_BUNDLES=()
+    for cfg in Debug Release; do
+        # DerivedData
+        DD_APP=$(find "$DERIVED_DATA" -name "Vial.app" -path "*Build/Products/$cfg*" -type d 2>/dev/null | head -n 1)
+        [ -d "$DD_APP" ] && APP_BUNDLES+=("$DD_APP")
+        # Local build dir
+        LOCAL_APP="$SCRIPT_DIR/standalone/builds/osx/build/$cfg/Vial.app"
+        [ -d "$LOCAL_APP" ] && APP_BUNDLES+=("$LOCAL_APP")
+    done
+
+    # Deduplicate
+    APP_BUNDLES=($(printf '%s\n' "${APP_BUNDLES[@]}" | sort -u))
+
+    for BUNDLE in "${APP_BUNDLES[@]}"; do
+        RESOURCES_DIR="$BUNDLE/Contents/Resources"
+        for FILE in "${RESOURCE_FILES[@]}"; do
+            if [ -f "$RESOURCE_SRC_DIR/$FILE" ]; then
+                cp "$RESOURCE_SRC_DIR/$FILE" "$RESOURCES_DIR/$FILE"
+                echo_status "Copied $FILE to $BUNDLE"
+            else
+                echo_warn "$FILE not found at $RESOURCE_SRC_DIR/$FILE"
+            fi
+        done
+    done
 else
     echo_error "Build failed or could not find Vial.app"
     exit 1
