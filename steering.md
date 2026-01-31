@@ -21,9 +21,9 @@
 
 ## Latest Updates
 
-- We drafted a document outlining the preset format/schema, based on the Vital codebase and some example presets: `vital/preset_schema.md`
+- We drafted a document outlining the preset format/schema, based on the Vital codebase and some example presets: `agents/vital-assistant/PRESET_SCHEMA.md`
     - We learned that waveforms can be stored as "Wave Source" (base64, not really LLM-friendly) OR "Line Source" (control points / curves, very LLM-friendly). We will prefer line source for preset generation. We will deal with wave source later.
-- We created a build script `vital/build_macos.sh` because we are developing on MacOS. This runs Projucer CLI to build the project to MacOS (Xcode) and other targets. Then it uses Xcode CLI to run the debug app. We can use this script with `--no-run` argument to verify that new changes build/compile successfully.
+- We created a build script `build_macos.sh` because we are developing on MacOS. This runs Projucer CLI to build the project to MacOS (Xcode) and other targets. Then it uses Xcode CLI to run the debug app. We can use this script with `--no-run` argument to verify that new changes build/compile successfully.
 - We added a sidepanel (via `side_panel.cpp`) where we will continue to add functionality
 - We added a textarea and a button to the sidepanel, near the bottom
 - We implemented a chat interface with scrollable message area, user message bubbles, and "Thinking..." indicator
@@ -90,42 +90,42 @@
 
 **Core Serialization:**
 
-- [load_save.cpp](vital/src/common/load_save.cpp) - JSON serialization/deserialization
-- [synth_parameters.cpp](vital/src/common/synth_parameters.cpp) - All parameter definitions with ranges
-- [synth_constants.h](vital/src/common/synth_constants.h) - Numeric constants
-- [synth_strings.h](vital/src/interface/look_and_feel/synth_strings.h) - String values for enums
+- [load_save.cpp](src/common/load_save.cpp) - JSON serialization/deserialization
+- [synth_parameters.cpp](src/common/synth_parameters.cpp) - All parameter definitions with ranges
+- [synth_constants.h](src/common/synth_constants.h) - Numeric constants
+- [synth_strings.h](src/interface/look_and_feel/synth_strings.h) - String values for enums
 - [synth_base.h](src/common/synth_base.h) - SynthBase with `getStateAsJson()` / `loadStateFromJson()` wrappers
 
 **Line Generator (LFOs and Line Source wavetables):**
 
-- [line_generator.cpp](vital/src/common/line_generator.cpp) - Line shape format and built-in waveform definitions
-- [line_generator.h](vital/src/common/line_generator.h) - LineGenerator class with initSaw, initSquare, etc.
+- [line_generator.cpp](src/common/line_generator.cpp) - Line shape format and built-in waveform definitions
+- [line_generator.h](src/common/line_generator.h) - LineGenerator class with initSaw, initSquare, etc.
 
 **Wavetables:**
 
-- [wave_line_source.cpp](vital/src/common/wavetable/wave_line_source.cpp) - **Line Source component (PREFERRED)**
-- [wave_line_source.h](vital/src/common/wavetable/wave_line_source.h) - Line Source class definition
-- [wave_source.cpp](vital/src/common/wavetable/wave_source.cpp) - Wave Source component (base64 encoded)
-- [wavetable_creator.cpp](vital/src/common/wavetable/wavetable_creator.cpp) - Wavetable rendering and JSON handling
-- [wavetable_component_factory.cpp](vital/src/common/wavetable/wavetable_component_factory.cpp) - Component type registry
-- [wavetable_group.cpp](vital/src/common/wavetable/wavetable_group.cpp) - Default wavetable creation
+- [wave_line_source.cpp](src/common/wavetable/wave_line_source.cpp) - **Line Source component (PREFERRED)**
+- [wave_line_source.h](src/common/wavetable/wave_line_source.h) - Line Source class definition
+- [wave_source.cpp](src/common/wavetable/wave_source.cpp) - Wave Source component (base64 encoded)
+- [wavetable_creator.cpp](src/common/wavetable/wavetable_creator.cpp) - Wavetable rendering and JSON handling
+- [wavetable_component_factory.cpp](src/common/wavetable/wavetable_component_factory.cpp) - Component type registry
+- [wavetable_group.cpp](src/common/wavetable/wavetable_group.cpp) - Default wavetable creation
 
 **Samples:**
 
-- [sample_source.cpp](vital/src/synthesis/producers/sample_source.cpp) - Sample data format
+- [sample_source.cpp](src/synthesis/producers/sample_source.cpp) - Sample data format
 
 **UI / Interface:**
 
 - [full_interface.h/cpp](src/interface/editor_sections/full_interface.cpp) - Main UI container, handles VitalSidePanel listener callbacks
-- [synth_section.h/cpp](vital/src/interface/editor_sections/synth_section.h) - Base class for all UI sections, includes `paintBackground()` for OpenGL rendering
-- [synth_button.h](vital/src/interface/editor_components/synth_button.h) - OpenGlToggleButton, SynthButton components
+- [synth_section.h/cpp](src/interface/editor_sections/synth_section.h) - Base class for all UI sections, includes `paintBackground()` for OpenGL rendering
+- [synth_button.h](src/interface/editor_components/synth_button.h) - OpenGlToggleButton, SynthButton components
 - [side_panel.h/cpp](src/interface/editor_sections/side_panel.cpp) - **Our AI chat panel (VitalSidePanel)** with listener pattern for message submission
-- [open_gl_image_component.h](vital/src/interface/editor_components/open_gl_image_component.h) - OpenGlTextEditor, PlainTextComponent, OpenGlAutoImageComponent
-- [open_gl_multi_quad.h](vital/src/interface/editor_components/open_gl_multi_quad.h) - OpenGlQuad (rounded rectangles), OpenGlScrollBar
-- [open_gl_component.h/cpp](vital/src/interface/editor_components/open_gl_component.cpp) - Base OpenGL component, parent/findValue system
-- [modulation_matrix.h/cpp](vital/src/interface/editor_sections/modulation_matrix.cpp) - Reference for scrollable lists with OpenGL (pre-allocated rows pattern)
-- [save_section.cpp](vital/src/interface/editor_sections/save_section.cpp) - Reference for OpenGlTextEditor setup patterns
-- [preset_browser.cpp](vital/src/interface/editor_sections/preset_browser.cpp) - Reference for multiline text editor setup
+- [open_gl_image_component.h](src/interface/editor_components/open_gl_image_component.h) - OpenGlTextEditor, PlainTextComponent, OpenGlAutoImageComponent
+- [open_gl_multi_quad.h](src/interface/editor_components/open_gl_multi_quad.h) - OpenGlQuad (rounded rectangles), OpenGlScrollBar
+- [open_gl_component.h/cpp](src/interface/editor_components/open_gl_component.cpp) - Base OpenGL component, parent/findValue system
+- [modulation_matrix.h/cpp](src/interface/editor_sections/modulation_matrix.cpp) - Reference for scrollable lists with OpenGL (pre-allocated rows pattern)
+- [save_section.cpp](src/interface/editor_sections/save_section.cpp) - Reference for OpenGlTextEditor setup patterns
+- [preset_browser.cpp](src/interface/editor_sections/preset_browser.cpp) - Reference for multiline text editor setup
 
 **API Client:**
 
@@ -136,5 +136,5 @@
 
 **Build System:**
 
-- [common.cpp](vital/src/unity_build/common.cpp) - Unity build file for common/utility classes
-- [interface_editor_sections.cpp](vital/src/unity_build/interface_editor_sections.cpp) - Unity build file for editor sections
+- [common.cpp](src/unity_build/common.cpp) - Unity build file for common/utility classes
+- [interface_editor_sections.cpp](src/unity_build/interface_editor_sections.cpp) - Unity build file for editor sections
