@@ -983,9 +983,26 @@ void FullInterface::toggleFilter2Zoom() {
 }
 
 void FullInterface::mergeJson(json& target, const json& patch) {
+  static const std::string kPlaceholder = "(base64 data removed)";
   for (auto it = patch.begin(); it != patch.end(); ++it) {
+    // Skip fields where the AI returned our placeholder instead of real base64 data
+    if (it.value().is_string() && it.value().get<std::string>() == kPlaceholder)
+      continue;
+
     if (it.value().is_object() && target.count(it.key()) && target[it.key()].is_object()) {
       mergeJson(target[it.key()], it.value());
+    } else if (it.value().is_array() && target.count(it.key()) && target[it.key()].is_array()) {
+      // For arrays (e.g. wavetables), merge element-by-element; null means keep original
+      auto& target_arr = target[it.key()];
+      const auto& patch_arr = it.value();
+      for (size_t i = 0; i < patch_arr.size() && i < target_arr.size(); ++i) {
+        if (patch_arr[i].is_null())
+          continue;
+        if (patch_arr[i].is_object() && target_arr[i].is_object())
+          mergeJson(target_arr[i], patch_arr[i]);
+        else
+          target_arr[i] = patch_arr[i];
+      }
     } else {
       target[it.key()] = it.value();
     }
