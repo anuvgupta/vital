@@ -6,7 +6,16 @@
 ### Open
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Markdown support in responses
-- Integrate with wispr flow
+- Integrate with wispr flow for voice to text
+- Autosave presets, checkpointing & restore chat at certain point
+- Chat clearing
+- Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
+    - architecture details
+        - first, run just the latest user message through sonnet to have it decide which "skill" to call
+        - then call the opus with the system prompt, selected skill prompt, preset schema, and if necessary also the vital handbook and sound design cookbook. add the conversation history with latest user message, and the current preset json.
+        - DONT have a final summarization step - this would waste tokens and add latency - in future we could have it print out a natural language response as one of the preset json fields, and extract that. but for now a hardcoded "preset updated" is just fine.
+    - first start with "knowledge base" and "preset generator" skills, then add "sound designer" as separate skill to see if it improves interpretation of nontechnical suond design descriptions
+    - we need to research if there is already support for this in claude platform or openai platform. if not, we need to build our own latency-optimized orchestrater in AWS for example.
 
 ### Done
 - ...
