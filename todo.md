@@ -20,6 +20,7 @@
 
 ### Done
 - Move away from Opus because its too expensive
+- Support for mixed messages (containing markdown fences for code ie three backticks, alongside natural language descriptions)
 
 
 ## Bugs
@@ -29,4 +30,4 @@
 - Placeholder text in textarea doesn't wrap when window is shrunk (resized to be smaller) even though actual text in textarea does
 
 ### Done
-- ...
+- Limit output tokens to prevent wasting money
