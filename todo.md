@@ -4,7 +4,7 @@
 ## Features
 
 ### Open
-- Rename chat panel to "sound designer"
+- Rename chat panel title from "chat" to "sound designer"
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Integrate with wispr flow for voice to text
 - Autosave presets, checkpointing & restore chat at certain point
