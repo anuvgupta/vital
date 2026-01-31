@@ -4,11 +4,19 @@ This is a fork of the open source synthesizer Vital (at version 1.0.6 or 1.0.7).
 
 This fork adds an AI agentic sidepanel to Vital.
 
+## Demos
+
+### 1/30/2026
+
+[![Video Title](https://markdown-videos.vercel.app/youtube/GkKuZN7fDMQ)](https://www.youtube.com/watch?v=GkKuZN7fDMQ)
+
+
+
 ## Developer information
 
 - Steering doc is `steering.md`
     - `CLAUDE.md` and `AGENTS.md` are symlinks to to steering.md created with `ln -s` on macOS. Be careful on Windows.
-- Additional prompts for steering agents manually are in `common_prompts.md`
+- Additional agent config is in `./agents`
 
 ## Vital (Original Readme)
 
