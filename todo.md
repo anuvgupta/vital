@@ -10,6 +10,7 @@
 - Autosave presets, checkpointing & restore chat at certain point
 - Chat clearing
 - Queue messages when sent while agent is already thinking (request already in progress)
+- multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
     - architecture details
         - first, run just the latest user message through sonnet to have it decide which "skill" to call
