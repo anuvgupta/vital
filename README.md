@@ -71,10 +71,11 @@ Options:
 **Dependencies:**
 - **GCC/G++** - `sudo apt install build-essential`
 - **JUCE dependencies** - `sudo apt install libasound2-dev libcurl4-openssl-dev libfreetype6-dev libgl1-mesa-dev libx11-dev libxcomposite-dev libxcursor-dev libxinerama-dev libxrandr-dev`
+- **JUCE/Projucer** - Download from [juce.com](https://juce.com/get-juce/) or build from source
+    - Download and extract JUCE to `~/JUCE`
     - Build Projucer with `cd ~/JUCE/extras/Projucer/Builds/LinuxMakefile` and `make CONFIG=Release`
     - The Projucer binary will be in: `~/JUCE/extras/Projucer/Builds/LinuxMakefile/build/Projucer`
     - Optional: Create a symlink for easy access: `sudo ln -s ~/JUCE/extras/Projucer/Builds/LinuxMakefile/build/Projucer /usr/local/bin/Projucer`
-- **JUCE/Projucer** - Download from [juce.com](https://juce.com/get-juce/) or build from source
 
 **Debian/Ubuntu:**
 ```bash
