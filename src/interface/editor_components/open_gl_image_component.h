@@ -115,11 +115,42 @@ class OpenGlTextEditor : public OpenGlAutoImageComponent<TextEditor>, public Tex
       image_component_.setComponent(this);
       addListener(this);
     }
-  
+
     OpenGlTextEditor(String name, wchar_t password_char) : OpenGlAutoImageComponent(name, password_char) {
       monospace_ = false;
       image_component_.setComponent(this);
       addListener(this);
+    }
+
+    void setTextToShowWhenEmpty(const String& text, const Colour& colour) {
+      placeholderColour_ = colour;
+      TextEditor::setTextToShowWhenEmpty(text, colour);
+    }
+
+    void paintOverChildren(Graphics& g) override {
+      // Custom placeholder rendering with word wrap for multiline editors
+      String placeholder = getTextToShowWhenEmpty();
+      if (placeholder.isNotEmpty() && !hasKeyboardFocus(false) && getTotalNumChars() == 0) {
+        g.setColour(placeholderColour_);
+        g.setFont(getFont());
+
+        float indent = isMultiLine() ? image_component_.findValue(Skin::kLabelBackgroundRounding) : 4.0f;
+        Rectangle<int> textBounds((int)indent, (int)indent,
+                                   getWidth() - (int)(indent * 2),
+                                   getHeight() - (int)(indent * 2));
+
+        if (!textBounds.isEmpty()) {
+          if (isMultiLine()) {
+            // Use drawFittedText for multiline - supports word wrapping
+            g.drawFittedText(placeholder, textBounds, Justification::topLeft,
+                            textBounds.getHeight() / (int)getFont().getHeight() + 1, 1.0f);
+          } else {
+            g.drawText(placeholder, textBounds, Justification::centredLeft, true);
+          }
+        }
+      }
+
+      getLookAndFeel().drawTextEditorOutline(g, getWidth(), getHeight(), *this);
     }
 
     bool keyPressed(const KeyPress& key) override {
@@ -177,6 +208,7 @@ class OpenGlTextEditor : public OpenGlAutoImageComponent<TextEditor>, public Tex
 
   private:
     bool monospace_;
+    Colour placeholderColour_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OpenGlTextEditor)
 };
