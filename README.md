@@ -38,16 +38,14 @@ Options:
 - **Visual Studio 2019** (or 2017) - Install with "Desktop development with C++" workload from [visualstudio.microsoft.com](https://visualstudio.microsoft.com/downloads/)
 - **Intel oneAPI Base Toolkit** - Required for Intel IPP (fast FFT). Download from [intel.com](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html)
 - **JUCE/Projucer** - Download from [juce.com](https://juce.com/get-juce/) (used to generate VS project)
-- **Git for Windows** - Includes Git Bash, used to run the build script. Download from [git-scm.com](https://git-scm.com/download/win)
 
-**Build (from Git Bash or WSL):**
-```bash
-./build_windows.sh
+**Build (from Command Prompt or PowerShell):**
+```cmd
+build_windows.bat
 ```
 
 Options:
-- `--config=Debug|Release` - Build configuration (default: Debug)
-- `--vs=2017|2019` - Visual Studio version (default: 2019)
+- `Debug` or `Release` - Build configuration (default: Debug)
 - `--skip-regenerate` - Skip VS project regeneration (faster rebuilds)
 - `--no-run` - Build only, don't launch the app
 - `--clean` - Clean build before building
