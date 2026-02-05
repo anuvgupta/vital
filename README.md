@@ -70,14 +70,51 @@ Options:
 
 **Dependencies:**
 - **GCC/G++** - `sudo apt install build-essential`
-- **JUCE dependencies** - `sudo apt install libasound2-dev libcurl4-openssl-dev libfreetype6-dev libgl1-mesa-dev libx11-dev libxcomposite-dev libxcursor-dev libxinerama-dev libxrandr-dev`
 - **JUCE/Projucer** - Download from [juce.com](https://juce.com/get-juce/) or build from source
+
+**Debian/Ubuntu:**
+```bash
+sudo apt install build-essential pkg-config libasound2-dev libfreetype6-dev \
+    libcurl4-openssl-dev libsecret-1-dev libglib2.0-dev libgl1-mesa-dev \
+    libfftw3-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev
+```
+
+(Raspberry Pi)
+```bash
+sudo apt-get install -y \
+  git build-essential pkg-config \
+  libasound2-dev \
+  libfreetype6-dev \
+  libfontconfig1-dev \
+  libx11-dev \
+  libxcomposite-dev \
+  libxcursor-dev \
+  libxext-dev \
+  libxinerama-dev \
+  libxrandr-dev \
+  libxrender-dev \
+  libwebkit2gtk-4.0-dev \
+  libglu1-mesa-dev \
+  mesa-common-dev
+``
+
+**Fedora/RHEL:**
+```bash
+sudo dnf install gcc-c++ make pkg-config alsa-lib-devel freetype-devel \
+    libcurl-devel libsecret-devel glib2-devel mesa-libGL-devel \
+    fftw-devel libX11-devel libXrandr-devel libXinerama-devel libXcursor-devel
+```
 
 **Build:**
 ```bash
-cd standalone/builds/linux
-make CONFIG=Release
+./build_linux.sh
 ```
+
+Options:
+- `--config=Debug|Release` - Build configuration (default: Debug)
+- `--skip-regenerate` - Skip Makefile regeneration (faster rebuilds)
+- `--no-run` - Build only, don't launch the app
+- `--clean` - Clean build before building
 
 ## Developer Information
 
