@@ -106,6 +106,7 @@ else
 fi
 
 # Check required libraries via pkg-config
+# Note: jack is required at build time, but JACK server is optional at runtime (falls back to ALSA)
 REQUIRED_LIBS="alsa freetype2 libcurl jack"
 MISSING_LIBS=""
 
