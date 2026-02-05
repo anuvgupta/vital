@@ -14,6 +14,17 @@ This fork adds an AI agentic sidepanel to Vital.
 
 ## Building from Source
 
+### Cross-Platform Build Script
+
+The easiest way to build is using the unified build script, which auto-detects your platform:
+
+```bash
+./build.sh                    # Debug build
+./build.sh --config=Release   # Release build
+```
+
+This script detects macOS, Windows (Git Bash/WSL), or Linux and runs the appropriate platform-specific build script.
+
 ### macOS
 
 **Dependencies:**
@@ -44,8 +55,13 @@ Options:
 build_windows.bat
 ```
 
+Or from Git Bash/WSL:
+```bash
+./build.sh
+```
+
 Options:
-- `Debug` or `Release` - Build configuration (default: Debug)
+- `--config=Debug|Release` - Build configuration (default: Debug)
 - `--skip-regenerate` - Skip VS project regeneration (faster rebuilds)
 - `--no-run` - Build only, don't launch the app
 - `--clean` - Clean build before building

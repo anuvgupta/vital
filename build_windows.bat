@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 :: Usage: build_windows.bat [options]
 ::
 :: Options:
-::   Debug or Release        Build configuration (default: Debug)
+::   --config=Debug|Release  Build configuration (default: Debug)
 ::   --skip-regenerate       Skip VS project regeneration (faster builds)
 ::   --no-run                Build only, don't launch the app
 ::   --clean                 Clean build before building
@@ -42,17 +42,35 @@ if /i "%~1"=="--clean" (
     shift
     goto parse_args
 )
-if /i "%~1"=="Debug" (
+:: Handle --config=Value (as single arg) or --config Value (split by cmd)
+if /i "%~1"=="--config=Debug" (
     set "CONFIG=Debug"
     shift
     goto parse_args
 )
-if /i "%~1"=="Release" (
+if /i "%~1"=="--config=Release" (
     set "CONFIG=Release"
     shift
     goto parse_args
 )
-echo [!] Unknown option: %~1
+if /i "%~1"=="--config" (
+    if /i "%~2"=="Debug" (
+        set "CONFIG=Debug"
+        shift
+        shift
+        goto parse_args
+    )
+    if /i "%~2"=="Release" (
+        set "CONFIG=Release"
+        shift
+        shift
+        goto parse_args
+    )
+    echo [X] Invalid config value: %~2
+    goto show_help
+)
+
+echo [X] Unknown option: %~1
 goto show_help
 
 :done_args
@@ -238,14 +256,14 @@ echo.
 echo Usage: build_windows.bat [options]
 echo.
 echo Options:
-echo   Debug or Release        Build configuration (default: Debug)
+echo   --config=Debug^|Release  Build configuration (default: Debug)
 echo   --skip-regenerate       Skip VS project regeneration (faster builds)
 echo   --no-run                Build only, don't launch the app
 echo   --clean                 Clean build before building
 echo   --help                  Show this help message
 echo.
 echo Examples:
-echo   build_windows.bat                     Build Debug config
-echo   build_windows.bat Release             Build Release config
-echo   build_windows.bat --skip-regenerate   Fast rebuild without Projucer
+echo   build_windows.bat                      Build Debug config
+echo   build_windows.bat --config=Release     Build Release config
+echo   build_windows.bat --skip-regenerate    Fast rebuild without Projucer
 exit /b 0
