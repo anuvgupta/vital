@@ -159,6 +159,7 @@ class OpenGlTextEditor : public OpenGlAutoImageComponent<TextEditor>, public Tex
       if (isMultiLine()) {
         float indent = image_component_.findValue(Skin::kLabelBackgroundRounding);
         setIndents(indent, indent);
+        redoImage();
         return;
       }
 
