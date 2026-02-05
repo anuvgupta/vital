@@ -210,7 +210,7 @@ void VitalSidePanel::paintBackground(Graphics& g) {
 
   // Draw panel title
   g.setColour(findColour(Skin::kBodyText, true));
-  g.setFont(Fonts::instance()->proportional_regular().withPointHeight(28.0f));
+  g.setFont(Fonts::instance()->proportional_regular().withPointHeight(size_ratio_ * 16.0f));
 
   int title_height = 30;
   int padding = findValue(Skin::kLargePadding);
@@ -228,7 +228,8 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
   Graphics::ScopedSaveState save_state(g);
   g.reduceClipRegion(chat_bounds_);
 
-  Font font = Fonts::instance()->proportional_regular().withPointHeight(ChatMessage::kFontSize);
+  float font_size = size_ratio_ * ChatMessage::kBaseFontSize;
+  Font font = Fonts::instance()->proportional_regular().withPointHeight(font_size);
   g.setFont(font);
 
   Colour bubble_color = findColour(Skin::kWidgetPrimary1, true).darker(0.4f);
@@ -277,7 +278,7 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
     float y = text_bounds.getY();
     float width = text_bounds.getWidth();
     float x = text_bounds.getX();
-    float fontSize = ChatMessage::kFontSize;
+    float fontSize = font_size;  // Uses scaled font_size from above
 
     for (size_t i = 0; i < message.blocks.size(); ++i) {
       if (i > 0)
@@ -390,7 +391,7 @@ void VitalSidePanel::resized() {
   // Button at the bottom
   int button_y = getHeight() - padding - button_height;
   action_button_->setBounds(padding, button_y, button_width, button_height);
-  action_button_->getGlComponent()->text().setTextSize(22.0f);
+  action_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
   action_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
   action_button_->getGlComponent()->text().redrawImage(true);
 
@@ -408,8 +409,8 @@ void VitalSidePanel::resized() {
     prompt_editor_->setColour(TextEditor::highlightedTextColourId, findColour(Skin::kBodyText, true));
     prompt_editor_->setColour(TextEditor::highlightColourId, findColour(Skin::kTextEditorSelection, true));
 
-    float font_size = 24.0f;
-    prompt_editor_->setFont(Fonts::instance()->proportional_regular().withPointHeight(font_size));
+    float editor_font_size = size_ratio_ * 14.0f;
+    prompt_editor_->setFont(Fonts::instance()->proportional_regular().withPointHeight(editor_font_size));
     prompt_editor_->redoImage();
   }
 #endif
@@ -534,14 +535,15 @@ void VitalSidePanel::layoutMessages() {
   if (message_width <= 0)
     return;
 
+  float scaled_font_size = size_ratio_ * ChatMessage::kBaseFontSize;
   int y_position = 0;
 
   for (auto& message : messages_) {
     int height;
     if (message.type == ChatMessage::kSystem && !message.blocks.empty())
-      height = ChatMessage::calculateMarkdownHeight(message.blocks, message_width, ChatMessage::kFontSize);
+      height = ChatMessage::calculateMarkdownHeight(message.blocks, message_width, scaled_font_size);
     else
-      height = ChatMessage::calculateHeight(message.text, message_width, ChatMessage::kFontSize);
+      height = ChatMessage::calculateHeight(message.text, message_width, scaled_font_size);
     message.y_position = y_position;
     message.height = height;
     y_position += height + kMessageSpacing;

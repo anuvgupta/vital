@@ -4,7 +4,6 @@
 ## Features
 
 ### Open
-- Rename chat panel title from "chat" to "sound designer"
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Integrate with wispr flow for voice to text
 - Autosave presets, checkpointing & restore chat at certain point
@@ -23,6 +22,7 @@
 - Move away from Opus because its too expensive
 - Support for mixed messages (containing markdown fences for code ie three backticks, alongside natural language descriptions)
 - Markdown support in responses
+- Rename chat panel title from "chat" to "sound designer"
 
 
 ## Bugs
@@ -33,3 +33,4 @@
 ### Done
 - Limit output tokens to prevent wasting money
 - Limit messages to a certain character limit
+- Fix font sizes appearing different on different platforms
