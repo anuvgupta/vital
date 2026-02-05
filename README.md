@@ -12,10 +12,63 @@ This fork adds an AI agentic sidepanel to Vital.
 
 
 
-## Developer information
+## Building from Source
+
+### macOS
+
+**Dependencies:**
+- **Xcode** - Install from the Mac App Store or [developer.apple.com](https://developer.apple.com/xcode/)
+- **Xcode Command Line Tools** - Run `xcode-select --install`
+- **JUCE/Projucer** - Download from [juce.com](https://juce.com/get-juce/) (used to generate Xcode project)
+
+**Build:**
+```bash
+./build_macos.sh
+```
+
+Options:
+- `--config=Debug|Release` - Build configuration (default: Debug)
+- `--skip-regenerate` - Skip Xcode project regeneration (faster rebuilds)
+- `--no-run` - Build only, don't launch the app
+- `--clean` - Clean build before building
+
+### Windows
+
+**Dependencies:**
+- **Visual Studio 2019** (or 2017) - Install with "Desktop development with C++" workload from [visualstudio.microsoft.com](https://visualstudio.microsoft.com/downloads/)
+- **Intel oneAPI Base Toolkit** - Required for Intel IPP (fast FFT). Download from [intel.com](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html)
+- **JUCE/Projucer** - Download from [juce.com](https://juce.com/get-juce/) (used to generate VS project)
+- **Git for Windows** - Includes Git Bash, used to run the build script. Download from [git-scm.com](https://git-scm.com/download/win)
+
+**Build (from Git Bash or WSL):**
+```bash
+./build_windows.sh
+```
+
+Options:
+- `--config=Debug|Release` - Build configuration (default: Debug)
+- `--vs=2017|2019` - Visual Studio version (default: 2019)
+- `--skip-regenerate` - Skip VS project regeneration (faster rebuilds)
+- `--no-run` - Build only, don't launch the app
+- `--clean` - Clean build before building
+
+### Linux
+
+**Dependencies:**
+- **GCC/G++** - `sudo apt install build-essential`
+- **JUCE dependencies** - `sudo apt install libasound2-dev libcurl4-openssl-dev libfreetype6-dev libgl1-mesa-dev libx11-dev libxcomposite-dev libxcursor-dev libxinerama-dev libxrandr-dev`
+- **JUCE/Projucer** - Download from [juce.com](https://juce.com/get-juce/) or build from source
+
+**Build:**
+```bash
+cd standalone/builds/linux
+make CONFIG=Release
+```
+
+## Developer Information
 
 - Steering doc is `STEERING.md`
-    - `CLAUDE.md` and `AGENTS.md` are symlinks to to `STEERING.md` created with `ln -s` on macOS. Be careful on Windows.
+    - `CLAUDE.md` and `AGENTS.md` are symlinks to `STEERING.md` created with `ln -s` on macOS. Be careful on Windows.
 - Additional agent config is in `./agents`
 
 ## Vital (Original Readme)
