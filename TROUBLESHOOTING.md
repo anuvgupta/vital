@@ -58,3 +58,9 @@
     - `SynthBase::saveToJson()` is protected - can't call directly from UI code like `FullInterface`.
     - **Solution**: Add a public wrapper method like `getStateAsJson()` (wraps `saveToJson()`) or `loadStateFromJson()` (wraps `loadFromJson()`).
     - This project uses an older nlohmann json version - use `.count("key")` instead of `.contains("key")`.
+
+- **JUCE TextEditor placeholder text shows ellipsis instead of wrapping**:
+    - JUCE's `TextEditor::paintOverChildren()` hardcodes `drawText(..., true)` which enables ellipsis for placeholder text, even in multiline editors.
+    - Pre-calculating wrap in `resized()` fails because component dimensions aren't set yet.
+    - **Solution**: Override `paintOverChildren()` to calculate word wrapping at paint time when dimensions and font are accurate. Add a `wrapText()` helper to split text into lines. Store placeholder text/color locally since JUCE's members are private (override `setTextToShowWhenEmpty()`).
+    - Fixed in `OpenGlTextEditor` class in `src/interface/editor_components/open_gl_image_component.h`.

@@ -122,43 +122,12 @@ class OpenGlTextEditor : public OpenGlAutoImageComponent<TextEditor>, public Tex
       addListener(this);
     }
 
-    void setTextToShowWhenEmpty(const String& text, const Colour& colour) {
-      placeholderColour_ = colour;
-      TextEditor::setTextToShowWhenEmpty(text, colour);
-    }
-
-    void paintOverChildren(Graphics& g) override {
-      // Custom placeholder rendering with word wrap for multiline editors
-      String placeholder = getTextToShowWhenEmpty();
-      if (placeholder.isNotEmpty() && !hasKeyboardFocus(false) && getTotalNumChars() == 0) {
-        g.setColour(placeholderColour_);
-        g.setFont(getFont());
-
-        float indent = isMultiLine() ? image_component_.findValue(Skin::kLabelBackgroundRounding) : 4.0f;
-        Rectangle<int> textBounds((int)indent, (int)indent,
-                                   getWidth() - (int)(indent * 2),
-                                   getHeight() - (int)(indent * 2));
-
-        if (!textBounds.isEmpty()) {
-          if (isMultiLine()) {
-            // Use drawFittedText for multiline - supports word wrapping
-            g.drawFittedText(placeholder, textBounds, Justification::topLeft,
-                            textBounds.getHeight() / (int)getFont().getHeight() + 1, 1.0f);
-          } else {
-            g.drawText(placeholder, textBounds, Justification::centredLeft, true);
-          }
-        }
-      }
-
-      getLookAndFeel().drawTextEditorOutline(g, getWidth(), getHeight(), *this);
-    }
-
     bool keyPressed(const KeyPress& key) override {
       bool result = TextEditor::keyPressed(key);
       redoImage();
       return result;
     }
-  
+
     void textEditorTextChanged(TextEditor&) override { redoImage(); }
     void textEditorFocusLost(TextEditor&) override { redoImage(); }
 
@@ -206,8 +175,67 @@ class OpenGlTextEditor : public OpenGlAutoImageComponent<TextEditor>, public Tex
       monospace_ = true;
     }
 
+    void setTextToShowWhenEmpty(const String& text, Colour colourToUse) {
+      placeholderText_ = text;
+      placeholderColour_ = colourToUse;
+      TextEditor::setTextToShowWhenEmpty(text, colourToUse);
+    }
+
+    void paintOverChildren(Graphics& g) override {
+      if (isMultiLine() && placeholderText_.isNotEmpty() &&
+          !hasKeyboardFocus(false) && getTotalNumChars() == 0) {
+        g.setColour(placeholderColour_);
+        Font font = getFont();
+        g.setFont(font);
+
+        float indent = image_component_.findValue(Skin::kLabelBackgroundRounding);
+        float availableWidth = getWidth() - 2 * indent;
+        float lineHeight = font.getHeight() * 1.2f;
+        float y = indent;
+
+        // Calculate wrapped lines at paint time for accurate dimensions
+        StringArray lines = wrapText(placeholderText_, font, availableWidth);
+
+        for (const String& line : lines) {
+          g.drawText(line, indent, y, availableWidth, lineHeight,
+                     Justification::topLeft, false);
+          y += lineHeight;
+        }
+
+        getLookAndFeel().drawTextEditorOutline(g, getWidth(), getHeight(), *this);
+      } else {
+        TextEditor::paintOverChildren(g);
+      }
+    }
+
   private:
+    StringArray wrapText(const String& text, const Font& font, float maxWidth) {
+      StringArray result;
+      if (text.isEmpty() || maxWidth <= 0)
+        return result;
+
+      StringArray words = StringArray::fromTokens(text, " ", "");
+      String currentLine;
+
+      for (const String& word : words) {
+        String testLine = currentLine.isEmpty() ? word : currentLine + " " + word;
+        if (font.getStringWidth(testLine) <= maxWidth) {
+          currentLine = testLine;
+        } else {
+          if (currentLine.isNotEmpty())
+            result.add(currentLine);
+          currentLine = word;
+        }
+      }
+
+      if (currentLine.isNotEmpty())
+        result.add(currentLine);
+
+      return result;
+    }
+
     bool monospace_;
+    String placeholderText_;
     Colour placeholderColour_;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OpenGlTextEditor)
