@@ -215,7 +215,7 @@ void VitalSidePanel::paintBackground(Graphics& g) {
   int title_height = 30;
   int padding = findValue(Skin::kLargePadding);
   Rectangle<int> title_bounds(padding, padding, getWidth() - 2 * padding, title_height);
-  g.drawText("CHAT", title_bounds, Justification::centredLeft);
+  g.drawText("SOUND DESIGNER", title_bounds, Justification::centredLeft);
 
   // Draw chat messages
   paintChatMessages(g);
