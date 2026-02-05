@@ -190,10 +190,10 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   prompt_editor_->addListener(this);
 #endif
 
-  action_button_ = std::make_unique<OpenGlToggleButton>("Send");
+  action_button_ = std::make_unique<OpenGlToggleButton>("Cook");
   addButton(action_button_.get());
   action_button_->setUiButton(true);
-  action_button_->setText("SEND");
+  action_button_->setText("COOK");
 
   setSkinOverride(Skin::kNone);
 
