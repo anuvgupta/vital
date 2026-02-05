@@ -106,7 +106,7 @@ else
 fi
 
 # Check required libraries via pkg-config
-REQUIRED_LIBS="alsa freetype2 libcurl"
+REQUIRED_LIBS="alsa freetype2 libcurl jack"
 MISSING_LIBS=""
 
 for lib in $REQUIRED_LIBS; do
@@ -152,13 +152,13 @@ if [ -n "$MISSING_LIBS" ]; then
     echo "    sudo apt install libasound2-dev libfreetype6-dev libcurl4-openssl-dev \\"
     echo "                     libsecret-1-dev libglib2.0-dev libgl1-mesa-dev \\"
     echo "                     libfftw3-dev libx11-dev libxrandr-dev libxinerama-dev \\"
-    echo "                     libxcursor-dev"
+    echo "                     libxcursor-dev libjack-jackd2-dev"
     echo ""
     echo "Install on Fedora/RHEL with:"
     echo "    sudo dnf install alsa-lib-devel freetype-devel libcurl-devel \\"
     echo "                     libsecret-devel glib2-devel mesa-libGL-devel \\"
     echo "                     fftw-devel libX11-devel libXrandr-devel libXinerama-devel \\"
-    echo "                     libXcursor-devel"
+    echo "                     libXcursor-devel jack-audio-connection-kit-devel"
     exit 1
 fi
 
@@ -294,6 +294,12 @@ if [ "$RUN_APP" = true ]; then
     echo "========================================"
     echo "Step 4: Launching Vial"
     echo "========================================"
+
+    # On ARM (e.g., Raspberry Pi), use software rendering for OpenGL compatibility
+    if [ "$(uname -m)" = "aarch64" ] || [ "$(uname -m)" = "armv7l" ]; then
+        echo_info "ARM detected - using software OpenGL rendering"
+        export LIBGL_ALWAYS_SOFTWARE=1
+    fi
 
     echo "Running: $EXE_PATH"
     "$EXE_PATH" &

@@ -95,7 +95,8 @@ sudo apt-get install -y \
   libxrender-dev \
   libwebkit2gtk-4.0-dev \
   libglu1-mesa-dev \
-  mesa-common-dev
+  mesa-common-dev \
+  libjack-jackd2-dev
 ``
 
 **Fedora/RHEL:**

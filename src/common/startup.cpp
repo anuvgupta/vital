@@ -36,7 +36,7 @@ void Startup::doStartupChecks(MidiManager* midi_manager, vital::StringLayout* la
 }
 
 bool Startup::isComputerCompatible() {
-  #if defined(__ARM_NEON__)
+  #if defined(__ARM_NEON__) || defined(__ARM_NEON)
   return true;
   #else
   return SystemStats::hasSSE2() || SystemStats::hasAVX2();
