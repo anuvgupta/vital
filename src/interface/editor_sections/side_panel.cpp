@@ -488,6 +488,9 @@ void VitalSidePanel::submitMessage() {
   if (text.isEmpty())
     return;
 
+  // Remove existing thinking indicator so user message appears above it
+  clearThinkingMessage();
+
   // Add user message
   addMessage(text, ChatMessage::kUser);
 
@@ -495,7 +498,7 @@ void VitalSidePanel::submitMessage() {
   prompt_editor_->clear();
   prompt_editor_->redoImage();
 
-  // Add thinking indicator
+  // Add thinking indicator (always at the end, after all user messages)
   addMessage("Thinking...", ChatMessage::kSystem);
 
   // Notify listeners

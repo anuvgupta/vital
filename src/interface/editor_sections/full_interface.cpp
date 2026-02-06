@@ -1059,9 +1059,22 @@ void FullInterface::stripBase64DataForLLM(json& state) {
 }
 
 void FullInterface::sidePanelMessageSubmitted(const String& message) {
+  if (api_request_in_flight_) {
+    // Queue the message — it's already displayed in the chat by VitalSidePanel
+    queued_messages_.add(message);
+    return;
+  }
+
+  api_request_in_flight_ = true;
+  StringArray messages;
+  messages.add(message);
+  sendApiRequest(messages);
+}
+
+void FullInterface::sendApiRequest(const StringArray& messages) {
   VitalSidePanel* panel = side_panel_.get();
 
-  // Get current preset state as JSON to provide context to Claude
+  // Get fresh preset state as JSON to provide context to Claude
   String preset_json;
   SynthGuiInterface* gui_interface = findParentComponentOfClass<SynthGuiInterface>();
   if (gui_interface && gui_interface->getSynth()) {
@@ -1070,15 +1083,21 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
     preset_json = String(state.dump());
   }
 
-  ClaudeApiClient::instance().sendMessage(message, [panel, this](const String& response, bool success) {
+  ClaudeApiClient::instance().sendMessages(messages, [panel, this](const String& response, bool success) {
     // This callback is already on the message thread (handled by ClaudeApiClient)
-    if (!panel)
+    if (!panel) {
+      api_request_in_flight_ = false;
+      queued_messages_.clear();
       return;
+    }
 
     panel->clearThinkingMessage();
 
     if (!success) {
       panel->addResponseMessage(response);
+      // On failure, clear queue and stop — don't hammer a broken API
+      api_request_in_flight_ = false;
+      queued_messages_.clear();
       return;
     }
 
@@ -1127,10 +1146,21 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
             // Show surrounding text if any, otherwise a random completion phrase
             String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
             panel->addResponseMessage(msg);
+            // Check queue after successful response
+            if (!queued_messages_.isEmpty()) {
+              StringArray pending;
+              pending.swapWith(queued_messages_);
+              panel->addMessage("Thinking...", ChatMessage::kSystem);
+              sendApiRequest(pending);
+            } else {
+              api_request_in_flight_ = false;
+            }
             return;
           }
         }
         panel->addResponseMessage("Failed to load preset from response.");
+        api_request_in_flight_ = false;
+        queued_messages_.clear();
         return;
       }
     }
@@ -1139,5 +1169,15 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
     }
 
     panel->addResponseMessage(response);
+
+    // Check queue after text-only response too
+    if (!queued_messages_.isEmpty()) {
+      StringArray pending;
+      pending.swapWith(queued_messages_);
+      panel->addMessage("Thinking...", ChatMessage::kSystem);
+      sendApiRequest(pending);
+    } else {
+      api_request_in_flight_ = false;
+    }
   }, preset_json);
 }

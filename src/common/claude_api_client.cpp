@@ -130,6 +130,13 @@ bool ClaudeApiClient::checkInternetAccess() {
 
 void ClaudeApiClient::sendMessage(const String& message, ResponseCallback callback,
                                    const String& preset_json) {
+  StringArray messages;
+  messages.add(message);
+  sendMessages(messages, callback, preset_json);
+}
+
+void ClaudeApiClient::sendMessages(const StringArray& messages, ResponseCallback callback,
+                                    const String& preset_json) {
   if (!initialized_) {
     callback("API client not initialized. Please configure your API key.", false);
     return;
@@ -141,8 +148,8 @@ void ClaudeApiClient::sendMessage(const String& message, ResponseCallback callba
   }
 
   // Run on background thread to avoid blocking UI
-  Thread::launch([this, message, callback, preset_json]() {
-    sendMessageAsync(message, callback, preset_json);
+  Thread::launch([this, messages, callback, preset_json]() {
+    sendMessagesAsync(messages, callback, preset_json);
   });
 }
 
@@ -155,15 +162,24 @@ void ClaudeApiClient::addMessage(const String& role, const String& content) {
 
 void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback callback,
                                         const String& preset_json) {
-  // If preset JSON is provided, inject it as a user message before the actual message
+  StringArray messages;
+  messages.add(message);
+  sendMessagesAsync(messages, callback, preset_json);
+}
+
+void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCallback callback,
+                                         const String& preset_json) {
+  // If preset JSON is provided, inject it as a user message before the actual messages
   if (preset_json.isNotEmpty()) {
     String preset_context = "This is the current preset JSON:\n```json\n" + preset_json + "\n```";
     addMessage("user", preset_context);
   }
 
-  // Add user message to conversation history (truncate user-typed messages)
-  String truncated_message = message.length() > 1024 ? message.substring(0, 1024) : message;
-  addMessage("user", truncated_message);
+  // Add all user messages to conversation history
+  for (const auto& message : messages) {
+    String truncated_message = message.length() > 1024 ? message.substring(0, 1024) : message;
+    addMessage("user", truncated_message);
+  }
 
   // Build the JSON request body
   DynamicObject::Ptr requestBody = new DynamicObject();

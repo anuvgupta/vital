@@ -35,6 +35,8 @@ class ClaudeApiClient {
 
     void sendMessage(const String& message, ResponseCallback callback,
                      const String& preset_json = String());
+    void sendMessages(const StringArray& messages, ResponseCallback callback,
+                      const String& preset_json = String());
 
   private:
     ClaudeApiClient();
@@ -46,6 +48,8 @@ class ClaudeApiClient {
     bool checkInternetAccess();
     void sendMessageAsync(const String& message, ResponseCallback callback,
                           const String& preset_json);
+    void sendMessagesAsync(const StringArray& messages, ResponseCallback callback,
+                           const String& preset_json);
     void addMessage(const String& role, const String& content);
 
     static const int kMaxMessages = 20;
