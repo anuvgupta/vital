@@ -203,14 +203,14 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
   }
 
   // Build messages array from conversation history
-  Array<var> messages;
+  Array<var> messagesArray;
   for (const auto& msg : conversation_history_) {
     DynamicObject::Ptr msgObj = new DynamicObject();
     msgObj->setProperty("role", msg.role);
     msgObj->setProperty("content", msg.content);
-    messages.add(var(msgObj.get()));
+    messagesArray.add(var(msgObj.get()));
   }
-  requestBody->setProperty("messages", messages);
+  requestBody->setProperty("messages", messagesArray);
 
   String jsonBody = JSON::toString(var(requestBody.get()));
   DBG("ClaudeApiClient: Sending request: " + jsonBody);
