@@ -63,8 +63,8 @@ class VitalSidePanel : public SynthSection,
 public:
     enum RecordingMode {
         kRecordingNone,
-        kRecordingAsk,
-        kRecordingTalk
+        kRecordingTalk,
+        kRecordingVoiceChat
     };
 
     class Listener
@@ -105,9 +105,9 @@ public:
     void addResponseMessage(const String &text);
 
     // Voice recording
-    void startAskRecording();
-    void stopRecording();
     void startTalkRecording();
+    void startVoiceChatRecording();
+    void stopRecording();
     bool isRecording() const { return recording_mode_ != kRecordingNone; }
     RecordingMode recordingMode() const { return recording_mode_; }
 
@@ -116,14 +116,14 @@ private:
     void scrollToBottom();
     void setScrollBarRange();
     void paintChatMessages(Graphics &g);
-    void updateAskButtonColors();
     void updateTalkButtonColors();
+    void updateVoiceChatButtonColors();
 
     std::vector<Listener *> listeners_;
     std::unique_ptr<OpenGlTextEditor> prompt_editor_;
     std::unique_ptr<OpenGlToggleButton> action_button_;
-    std::unique_ptr<OpenGlToggleButton> ask_button_;
     std::unique_ptr<OpenGlToggleButton> talk_button_;
+    std::unique_ptr<OpenGlToggleButton> voice_chat_button_;
 
     // Chat state
     std::unique_ptr<OpenGlScrollBar> scroll_bar_;
@@ -134,8 +134,8 @@ private:
 
     // Voice recording state
     std::unique_ptr<MicrophoneCapture> mic_capture_;
-    std::unique_ptr<OpenGlQuad> ask_recording_indicator_;
     std::unique_ptr<OpenGlQuad> talk_recording_indicator_;
+    std::unique_ptr<OpenGlQuad> voice_chat_recording_indicator_;
     RecordingMode recording_mode_ = kRecordingNone;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VitalSidePanel)

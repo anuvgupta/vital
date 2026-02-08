@@ -31,12 +31,14 @@ MicrophoneCapture::~MicrophoneCapture() {
   stopCapture();
 }
 
-bool MicrophoneCapture::startCapture(AudioDataCallback callback, SilenceCallback on_silence) {
+bool MicrophoneCapture::startCapture(AudioDataCallback callback, SilenceCallback on_silence,
+                                     float silence_timeout_override) {
   if (capturing_.load())
     stopCapture();
 
   audio_callback_ = std::move(callback);
   silence_callback_ = std::move(on_silence);
+  silence_timeout_override_ = silence_timeout_override;
   silent_callback_count_ = 0;
   silence_threshold_callbacks_ = 0;
   silence_fired_.store(false);
@@ -80,7 +82,9 @@ void MicrophoneCapture::audioDeviceAboutToStart(AudioIODevice* device) {
   device_sample_rate_ = device->getCurrentSampleRate();
   resampler_.reset();
 
-  float timeout_seconds = LoadSave::getMicSilenceTimeout();
+  float timeout_seconds = (silence_timeout_override_ > 0.0f)
+      ? silence_timeout_override_
+      : LoadSave::getMicSilenceTimeout();
   int block_size = device->getCurrentBufferSizeSamples();
   if (timeout_seconds > 0.0f && block_size > 0 && device_sample_rate_ > 0.0) {
     double callbacks_per_sec = device_sample_rate_ / block_size;

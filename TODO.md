@@ -4,6 +4,11 @@
 ## Features
 
 ### Open
+- VOICE CHAT mode: intelligent local VAD gating to avoid sending silence to Deepgram
+    - Deepgram charges per-second of all audio sent, including silence. Always-on streaming is expensive.
+    - Implement two-tier gating: (1) local energy/amplitude detection using existing `MicrophoneCapture` silence threshold (`kSilenceThreshold`) to gate whether audio is streamed to Deepgram; (2) Deepgram validates actual speech - if only noise/coughs with no valid transcripts, stop streaming and go back to local-only detection.
+    - Flow: [always-on mic] -> local energy check -> above threshold? -> stream to Deepgram -> valid transcript? -> submit as message. Below threshold = free local listening only.
+    - Future enhancement: wake word detection (e.g. "Hey Vital" via Picovoice Porcupine) as an additional gating layer for either ASK or TALK mode.
 - Increase sampling speed for deepgram
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
@@ -25,6 +30,7 @@
 
 
 ### Done
+- Split mic into VOICE CHAT (always-on, 20s silence timeout, popup warning) and TALK (auto-stops on configurable silence) modes with SEND button
 - Move away from Opus because its too expensive
 - Support for mixed messages (containing markdown fences for code ie three backticks, alongside natural language descriptions)
 - Markdown support in responses

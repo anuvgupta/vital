@@ -232,18 +232,20 @@ void SynthPresetSelector::showPopupMenu(Component* anchor) {
   options.addItem(kLoadApiKey, "Load Claude API Key");
   options.addItem(kLoadDeepgramApiKey, "Load Deepgram API Key");
 
-  float current_timeout = LoadSave::getMicSilenceTimeout();
-  std::string check_1_5 = (std::abs(current_timeout - 1.5f) < 0.1f) ? " *" : "";
-  std::string check_2_5 = (std::abs(current_timeout - 2.5f) < 0.1f) ? " *" : "";
-  std::string check_3_5 = (std::abs(current_timeout - 3.5f) < 0.1f) ? " *" : "";
-  std::string check_5 = (std::abs(current_timeout - 5.0f) < 0.1f) ? " *" : "";
-  std::string check_off = (current_timeout <= 0.0f) ? " *" : "";
-  options.addItem(-1, "");
-  options.addItem(kSilenceTimeout1_5, "Mic Silence Timeout: 1.5s" + check_1_5);
-  options.addItem(kSilenceTimeout2_5, "Mic Silence Timeout: 2.5s" + check_2_5);
-  options.addItem(kSilenceTimeout3_5, "Mic Silence Timeout: 3.5s" + check_3_5);
-  options.addItem(kSilenceTimeout5, "Mic Silence Timeout: 5s" + check_5);
-  options.addItem(kSilenceTimeoutOff, "Mic Silence Timeout: Off" + check_off);
+  // Silence timeout menu hidden for now - TALK uses user-configured timeout,
+  // VOICE CHAT uses hardcoded 12s timeout
+  // float current_timeout = LoadSave::getMicSilenceTimeout();
+  // std::string check_1_5 = (std::abs(current_timeout - 1.5f) < 0.1f) ? " *" : "";
+  // std::string check_2_5 = (std::abs(current_timeout - 2.5f) < 0.1f) ? " *" : "";
+  // std::string check_3_5 = (std::abs(current_timeout - 3.5f) < 0.1f) ? " *" : "";
+  // std::string check_5 = (std::abs(current_timeout - 5.0f) < 0.1f) ? " *" : "";
+  // std::string check_off = (current_timeout <= 0.0f) ? " *" : "";
+  // options.addItem(-1, "");
+  // options.addItem(kSilenceTimeout1_5, "Mic Silence Timeout: 1.5s" + check_1_5);
+  // options.addItem(kSilenceTimeout2_5, "Mic Silence Timeout: 2.5s" + check_2_5);
+  // options.addItem(kSilenceTimeout3_5, "Mic Silence Timeout: 3.5s" + check_3_5);
+  // options.addItem(kSilenceTimeout5, "Mic Silence Timeout: 5s" + check_5);
+  // options.addItem(kSilenceTimeoutOff, "Mic Silence Timeout: Off" + check_off);
 
   if (LoadSave::getDefaultSkin().exists()) {
     options.addItem(-1, "");

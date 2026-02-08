@@ -35,8 +35,8 @@ static constexpr int kQuoteBorderWidth = 3;
 static constexpr int kQuoteIndent = 10;
 static constexpr float kHeadingScale[] = { 1.5f, 1.3f, 1.15f, 1.0f, 0.9f, 0.85f };
 
-static const String kAskButtonLabel = "ASK";
-static const String kTalkButtonLabel = "TALK";
+static const String kTalkButtonLabel = "SPEAK";
+static const String kVoiceChatButtonLabel = "VOICE CHAT";
 static const String kStopButtonLabel = "STOP";
 static const String kSubmitButtonText = "SEND";
 
@@ -201,27 +201,27 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   action_button_->setUiButton(true);
   action_button_->setText(kSubmitButtonText);
 
-  ask_button_ = std::make_unique<OpenGlToggleButton>("Ask");
-  addButton(ask_button_.get());
-  ask_button_->setUiButton(true);
-  ask_button_->setText(kAskButtonLabel);
-
   talk_button_ = std::make_unique<OpenGlToggleButton>("Talk");
   addButton(talk_button_.get());
   talk_button_->setUiButton(true);
   talk_button_->setText(kTalkButtonLabel);
 
-  mic_capture_ = std::make_unique<MicrophoneCapture>();
+  voice_chat_button_ = std::make_unique<OpenGlToggleButton>("VoiceChat");
+  addButton(voice_chat_button_.get());
+  voice_chat_button_->setUiButton(true);
+  voice_chat_button_->setText(kVoiceChatButtonLabel);
 
-  ask_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
-  addOpenGlComponent(ask_recording_indicator_.get());
-  ask_recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
-  ask_recording_indicator_->setActive(false);
+  mic_capture_ = std::make_unique<MicrophoneCapture>();
 
   talk_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
   addOpenGlComponent(talk_recording_indicator_.get());
   talk_recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
   talk_recording_indicator_->setActive(false);
+
+  voice_chat_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
+  addOpenGlComponent(voice_chat_recording_indicator_.get());
+  voice_chat_recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
+  voice_chat_recording_indicator_->setActive(false);
 
   setSkinOverride(Skin::kNone);
 
@@ -418,24 +418,18 @@ void VitalSidePanel::resized() {
   int textarea_height = 180;
   int title_height = 30;
 
-  // Button row at the bottom: ASK | TALK | COOK
-  // Left half = ASK + TALK, right half = COOK
+  // Button row at the bottom: VOICE CHAT | TALK | SEND
+  // VOICE CHAT (big, half width) | TALK (small) | SEND (small)
   int button_y = getHeight() - padding - button_height;
   int button_gap = widget_margin;
-  int half_width = (button_width - button_gap) / 2;
-  int ask_width = (half_width - button_gap) / 2;
-  int talk_width = half_width - ask_width - button_gap;
-  int cook_width = button_width - half_width - button_gap;
+  int voice_chat_width = (button_width - 2 * button_gap) / 2;
+  int side_width = button_width - voice_chat_width - 2 * button_gap;
+  int talk_width = side_width / 2;
+  int send_width = side_width - talk_width;
 
-  int ask_x = padding;
-  int talk_x = ask_x + ask_width + button_gap;
-  int cook_x = talk_x + talk_width + button_gap;
-
-  ask_button_->setBounds(ask_x, button_y, ask_width, button_height);
-  ask_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
-  ask_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
-  ask_button_->getGlComponent()->text().redrawImage(true);
-  updateAskButtonColors();
+  int voice_chat_x = padding;
+  int talk_x = voice_chat_x + voice_chat_width + button_gap;
+  int send_x = talk_x + talk_width + button_gap;
 
   talk_button_->setBounds(talk_x, button_y, talk_width, button_height);
   talk_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
@@ -443,20 +437,26 @@ void VitalSidePanel::resized() {
   talk_button_->getGlComponent()->text().redrawImage(true);
   updateTalkButtonColors();
 
-  action_button_->setBounds(cook_x, button_y, cook_width, button_height);
-  action_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
+  voice_chat_button_->setBounds(voice_chat_x, button_y, voice_chat_width, button_height);
+  voice_chat_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
+  voice_chat_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
+  voice_chat_button_->getGlComponent()->text().redrawImage(true);
+  updateVoiceChatButtonColors();
+
+  action_button_->setBounds(send_x, button_y, send_width, button_height);
+  action_button_->getGlComponent()->text().setTextSize(size_ratio_ * 11.0f);
   action_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
   action_button_->getGlComponent()->text().redrawImage(true);
 
-  // Recording indicators (small red dots above ASK/TALK buttons)
+  // Recording indicators (small red dots above TALK/VOICE CHAT buttons)
   int indicator_size = 8;
-  int ask_ind_x = ask_x + ask_width - indicator_size - 6;
-  int ask_ind_y = button_y - indicator_size - 4;
-  ask_recording_indicator_->setBounds(ask_ind_x, ask_ind_y, indicator_size, indicator_size);
-
   int talk_ind_x = talk_x + talk_width - indicator_size - 6;
   int talk_ind_y = button_y - indicator_size - 4;
   talk_recording_indicator_->setBounds(talk_ind_x, talk_ind_y, indicator_size, indicator_size);
+
+  int vc_ind_x = voice_chat_x + voice_chat_width - indicator_size - 6;
+  int vc_ind_y = button_y - indicator_size - 4;
+  voice_chat_recording_indicator_->setBounds(vc_ind_x, vc_ind_y, indicator_size, indicator_size);
 
   // Textarea above the button
   int textarea_y = button_y - widget_margin - textarea_height;
@@ -503,22 +503,22 @@ void VitalSidePanel::buttonClicked(Button* clicked_button) {
     for (Listener* listener : listeners_)
       listener->sidePanelButtonClicked();
   }
-  else if (clicked_button == ask_button_.get()) {
-    if (recording_mode_ == kRecordingAsk) {
-      stopRecording();
-    } else {
-      if (recording_mode_ == kRecordingTalk)
-        stopRecording();
-      startAskRecording();
-    }
-  }
   else if (clicked_button == talk_button_.get()) {
     if (recording_mode_ == kRecordingTalk) {
       stopRecording();
     } else {
-      if (recording_mode_ == kRecordingAsk)
+      if (recording_mode_ == kRecordingVoiceChat)
         stopRecording();
       startTalkRecording();
+    }
+  }
+  else if (clicked_button == voice_chat_button_.get()) {
+    if (recording_mode_ == kRecordingVoiceChat) {
+      stopRecording();
+    } else {
+      if (recording_mode_ == kRecordingTalk)
+        stopRecording();
+      startVoiceChatRecording();
     }
   }
   else {
@@ -567,7 +567,7 @@ void VitalSidePanel::initializeDeepgramClient() {
   // No chat message needed - mic button will show error if key not set
 }
 
-void VitalSidePanel::startAskRecording() {
+void VitalSidePanel::startTalkRecording() {
   DeepgramClient& dg = DeepgramClient::instance();
   if (!dg.isInitialized()) {
     addMessage("Deepgram API key not configured. Use the menu to set it.", ChatMessage::kSystem);
@@ -575,27 +575,21 @@ void VitalSidePanel::startAskRecording() {
   }
 
   bool connected = dg.connect(
-    // Transcript callback (called on message thread via MessageManager::callAsync)
     [this](const String& transcript, bool is_final) {
       if (is_final && transcript.trim().isNotEmpty()) {
-        // Clear partial preview from text editor
 #if !defined(NO_TEXT_ENTRY)
         if (prompt_editor_) {
           prompt_editor_->clear();
           prompt_editor_->redoImage();
         }
 #endif
-        // Remove existing thinking indicator
         clearThinkingMessage();
-
-        // Submit as if the user typed it
         addMessage(transcript.trim(), ChatMessage::kUser);
         addMessage("Thinking...", ChatMessage::kSystem);
 
         for (Listener* listener : listeners_)
           listener->sidePanelMessageSubmitted(transcript.trim());
       } else if (!is_final) {
-        // Show interim result as preview in text editor
 #if !defined(NO_TEXT_ENTRY)
         if (prompt_editor_) {
           prompt_editor_->setText(transcript, false);
@@ -604,7 +598,6 @@ void VitalSidePanel::startAskRecording() {
 #endif
       }
     },
-    // Error callback
     [this](const String& error) {
       addMessage("Voice error: " + error, ChatMessage::kSystem);
       stopRecording();
@@ -616,12 +609,13 @@ void VitalSidePanel::startAskRecording() {
     return;
   }
 
+  // Silence callback stops recording in TALK mode
   bool capturing = mic_capture_->startCapture(
     [](const void* data, int num_bytes) {
       DeepgramClient::instance().sendAudioData(data, num_bytes);
     },
     [this]() {
-      DBG("VitalSidePanel: Silence timeout - stopping ASK recording");
+      DBG("VitalSidePanel: Silence timeout - stopping TALK recording");
       stopRecording();
     }
   );
@@ -632,73 +626,132 @@ void VitalSidePanel::startAskRecording() {
     return;
   }
 
-  recording_mode_ = kRecordingAsk;
-  ask_button_->setText(kStopButtonLabel);
-  ask_button_->getGlComponent()->text().redrawImage(true);
-  updateAskButtonColors();
-  ask_recording_indicator_->setActive(true);
-  addMessage("Listening... speak your instructions.", ChatMessage::kSystem);
-}
-
-void VitalSidePanel::startTalkRecording() {
-  // TODO: Implement always-on talk mode with local VAD gating
-  // For now, just toggle the visual state
   recording_mode_ = kRecordingTalk;
   talk_button_->setText(kStopButtonLabel);
   talk_button_->getGlComponent()->text().redrawImage(true);
   updateTalkButtonColors();
   talk_recording_indicator_->setActive(true);
-  addMessage("Talk mode active (coming soon).", ChatMessage::kSystem);
+  addMessage("Listening... speak your instructions.", ChatMessage::kSystem);
+}
+
+void VitalSidePanel::startVoiceChatRecording() {
+  static constexpr float kVoiceChatSilenceTimeout = 20.0f;
+
+  DeepgramClient& dg = DeepgramClient::instance();
+  if (!dg.isInitialized()) {
+    addMessage("Deepgram API key not configured. Use the menu to set it.", ChatMessage::kSystem);
+    return;
+  }
+
+  // Show confirmation popup (cross-platform native dialog)
+  AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
+    "Voice Chat",
+    "Voice chat will stay active until you press STOP or 20 seconds of silence is detected.");
+
+  bool connected = dg.connect(
+    [this](const String& transcript, bool is_final) {
+      if (is_final && transcript.trim().isNotEmpty()) {
+#if !defined(NO_TEXT_ENTRY)
+        if (prompt_editor_) {
+          prompt_editor_->clear();
+          prompt_editor_->redoImage();
+        }
+#endif
+        clearThinkingMessage();
+        addMessage(transcript.trim(), ChatMessage::kUser);
+        addMessage("Thinking...", ChatMessage::kSystem);
+
+        for (Listener* listener : listeners_)
+          listener->sidePanelMessageSubmitted(transcript.trim());
+      } else if (!is_final) {
+#if !defined(NO_TEXT_ENTRY)
+        if (prompt_editor_) {
+          prompt_editor_->setText(transcript, false);
+          prompt_editor_->redoImage();
+        }
+#endif
+      }
+    },
+    [this](const String& error) {
+      addMessage("Voice error: " + error, ChatMessage::kSystem);
+      stopRecording();
+    }
+  );
+
+  if (!connected) {
+    addMessage("Failed to connect to Deepgram.", ChatMessage::kSystem);
+    return;
+  }
+
+  // 12-second hardcoded silence timeout for VOICE CHAT mode
+  bool capturing = mic_capture_->startCapture(
+    [](const void* data, int num_bytes) {
+      DeepgramClient::instance().sendAudioData(data, num_bytes);
+    },
+    [this]() {
+      DBG("VitalSidePanel: Silence timeout - stopping VOICE CHAT recording");
+      stopRecording();
+    },
+    kVoiceChatSilenceTimeout
+  );
+
+  if (!capturing) {
+    dg.disconnect();
+    addMessage("Failed to access microphone.", ChatMessage::kSystem);
+    return;
+  }
+
+  recording_mode_ = kRecordingVoiceChat;
+  voice_chat_button_->setText(kStopButtonLabel);
+  voice_chat_button_->getGlComponent()->text().redrawImage(true);
+  updateVoiceChatButtonColors();
+  voice_chat_recording_indicator_->setActive(true);
+  addMessage("Voice chat active. Listening until you stop or 20s of silence.", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::stopRecording() {
   if (recording_mode_ == kRecordingNone)
     return;
 
-  if (recording_mode_ == kRecordingAsk) {
-    mic_capture_->stopCapture();
+  mic_capture_->stopCapture();
 
-    // Grab any pending transcript from the text editor before disconnecting
-    // (interim results are previewed there; if endpointing never triggered,
-    //  this is the only copy of the transcription)
-    String pending_text;
+  String pending_text;
 #if !defined(NO_TEXT_ENTRY)
-    if (prompt_editor_)
-      pending_text = prompt_editor_->getText().trim();
+  if (prompt_editor_)
+    pending_text = prompt_editor_->getText().trim();
 #endif
 
-    DeepgramClient::instance().disconnect();
+  DeepgramClient::instance().disconnect();
 
-    ask_button_->setText(kAskButtonLabel);
-    ask_button_->getGlComponent()->text().redrawImage(true);
-    ask_recording_indicator_->setActive(false);
-
-#if !defined(NO_TEXT_ENTRY)
-    if (prompt_editor_) {
-      prompt_editor_->clear();
-      prompt_editor_->redoImage();
-    }
-#endif
-
-    // Submit any pending transcript as a chat message
-    if (pending_text.isNotEmpty()) {
-      clearThinkingMessage();
-      addMessage(pending_text, ChatMessage::kUser);
-      addMessage("Thinking...", ChatMessage::kSystem);
-      for (Listener* listener : listeners_)
-        listener->sidePanelMessageSubmitted(pending_text);
-    }
-  }
-  else if (recording_mode_ == kRecordingTalk) {
-    // TODO: Stop always-on talk mode resources when implemented
+  if (recording_mode_ == kRecordingTalk) {
     talk_button_->setText(kTalkButtonLabel);
     talk_button_->getGlComponent()->text().redrawImage(true);
     talk_recording_indicator_->setActive(false);
   }
+  else if (recording_mode_ == kRecordingVoiceChat) {
+    voice_chat_button_->setText(kVoiceChatButtonLabel);
+    voice_chat_button_->getGlComponent()->text().redrawImage(true);
+    voice_chat_recording_indicator_->setActive(false);
+  }
+
+#if !defined(NO_TEXT_ENTRY)
+  if (prompt_editor_) {
+    prompt_editor_->clear();
+    prompt_editor_->redoImage();
+  }
+#endif
+
+  if (pending_text.isNotEmpty()) {
+    clearThinkingMessage();
+    addMessage(pending_text, ChatMessage::kUser);
+    addMessage("Thinking...", ChatMessage::kSystem);
+    for (Listener* listener : listeners_)
+      listener->sidePanelMessageSubmitted(pending_text);
+  }
 
   recording_mode_ = kRecordingNone;
-  updateAskButtonColors();
   updateTalkButtonColors();
+  updateVoiceChatButtonColors();
 }
 
 void VitalSidePanel::submitMessage() {
@@ -797,32 +850,28 @@ void VitalSidePanel::setScrollBarRange() {
   scroll_bar_->setCurrentRange(scroll_position_, visible_height, dontSendNotification);
 }
 
-void VitalSidePanel::updateAskButtonColors() {
-  if (recording_mode_ == kRecordingAsk) {
-    // Use the original non-primary button grey for STOP state
-    ask_button_->setColour(Skin::kUiActionButton, findColour(Skin::kUiButton, true));
-    ask_button_->setColour(Skin::kUiActionButtonHover, findColour(Skin::kUiButtonHover, true));
-    ask_button_->setColour(Skin::kUiActionButtonPressed, findColour(Skin::kUiButtonPressed, true));
-  } else {
-    // Remove overrides to use default bright purple
-    ask_button_->removeColour(Skin::kUiActionButton);
-    ask_button_->removeColour(Skin::kUiActionButtonHover);
-    ask_button_->removeColour(Skin::kUiActionButtonPressed);
-  }
-  ask_button_->getGlComponent()->setColors();
-}
-
 void VitalSidePanel::updateTalkButtonColors() {
   if (recording_mode_ == kRecordingTalk) {
-    // Use the original non-primary button grey for STOP state
     talk_button_->setColour(Skin::kUiActionButton, findColour(Skin::kUiButton, true));
     talk_button_->setColour(Skin::kUiActionButtonHover, findColour(Skin::kUiButtonHover, true));
     talk_button_->setColour(Skin::kUiActionButtonPressed, findColour(Skin::kUiButtonPressed, true));
   } else {
-    // Remove overrides to use default bright purple
     talk_button_->removeColour(Skin::kUiActionButton);
     talk_button_->removeColour(Skin::kUiActionButtonHover);
     talk_button_->removeColour(Skin::kUiActionButtonPressed);
   }
   talk_button_->getGlComponent()->setColors();
+}
+
+void VitalSidePanel::updateVoiceChatButtonColors() {
+  if (recording_mode_ == kRecordingVoiceChat) {
+    voice_chat_button_->setColour(Skin::kUiActionButton, findColour(Skin::kUiButton, true));
+    voice_chat_button_->setColour(Skin::kUiActionButtonHover, findColour(Skin::kUiButtonHover, true));
+    voice_chat_button_->setColour(Skin::kUiActionButtonPressed, findColour(Skin::kUiButtonPressed, true));
+  } else {
+    voice_chat_button_->removeColour(Skin::kUiActionButton);
+    voice_chat_button_->removeColour(Skin::kUiActionButtonHover);
+    voice_chat_button_->removeColour(Skin::kUiActionButtonPressed);
+  }
+  voice_chat_button_->getGlComponent()->setColors();
 }

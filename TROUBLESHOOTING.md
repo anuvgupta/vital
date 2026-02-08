@@ -84,3 +84,7 @@
 - **Separate AudioDeviceManager for mic input to avoid interfering with synth**:
     - Using the synth's existing `AudioDeviceManager` for mic capture can reconfigure audio routing and break synth output.
     - **Solution**: Create a dedicated `AudioDeviceManager` in `MicrophoneCapture` with 1 input channel and 0 output channels. This keeps mic recording fully isolated from synth audio.
+
+- **JUCE 6 vs JUCE 7 AlertWindow API**:
+    - `MessageBoxIconType::InfoIcon` and similar enum-class-style icon types are JUCE 7+ API. Using them in JUCE 6 causes compilation errors.
+    - **Solution**: Use `AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon, ...)` which is the JUCE 6 API. The icon type enum lives on `AlertWindow` directly in JUCE 6, not in a separate `MessageBoxIconType` enum class.

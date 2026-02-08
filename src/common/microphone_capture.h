@@ -33,7 +33,9 @@ class MicrophoneCapture : private AudioIODeviceCallback {
     MicrophoneCapture();
     ~MicrophoneCapture();
 
-    bool startCapture(AudioDataCallback callback, SilenceCallback on_silence = nullptr);
+    // silence_timeout_override: if > 0, overrides the user-configured silence timeout
+    bool startCapture(AudioDataCallback callback, SilenceCallback on_silence = nullptr,
+                      float silence_timeout_override = -1.0f);
     void stopCapture();
     bool isCapturing() const { return capturing_.load(); }
 
@@ -59,4 +61,5 @@ class MicrophoneCapture : private AudioIODeviceCallback {
     int silent_callback_count_ = 0;
     int silence_threshold_callbacks_ = 0;
     std::atomic<bool> silence_fired_{false};
+    float silence_timeout_override_ = -1.0f;
 };

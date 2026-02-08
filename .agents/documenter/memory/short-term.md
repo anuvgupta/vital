@@ -1,10 +1,9 @@
 # Documenter Agent's Short-Term Memory
 
-## Latest Task: Voice-to-Text (Deepgram STT) Documentation (2026-02-08)
+## Latest Task: Voice Button Rename & Layout (2026-02-08)
 
-- Documented the full Deepgram voice input feature: DeepgramClient, MicrophoneCapture, mic_permission_mac.mm
-- Added 5 new troubleshooting entries (plist nesting, AVFoundation conflicts, hardened runtime, endpointing, separate AudioDeviceManager)
-- Updated Core Architecture with Voice Input section
-- Added Voice Input key files section to STEERING.md
-- Added cross-platform mic permission to TODO.md as open item
-- Moved voice-to-text feature to Done in TODO.md
+- Renamed ASK/TALK to VOICE CHAT/TALK with new layout: [VOICE CHAT (half)] [TALK (quarter)] [SEND (quarter)]
+- VOICE CHAT has hardcoded 20s silence timeout via new `silence_timeout_override` param on MicrophoneCapture
+- JUCE 6 AlertWindow API bug encountered and documented in TROUBLESHOOTING.md
+- Updated STEERING.md core architecture, CHANGELOG.md, TODO.md, TROUBLESHOOTING.md
+- Files touched: side_panel.h/cpp, microphone_capture.h/cpp, synth_preset_selector.cpp
