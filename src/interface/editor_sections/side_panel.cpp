@@ -35,8 +35,9 @@ static constexpr int kQuoteBorderWidth = 3;
 static constexpr int kQuoteIndent = 10;
 static constexpr float kHeadingScale[] = { 1.5f, 1.3f, 1.15f, 1.0f, 0.9f, 0.85f };
 
-static const String kMicButtonTalk = "TALK";
-static const String kMicButtonStop = "STOP";
+static const String kAskButtonLabel = "ASK";
+static const String kTalkButtonLabel = "TALK";
+static const String kStopButtonLabel = "STOP";
 static const String kSubmitButtonText = "COOK";
 
 Font getRegularFont(float size) {
@@ -200,17 +201,27 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   action_button_->setUiButton(true);
   action_button_->setText(kSubmitButtonText);
 
-  mic_button_ = std::make_unique<OpenGlToggleButton>("Mic");
-  addButton(mic_button_.get());
-  mic_button_->setUiButton(true);
-  mic_button_->setText(kMicButtonTalk);
+  ask_button_ = std::make_unique<OpenGlToggleButton>("Ask");
+  addButton(ask_button_.get());
+  ask_button_->setUiButton(true);
+  ask_button_->setText(kAskButtonLabel);
+
+  talk_button_ = std::make_unique<OpenGlToggleButton>("Talk");
+  addButton(talk_button_.get());
+  talk_button_->setUiButton(true);
+  talk_button_->setText(kTalkButtonLabel);
 
   mic_capture_ = std::make_unique<MicrophoneCapture>();
 
-  recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
-  addOpenGlComponent(recording_indicator_.get());
-  recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
-  recording_indicator_->setActive(false);
+  ask_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
+  addOpenGlComponent(ask_recording_indicator_.get());
+  ask_recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
+  ask_recording_indicator_->setActive(false);
+
+  talk_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
+  addOpenGlComponent(talk_recording_indicator_.get());
+  talk_recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
+  talk_recording_indicator_->setActive(false);
 
   setSkinOverride(Skin::kNone);
 
@@ -407,28 +418,45 @@ void VitalSidePanel::resized() {
   int textarea_height = 180;
   int title_height = 30;
 
-  // Button row at the bottom: MIC | COOK
+  // Button row at the bottom: ASK | TALK | COOK
+  // Left half = ASK + TALK, right half = COOK
   int button_y = getHeight() - padding - button_height;
-  int mic_width = (int)(button_width * 0.28f);
   int button_gap = widget_margin;
-  int cook_width = button_width - mic_width - button_gap;
+  int half_width = (button_width - button_gap) / 2;
+  int ask_width = (half_width - button_gap) / 2;
+  int talk_width = half_width - ask_width - button_gap;
+  int cook_width = button_width - half_width - button_gap;
 
-  mic_button_->setBounds(padding, button_y, mic_width, button_height);
-  mic_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
-  mic_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
-  mic_button_->getGlComponent()->text().redrawImage(true);
-  updateMicButtonColors();
+  int ask_x = padding;
+  int talk_x = ask_x + ask_width + button_gap;
+  int cook_x = talk_x + talk_width + button_gap;
 
-  action_button_->setBounds(padding + mic_width + button_gap, button_y, cook_width, button_height);
+  ask_button_->setBounds(ask_x, button_y, ask_width, button_height);
+  ask_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
+  ask_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
+  ask_button_->getGlComponent()->text().redrawImage(true);
+  updateAskButtonColors();
+
+  talk_button_->setBounds(talk_x, button_y, talk_width, button_height);
+  talk_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
+  talk_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
+  talk_button_->getGlComponent()->text().redrawImage(true);
+  updateTalkButtonColors();
+
+  action_button_->setBounds(cook_x, button_y, cook_width, button_height);
   action_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
   action_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
   action_button_->getGlComponent()->text().redrawImage(true);
 
-  // Recording indicator (small red dot next to MIC button)
+  // Recording indicators (small red dots above ASK/TALK buttons)
   int indicator_size = 8;
-  int indicator_x = padding + mic_width - indicator_size - 6;
-  int indicator_y = button_y - indicator_size - 4;
-  recording_indicator_->setBounds(indicator_x, indicator_y, indicator_size, indicator_size);
+  int ask_ind_x = ask_x + ask_width - indicator_size - 6;
+  int ask_ind_y = button_y - indicator_size - 4;
+  ask_recording_indicator_->setBounds(ask_ind_x, ask_ind_y, indicator_size, indicator_size);
+
+  int talk_ind_x = talk_x + talk_width - indicator_size - 6;
+  int talk_ind_y = button_y - indicator_size - 4;
+  talk_recording_indicator_->setBounds(talk_ind_x, talk_ind_y, indicator_size, indicator_size);
 
   // Textarea above the button
   int textarea_y = button_y - widget_margin - textarea_height;
@@ -475,8 +503,23 @@ void VitalSidePanel::buttonClicked(Button* clicked_button) {
     for (Listener* listener : listeners_)
       listener->sidePanelButtonClicked();
   }
-  else if (clicked_button == mic_button_.get()) {
-    toggleRecording();
+  else if (clicked_button == ask_button_.get()) {
+    if (recording_mode_ == kRecordingAsk) {
+      stopRecording();
+    } else {
+      if (recording_mode_ == kRecordingTalk)
+        stopRecording();
+      startAskRecording();
+    }
+  }
+  else if (clicked_button == talk_button_.get()) {
+    if (recording_mode_ == kRecordingTalk) {
+      stopRecording();
+    } else {
+      if (recording_mode_ == kRecordingAsk)
+        stopRecording();
+      startTalkRecording();
+    }
   }
   else {
     SynthSection::buttonClicked(clicked_button);
@@ -524,14 +567,7 @@ void VitalSidePanel::initializeDeepgramClient() {
   // No chat message needed - mic button will show error if key not set
 }
 
-void VitalSidePanel::toggleRecording() {
-  if (recording_)
-    stopRecording();
-  else
-    startRecording();
-}
-
-void VitalSidePanel::startRecording() {
+void VitalSidePanel::startAskRecording() {
   DeepgramClient& dg = DeepgramClient::instance();
   if (!dg.isInitialized()) {
     addMessage("Deepgram API key not configured. Use the menu to set it.", ChatMessage::kSystem);
@@ -585,7 +621,7 @@ void VitalSidePanel::startRecording() {
       DeepgramClient::instance().sendAudioData(data, num_bytes);
     },
     [this]() {
-      DBG("VitalSidePanel: Silence timeout - stopping recording");
+      DBG("VitalSidePanel: Silence timeout - stopping ASK recording");
       stopRecording();
     }
   );
@@ -596,52 +632,73 @@ void VitalSidePanel::startRecording() {
     return;
   }
 
-  recording_ = true;
-  mic_button_->setText(kMicButtonStop);
-  mic_button_->getGlComponent()->text().redrawImage(true);
-  updateMicButtonColors();
-  recording_indicator_->setActive(true);
+  recording_mode_ = kRecordingAsk;
+  ask_button_->setText(kStopButtonLabel);
+  ask_button_->getGlComponent()->text().redrawImage(true);
+  updateAskButtonColors();
+  ask_recording_indicator_->setActive(true);
   addMessage("Listening... speak your instructions.", ChatMessage::kSystem);
 }
 
+void VitalSidePanel::startTalkRecording() {
+  // TODO: Implement always-on talk mode with local VAD gating
+  // For now, just toggle the visual state
+  recording_mode_ = kRecordingTalk;
+  talk_button_->setText(kStopButtonLabel);
+  talk_button_->getGlComponent()->text().redrawImage(true);
+  updateTalkButtonColors();
+  talk_recording_indicator_->setActive(true);
+  addMessage("Talk mode active (coming soon).", ChatMessage::kSystem);
+}
+
 void VitalSidePanel::stopRecording() {
-  if (!recording_)
+  if (recording_mode_ == kRecordingNone)
     return;
 
-  mic_capture_->stopCapture();
+  if (recording_mode_ == kRecordingAsk) {
+    mic_capture_->stopCapture();
 
-  // Grab any pending transcript from the text editor before disconnecting
-  // (interim results are previewed there; if endpointing never triggered,
-  //  this is the only copy of the transcription)
-  String pending_text;
+    // Grab any pending transcript from the text editor before disconnecting
+    // (interim results are previewed there; if endpointing never triggered,
+    //  this is the only copy of the transcription)
+    String pending_text;
 #if !defined(NO_TEXT_ENTRY)
-  if (prompt_editor_)
-    pending_text = prompt_editor_->getText().trim();
+    if (prompt_editor_)
+      pending_text = prompt_editor_->getText().trim();
 #endif
 
-  DeepgramClient::instance().disconnect();
-  recording_ = false;
+    DeepgramClient::instance().disconnect();
 
-  mic_button_->setText(kMicButtonTalk);
-  mic_button_->getGlComponent()->text().redrawImage(true);
-  updateMicButtonColors();
-  recording_indicator_->setActive(false);
+    ask_button_->setText(kAskButtonLabel);
+    ask_button_->getGlComponent()->text().redrawImage(true);
+    ask_recording_indicator_->setActive(false);
 
 #if !defined(NO_TEXT_ENTRY)
-  if (prompt_editor_) {
-    prompt_editor_->clear();
-    prompt_editor_->redoImage();
-  }
+    if (prompt_editor_) {
+      prompt_editor_->clear();
+      prompt_editor_->redoImage();
+    }
 #endif
 
-  // Submit any pending transcript as a chat message
-  if (pending_text.isNotEmpty()) {
-    clearThinkingMessage();
-    addMessage(pending_text, ChatMessage::kUser);
-    addMessage("Thinking...", ChatMessage::kSystem);
-    for (Listener* listener : listeners_)
-      listener->sidePanelMessageSubmitted(pending_text);
+    // Submit any pending transcript as a chat message
+    if (pending_text.isNotEmpty()) {
+      clearThinkingMessage();
+      addMessage(pending_text, ChatMessage::kUser);
+      addMessage("Thinking...", ChatMessage::kSystem);
+      for (Listener* listener : listeners_)
+        listener->sidePanelMessageSubmitted(pending_text);
+    }
   }
+  else if (recording_mode_ == kRecordingTalk) {
+    // TODO: Stop always-on talk mode resources when implemented
+    talk_button_->setText(kTalkButtonLabel);
+    talk_button_->getGlComponent()->text().redrawImage(true);
+    talk_recording_indicator_->setActive(false);
+  }
+
+  recording_mode_ = kRecordingNone;
+  updateAskButtonColors();
+  updateTalkButtonColors();
 }
 
 void VitalSidePanel::submitMessage() {
@@ -740,17 +797,32 @@ void VitalSidePanel::setScrollBarRange() {
   scroll_bar_->setCurrentRange(scroll_position_, visible_height, dontSendNotification);
 }
 
-void VitalSidePanel::updateMicButtonColors() {
-  if (recording_) {
+void VitalSidePanel::updateAskButtonColors() {
+  if (recording_mode_ == kRecordingAsk) {
     // Use the original non-primary button grey for STOP state
-    mic_button_->setColour(Skin::kUiActionButton, findColour(Skin::kUiButton, true));
-    mic_button_->setColour(Skin::kUiActionButtonHover, findColour(Skin::kUiButtonHover, true));
-    mic_button_->setColour(Skin::kUiActionButtonPressed, findColour(Skin::kUiButtonPressed, true));
+    ask_button_->setColour(Skin::kUiActionButton, findColour(Skin::kUiButton, true));
+    ask_button_->setColour(Skin::kUiActionButtonHover, findColour(Skin::kUiButtonHover, true));
+    ask_button_->setColour(Skin::kUiActionButtonPressed, findColour(Skin::kUiButtonPressed, true));
   } else {
     // Remove overrides to use default bright purple
-    mic_button_->removeColour(Skin::kUiActionButton);
-    mic_button_->removeColour(Skin::kUiActionButtonHover);
-    mic_button_->removeColour(Skin::kUiActionButtonPressed);
+    ask_button_->removeColour(Skin::kUiActionButton);
+    ask_button_->removeColour(Skin::kUiActionButtonHover);
+    ask_button_->removeColour(Skin::kUiActionButtonPressed);
   }
-  mic_button_->getGlComponent()->setColors();
+  ask_button_->getGlComponent()->setColors();
+}
+
+void VitalSidePanel::updateTalkButtonColors() {
+  if (recording_mode_ == kRecordingTalk) {
+    // Use the original non-primary button grey for STOP state
+    talk_button_->setColour(Skin::kUiActionButton, findColour(Skin::kUiButton, true));
+    talk_button_->setColour(Skin::kUiActionButtonHover, findColour(Skin::kUiButtonHover, true));
+    talk_button_->setColour(Skin::kUiActionButtonPressed, findColour(Skin::kUiButtonPressed, true));
+  } else {
+    // Remove overrides to use default bright purple
+    talk_button_->removeColour(Skin::kUiActionButton);
+    talk_button_->removeColour(Skin::kUiActionButtonHover);
+    talk_button_->removeColour(Skin::kUiActionButtonPressed);
+  }
+  talk_button_->getGlComponent()->setColors();
 }
