@@ -4,4 +4,6 @@ can you add a voice-to-text mode to the ai chatbot sidepanel that we added? it s
 2. when it detects a pause, it should convert/transcode the speech so far to text, clear / reset the speech buffer, and send the transcoded text as a chat message, using the flow we already implemented for sending chat messages to the ai agent (claude)
 3. after sending the previous message, it can start to record the next one
 
-we can use deepgram for this. if you are not familiar with the lastet api as of feb 2026, look it up online.
+we can use deepgram for this. if you are not familiar with the latest api as of feb 2026, look it up online.
+
+plan it out with research ofthe current keyboard and ask me questions about the key requirements if needed. go now and plan.
