@@ -88,3 +88,7 @@
 - **JUCE 6 vs JUCE 7 AlertWindow API**:
     - `MessageBoxIconType::InfoIcon` and similar enum-class-style icon types are JUCE 7+ API. Using them in JUCE 6 causes compilation errors.
     - **Solution**: Use `AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon, ...)` which is the JUCE 6 API. The icon type enum lives on `AlertWindow` directly in JUCE 6, not in a separate `MessageBoxIconType` enum class.
+
+- **UTF-8 special characters render as garbage in JUCE button text**:
+    - Passing raw UTF-8 hex bytes like `"\xc3\x97"` (multiplication sign) to `setButtonText()` renders as "A" with diacritical marks (e.g., "Å") because JUCE interprets the bytes as Latin-1, not UTF-8.
+    - **Solution**: Wrap UTF-8 byte sequences with `String(CharPointer_UTF8("\xc3\x97"))`. This is the established pattern in the Vital codebase (used for bullet characters in markdown rendering in `side_panel.cpp`). Applies to any non-ASCII Unicode character in button labels or drawn text.

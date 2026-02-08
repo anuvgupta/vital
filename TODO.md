@@ -13,7 +13,6 @@
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
 - Autosave presets, checkpointing & restore chat at certain point
-- Chat clearing
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
     - architecture details
@@ -30,6 +29,7 @@
 
 
 ### Done
+- Chat clearing (clear/reset button in title row resets chat UI and API conversation history)
 - Split mic into VOICE CHAT (always-on, 20s silence timeout, popup warning) and TALK (auto-stops on configurable silence) modes with SEND button
 - Move away from Opus because its too expensive
 - Support for mixed messages (containing markdown fences for code ie three backticks, alongside natural language descriptions)

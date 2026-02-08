@@ -211,6 +211,11 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   voice_chat_button_->setUiButton(true);
   voice_chat_button_->setText(kVoiceChatButtonLabel);
 
+  clear_button_ = std::make_unique<OpenGlToggleButton>("Clear");
+  addButton(clear_button_.get());
+  clear_button_->setUiButton(true);
+  clear_button_->setText(String(CharPointer_UTF8("\xc3\x97")));
+
   mic_capture_ = std::make_unique<MicrophoneCapture>();
 
   talk_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
@@ -418,6 +423,15 @@ void VitalSidePanel::resized() {
   int textarea_height = 180;
   int title_height = 30;
 
+  // Clear button in the title row (top right)
+  int clear_size = title_height;
+  int clear_x = getWidth() - padding - clear_size;
+  int clear_y = padding;
+  clear_button_->setBounds(clear_x, clear_y, clear_size, clear_size);
+  clear_button_->getGlComponent()->text().setTextSize(size_ratio_ * 16.0f);
+  clear_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
+  clear_button_->getGlComponent()->text().redrawImage(true);
+
   // Button row at the bottom: VOICE CHAT | TALK | SEND
   // VOICE CHAT (big, half width) | TALK (small) | SEND (small)
   int button_y = getHeight() - padding - button_height;
@@ -502,6 +516,9 @@ void VitalSidePanel::buttonClicked(Button* clicked_button) {
     submitMessage();
     for (Listener* listener : listeners_)
       listener->sidePanelButtonClicked();
+  }
+  else if (clicked_button == clear_button_.get()) {
+    clearChat();
   }
   else if (clicked_button == talk_button_.get()) {
     if (recording_mode_ == kRecordingTalk) {
@@ -861,6 +878,32 @@ void VitalSidePanel::updateTalkButtonColors() {
     talk_button_->removeColour(Skin::kUiActionButtonPressed);
   }
   talk_button_->getGlComponent()->setColors();
+}
+
+void VitalSidePanel::clearChat() {
+  // Stop any active recording
+  if (isRecording())
+    stopRecording();
+
+  // Clear UI messages
+  messages_.clear();
+  total_content_height_ = 0;
+  scroll_position_ = 0;
+  setScrollBarRange();
+
+  // Clear text editor
+#if !defined(NO_TEXT_ENTRY)
+  if (prompt_editor_) {
+    prompt_editor_->clear();
+    prompt_editor_->redoImage();
+  }
+#endif
+
+  // Clear API conversation history
+  ClaudeApiClient::instance().clearConversation();
+
+  // Show ready message
+  addMessage("Ready to create!", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::updateVoiceChatButtonColors() {

@@ -103,6 +103,7 @@ public:
     void addMessage(const String &text, ChatMessage::Type type);
     void clearThinkingMessage();
     void addResponseMessage(const String &text);
+    void clearChat();
 
     // Voice recording
     void startTalkRecording();
@@ -124,6 +125,7 @@ private:
     std::unique_ptr<OpenGlToggleButton> action_button_;
     std::unique_ptr<OpenGlToggleButton> talk_button_;
     std::unique_ptr<OpenGlToggleButton> voice_chat_button_;
+    std::unique_ptr<OpenGlToggleButton> clear_button_;
 
     // Chat state
     std::unique_ptr<OpenGlScrollBar> scroll_bar_;

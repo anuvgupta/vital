@@ -42,7 +42,7 @@
 
 ### AI Chatbot Addition
 
-**Side Panel (`side_panel.h/cpp`):** `VitalSidePanel` extends `SynthSection` and provides the chat UI. It contains a scrollable message area (manual scroll tracking, no `juce::Viewport`), an `OpenGlTextEditor` for input, and a submit button. Messages are rendered directly in `paintBackground()` -> `paintChatMessages()` using `TextLayout` for word-wrapped text. System messages support markdown rendering.
+**Side Panel (`side_panel.h/cpp`):** `VitalSidePanel` extends `SynthSection` and provides the chat UI. It contains a scrollable message area (manual scroll tracking, no `juce::Viewport`), an `OpenGlTextEditor` for input, and a submit button. Messages are rendered directly in `paintBackground()` -> `paintChatMessages()` using `TextLayout` for word-wrapped text. System messages support markdown rendering. A clear button (x icon) in the title row resets the chat to its initial state: clears all messages, stops any active recording, clears the text editor, and calls `ClaudeApiClient::clearConversation()` to reset conversation history.
 
 **Listener Pattern:** `VitalSidePanel` defines an inner `Listener` class. `FullInterface` implements this listener and handles `sidePanelMessageSubmitted()` -- it serializes the current preset to JSON (stripping base64 data), passes it along with the user message to the API client, and applies the returned JSON diff to the live preset.
 

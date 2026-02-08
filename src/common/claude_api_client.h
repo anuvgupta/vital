@@ -37,6 +37,7 @@ class ClaudeApiClient {
                      const String& preset_json = String());
     void sendMessages(const StringArray& messages, ResponseCallback callback,
                       const String& preset_json = String());
+    void clearConversation();
 
   private:
     ClaudeApiClient();

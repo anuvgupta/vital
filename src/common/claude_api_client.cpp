@@ -153,6 +153,10 @@ void ClaudeApiClient::sendMessages(const StringArray& messages, ResponseCallback
   });
 }
 
+void ClaudeApiClient::clearConversation() {
+  conversation_history_.clear();
+}
+
 void ClaudeApiClient::addMessage(const String& role, const String& content) {
   while (conversation_history_.size() >= kMaxMessages)
     conversation_history_.erase(conversation_history_.begin());
