@@ -1,7 +1,10 @@
 # Documenter Agent's Short-Term Memory
 
-## Latest Task: Core Architecture Section (2026-01-31)
+## Latest Task: Voice-to-Text (Deepgram STT) Documentation (2026-02-08)
 
-- Filled out the Core Architecture section in STEERING.md
-- Covered: synthesis engine, preset system, UI/OpenGL rendering, build system, side panel, listener pattern, API client, preset manipulation flow, markdown rendering
-- No code changes, documentation only
+- Documented the full Deepgram voice input feature: DeepgramClient, MicrophoneCapture, mic_permission_mac.mm
+- Added 5 new troubleshooting entries (plist nesting, AVFoundation conflicts, hardened runtime, endpointing, separate AudioDeviceManager)
+- Updated Core Architecture with Voice Input section
+- Added Voice Input key files section to STEERING.md
+- Added cross-platform mic permission to TODO.md as open item
+- Moved voice-to-text feature to Done in TODO.md

@@ -1706,6 +1706,19 @@ std::string LoadSave::getApiKeyPath() {
   return "";
 }
 
+void LoadSave::saveDeepgramApiKeyPath(const std::string& path) {
+  json data = getConfigJson();
+  data["deepgram_api_key_path"] = path;
+  saveJsonToConfig(data);
+}
+
+std::string LoadSave::getDeepgramApiKeyPath() {
+  json data = getConfigJson();
+  if (data.count("deepgram_api_key_path"))
+    return data["deepgram_api_key_path"];
+  return "";
+}
+
 std::pair<wchar_t, wchar_t> LoadSave::getComputerKeyboardOctaveControls() {
   std::pair<wchar_t, wchar_t> octave_controls(vital::kDefaultKeyboardOctaveDown, vital::kDefaultKeyboardOctaveUp);
   json data = getConfigJson();

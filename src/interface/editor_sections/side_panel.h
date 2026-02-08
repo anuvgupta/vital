@@ -20,6 +20,8 @@
 #include "synth_section.h"
 #include "open_gl_multi_quad.h"
 #include "claude_api_client.h"
+#include "deepgram_client.h"
+#include "microphone_capture.h"
 #include "markdown_parser.h"
 
 class OpenGlToggleButton;
@@ -88,12 +90,19 @@ public:
 
     // API client
     void initializeApiClient();
+    void initializeDeepgramClient();
 
     // Chat methods
     void submitMessage();
     void addMessage(const String &text, ChatMessage::Type type);
     void clearThinkingMessage();
     void addResponseMessage(const String &text);
+
+    // Voice recording
+    void toggleRecording();
+    void startRecording();
+    void stopRecording();
+    bool isRecording() const { return recording_; }
 
 private:
     void layoutMessages();
@@ -104,6 +113,7 @@ private:
     std::vector<Listener *> listeners_;
     std::unique_ptr<OpenGlTextEditor> prompt_editor_;
     std::unique_ptr<OpenGlToggleButton> action_button_;
+    std::unique_ptr<OpenGlToggleButton> mic_button_;
 
     // Chat state
     std::unique_ptr<OpenGlScrollBar> scroll_bar_;
@@ -111,6 +121,11 @@ private:
     Rectangle<int> chat_bounds_;
     int total_content_height_ = 0;
     int scroll_position_ = 0;
+
+    // Voice recording state
+    std::unique_ptr<MicrophoneCapture> mic_capture_;
+    std::unique_ptr<OpenGlQuad> recording_indicator_;
+    bool recording_ = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VitalSidePanel)
 };

@@ -19,6 +19,7 @@
 #include "fonts.h"
 #include "skin.h"
 #include "synth_button.h"
+#include "shaders.h"
 #include <cmath>
 
 // ============================================================================
@@ -195,12 +196,26 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   action_button_->setUiButton(true);
   action_button_->setText("COOK");
 
+  mic_button_ = std::make_unique<OpenGlToggleButton>("Mic");
+  addButton(mic_button_.get());
+  mic_button_->setUiButton(false);
+  mic_button_->setText("MIC");
+
+  mic_capture_ = std::make_unique<MicrophoneCapture>();
+
+  recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
+  addOpenGlComponent(recording_indicator_.get());
+  recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
+  recording_indicator_->setActive(false);
+
   setSkinOverride(Skin::kNone);
 
   initializeApiClient();
+  initializeDeepgramClient();
 }
 
 VitalSidePanel::~VitalSidePanel() {
+  stopRecording();
   scroll_bar_->removeListener(this);
 }
 
@@ -388,12 +403,27 @@ void VitalSidePanel::resized() {
   int textarea_height = 180;
   int title_height = 30;
 
-  // Button at the bottom
+  // Button row at the bottom: MIC | COOK
   int button_y = getHeight() - padding - button_height;
-  action_button_->setBounds(padding, button_y, button_width, button_height);
+  int mic_width = (int)(button_width * 0.28f);
+  int button_gap = widget_margin;
+  int cook_width = button_width - mic_width - button_gap;
+
+  mic_button_->setBounds(padding, button_y, mic_width, button_height);
+  mic_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
+  mic_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
+  mic_button_->getGlComponent()->text().redrawImage(true);
+
+  action_button_->setBounds(padding + mic_width + button_gap, button_y, cook_width, button_height);
   action_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
   action_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
   action_button_->getGlComponent()->text().redrawImage(true);
+
+  // Recording indicator (small red dot next to MIC button)
+  int indicator_size = 8;
+  int indicator_x = padding + mic_width - indicator_size - 6;
+  int indicator_y = button_y - indicator_size - 4;
+  recording_indicator_->setBounds(indicator_x, indicator_y, indicator_size, indicator_size);
 
   // Textarea above the button
   int textarea_y = button_y - widget_margin - textarea_height;
@@ -440,6 +470,9 @@ void VitalSidePanel::buttonClicked(Button* clicked_button) {
     for (Listener* listener : listeners_)
       listener->sidePanelButtonClicked();
   }
+  else if (clicked_button == mic_button_.get()) {
+    toggleRecording();
+  }
   else {
     SynthSection::buttonClicked(clicked_button);
   }
@@ -477,6 +510,127 @@ void VitalSidePanel::initializeApiClient() {
     addMessage("Ready to create!", ChatMessage::kSystem);
   else
     addMessage("API key not configured. Use the menu to set your API key path.", ChatMessage::kSystem);
+}
+
+void VitalSidePanel::initializeDeepgramClient() {
+  DeepgramClient& dg = DeepgramClient::instance();
+  if (dg.initialize())
+    DBG("DeepgramClient initialized successfully");
+  // No chat message needed - mic button will show error if key not set
+}
+
+void VitalSidePanel::toggleRecording() {
+  if (recording_)
+    stopRecording();
+  else
+    startRecording();
+}
+
+void VitalSidePanel::startRecording() {
+  DeepgramClient& dg = DeepgramClient::instance();
+  if (!dg.isInitialized()) {
+    addMessage("Deepgram API key not configured. Use the menu to set it.", ChatMessage::kSystem);
+    return;
+  }
+
+  bool connected = dg.connect(
+    // Transcript callback (called on message thread via MessageManager::callAsync)
+    [this](const String& transcript, bool is_final) {
+      if (is_final && transcript.trim().isNotEmpty()) {
+        // Clear partial preview from text editor
+#if !defined(NO_TEXT_ENTRY)
+        if (prompt_editor_) {
+          prompt_editor_->clear();
+          prompt_editor_->redoImage();
+        }
+#endif
+        // Remove existing thinking indicator
+        clearThinkingMessage();
+
+        // Submit as if the user typed it
+        addMessage(transcript.trim(), ChatMessage::kUser);
+        addMessage("Thinking...", ChatMessage::kSystem);
+
+        for (Listener* listener : listeners_)
+          listener->sidePanelMessageSubmitted(transcript.trim());
+      } else if (!is_final) {
+        // Show interim result as preview in text editor
+#if !defined(NO_TEXT_ENTRY)
+        if (prompt_editor_) {
+          prompt_editor_->setText(transcript, false);
+          prompt_editor_->redoImage();
+        }
+#endif
+      }
+    },
+    // Error callback
+    [this](const String& error) {
+      addMessage("Voice error: " + error, ChatMessage::kSystem);
+      stopRecording();
+    }
+  );
+
+  if (!connected) {
+    addMessage("Failed to connect to Deepgram.", ChatMessage::kSystem);
+    return;
+  }
+
+  bool capturing = mic_capture_->startCapture(
+    [](const void* data, int num_bytes) {
+      DeepgramClient::instance().sendAudioData(data, num_bytes);
+    }
+  );
+
+  if (!capturing) {
+    dg.disconnect();
+    addMessage("Failed to access microphone.", ChatMessage::kSystem);
+    return;
+  }
+
+  recording_ = true;
+  mic_button_->setText("STOP");
+  mic_button_->getGlComponent()->text().redrawImage(true);
+  recording_indicator_->setActive(true);
+  addMessage("Listening... speak your instructions.", ChatMessage::kSystem);
+}
+
+void VitalSidePanel::stopRecording() {
+  if (!recording_)
+    return;
+
+  mic_capture_->stopCapture();
+
+  // Grab any pending transcript from the text editor before disconnecting
+  // (interim results are previewed there; if endpointing never triggered,
+  //  this is the only copy of the transcription)
+  String pending_text;
+#if !defined(NO_TEXT_ENTRY)
+  if (prompt_editor_)
+    pending_text = prompt_editor_->getText().trim();
+#endif
+
+  DeepgramClient::instance().disconnect();
+  recording_ = false;
+
+  mic_button_->setText("MIC");
+  mic_button_->getGlComponent()->text().redrawImage(true);
+  recording_indicator_->setActive(false);
+
+#if !defined(NO_TEXT_ENTRY)
+  if (prompt_editor_) {
+    prompt_editor_->clear();
+    prompt_editor_->redoImage();
+  }
+#endif
+
+  // Submit any pending transcript as a chat message
+  if (pending_text.isNotEmpty()) {
+    clearThinkingMessage();
+    addMessage(pending_text, ChatMessage::kUser);
+    addMessage("Thinking...", ChatMessage::kSystem);
+    for (Listener* listener : listeners_)
+      listener->sidePanelMessageSubmitted(pending_text);
+  }
 }
 
 void VitalSidePanel::submitMessage() {

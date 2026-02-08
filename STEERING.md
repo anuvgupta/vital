@@ -52,6 +52,8 @@
 
 **Markdown Rendering (`markdown_parser.h/cpp`):** Uses vendored md4c (C library, MIT license, in `third_party/md4c/`) with a SAX callback approach. Parses markdown into `MarkdownBlock`/`StyledRun` structs. The side panel renders these blocks with support for headings, bold/italic/monospace, fenced code blocks, bullet/numbered lists, block quotes, and horizontal rules. Uses Vital's `Fonts::instance()->proportional_regular()` (Lato) with `.boldened()` for bold text.
 
+**Voice Input (Deepgram STT):** The side panel has a MIC toggle button next to the COOK submit button. Clicking MIC starts recording from the system microphone via `MicrophoneCapture` (dedicated `AudioDeviceManager` with 1 input, 0 outputs, resampling to 16kHz). Audio is streamed over WebSocket to Deepgram's Nova-3 STT API via `DeepgramClient` (singleton, PIMPL pattern hiding IXWebSocket dependency). Interim transcripts update the text editor as a live preview; when endpointing detects a pause or the user clicks STOP, the transcribed text is submitted as a chat message. Recording continues after submission for the next utterance. The Deepgram API key is stored via the same file-path-in-config pattern as the Claude API key. IXWebSocket is vendored in `third_party/ixwebsocket/` for WebSocket+TLS. macOS mic permission is handled in a separate `mic_permission_mac.mm` file (compiled independently, not in unity build) to avoid AVFoundation/JUCE namespace conflicts.
+
 ## Key Files Reference
 
 **Core Serialization:**
@@ -99,6 +101,13 @@
 - [SYSTEM_PROMPT.md](agents/vital-assistant/SYSTEM_PROMPT.md) - System prompt for Claude API assistant
 - [PRESET_SCHEMA.md](agents/vital-assistant/PRESET_SCHEMA.md) - Parameter schema with scaling formulas
 - [synth_preset_selector.cpp](src/interface/editor_components/synth_preset_selector.cpp) - Menu bar with preset loading, skin, and API key file selection
+
+**Voice Input (Deepgram STT):**
+
+- [deepgram_client.h/cpp](src/common/deepgram_client.cpp) - Singleton Deepgram WebSocket STT client (PIMPL pattern)
+- [microphone_capture.h/cpp](src/common/microphone_capture.cpp) - Mic capture with 16kHz resampling
+- [mic_permission_mac.mm](src/common/mic_permission_mac.mm) - macOS mic permission request (separate from unity build)
+- [ixwebsocket/](third_party/ixwebsocket/) - Vendored IXWebSocket library for WebSocket+TLS
 
 **Markdown Rendering:**
 

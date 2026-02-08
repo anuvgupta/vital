@@ -3,7 +3,8 @@
 <JUCERPROJECT id="GfsdNK" name="Vial" projectType="guiapp" version="1.0.6"
               bundleIdentifier="audio.vital.standalone.custom" includeBinaryInAppConfig="1"
               companyName="Matt Tytel" companyWebsite="vial.audio" companyEmail="matthewtytel@gmail.com"
-              defines="" displaySplashScreen="0" reportAppUsage="0" splashScreenColour="Dark"
+              defines="IXWEBSOCKET_USE_TLS=1&#10;IXWEBSOCKET_USE_SECURE_TRANSPORT=1"
+              displaySplashScreen="0" reportAppUsage="0" splashScreenColour="Dark"
               companyCopyright="Matt Tytel" jucerFormatVersion="1" projectLineFeed="&#10;">
   <MAINGROUP id="CeypXq" name="Vial">
     <GROUP id="{C539C807-A3BC-1AAC-36A3-83E9F431E5C3}" name="tunings">
@@ -158,12 +159,78 @@
               file="../src/common/claude_api_client.cpp"/>
         <FILE id="cAcL02" name="claude_api_client.h" compile="0" resource="0"
               file="../src/common/claude_api_client.h"/>
+        <FILE id="dGrM01" name="deepgram_client.cpp" compile="0" resource="0"
+              file="../src/common/deepgram_client.cpp"/>
+        <FILE id="dGrM02" name="deepgram_client.h" compile="0" resource="0"
+              file="../src/common/deepgram_client.h"/>
+        <FILE id="mIcC01" name="microphone_capture.cpp" compile="0" resource="0"
+              file="../src/common/microphone_capture.cpp"/>
+        <FILE id="mIcC02" name="microphone_capture.h" compile="0" resource="0"
+              file="../src/common/microphone_capture.h"/>
+        <FILE id="mIcP01" name="mic_permission_mac.mm" compile="1" resource="0"
+              file="../src/common/mic_permission_mac.mm"/>
         <FILE id="mDpR01" name="markdown_parser.cpp" compile="0" resource="0"
               file="../src/common/markdown_parser.cpp"/>
         <FILE id="mDpR02" name="markdown_parser.h" compile="0" resource="0"
               file="../src/common/markdown_parser.h"/>
         <FILE id="mD4c01" name="md4c.c" compile="1" resource="0" file="../third_party/md4c/md4c.c"/>
         <FILE id="mD4c02" name="md4c.h" compile="0" resource="0" file="../third_party/md4c/md4c.h"/>
+        <FILE id="ix1eb3" name="IXBench.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXBench.cpp"/>
+        <FILE id="ix88db" name="IXCancellationRequest.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXCancellationRequest.cpp"/>
+        <FILE id="ix6ab6" name="IXConnectionState.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXConnectionState.cpp"/>
+        <FILE id="ix82db" name="IXDNSLookup.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXDNSLookup.cpp"/>
+        <FILE id="ix5f49" name="IXExponentialBackoff.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXExponentialBackoff.cpp"/>
+        <FILE id="ixc2ae" name="IXGzipCodec.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXGzipCodec.cpp"/>
+        <FILE id="ixbb86" name="IXHttp.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXHttp.cpp"/>
+        <FILE id="ix8993" name="IXHttpClient.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXHttpClient.cpp"/>
+        <FILE id="ixeb87" name="IXNetSystem.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXNetSystem.cpp"/>
+        <FILE id="ix5a8b" name="IXSelectInterrupt.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSelectInterrupt.cpp"/>
+        <FILE id="ix4e09" name="IXSelectInterruptEvent.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSelectInterruptEvent.cpp"/>
+        <FILE id="ixe2cc" name="IXSelectInterruptFactory.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSelectInterruptFactory.cpp"/>
+        <FILE id="ix821f" name="IXSelectInterruptPipe.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSelectInterruptPipe.cpp"/>
+        <FILE id="ix2da7" name="IXSetThreadName.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSetThreadName.cpp"/>
+        <FILE id="ix2e3b" name="IXSocket.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXSocket.cpp"/>
+        <FILE id="ixa430" name="IXSocketAppleSSL.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSocketAppleSSL.cpp"/>
+        <FILE id="ixecdb" name="IXSocketConnect.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSocketConnect.cpp"/>
+        <FILE id="ixf060" name="IXSocketFactory.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSocketFactory.cpp"/>
+        <FILE id="ixdaae" name="IXSocketMbedTLS.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSocketMbedTLS.cpp"/>
+        <FILE id="ix75da" name="IXSocketOpenSSL.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSocketOpenSSL.cpp"/>
+        <FILE id="ix795c" name="IXSocketTLSOptions.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXSocketTLSOptions.cpp"/>
+        <FILE id="ix9a5b" name="IXStrCaseCompare.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXStrCaseCompare.cpp"/>
+        <FILE id="ix687e" name="IXUrlParser.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXUrlParser.cpp"/>
+        <FILE id="ixb165" name="IXUserAgent.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXUserAgent.cpp"/>
+        <FILE id="ixfa04" name="IXUuid.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXUuid.cpp"/>
+        <FILE id="ix6829" name="IXWebSocket.cpp" compile="1" resource="0" file="../third_party/ixwebsocket/IXWebSocket.cpp"/>
+        <FILE id="ix42f2" name="IXWebSocketCloseConstants.cpp" compile="1"
+              resource="0" file="../third_party/ixwebsocket/IXWebSocketCloseConstants.cpp"/>
+        <FILE id="ix8a8b" name="IXWebSocketHandshake.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXWebSocketHandshake.cpp"/>
+        <FILE id="ix16c0" name="IXWebSocketHttpHeaders.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXWebSocketHttpHeaders.cpp"/>
+        <FILE id="ixd15e" name="IXWebSocketPerMessageDeflate.cpp" compile="1"
+              resource="0" file="../third_party/ixwebsocket/IXWebSocketPerMessageDeflate.cpp"/>
+        <FILE id="ix4d88" name="IXWebSocketPerMessageDeflateCodec.cpp" compile="1"
+              resource="0" file="../third_party/ixwebsocket/IXWebSocketPerMessageDeflateCodec.cpp"/>
+        <FILE id="ix25dc" name="IXWebSocketPerMessageDeflateOptions.cpp" compile="1"
+              resource="0" file="../third_party/ixwebsocket/IXWebSocketPerMessageDeflateOptions.cpp"/>
+        <FILE id="ix2063" name="IXWebSocketTransport.cpp" compile="1" resource="0"
+              file="../third_party/ixwebsocket/IXWebSocketTransport.cpp"/>
         <FILE id="LN5QQ0" name="midi_manager.cpp" compile="0" resource="0"
               file="../src/common/midi_manager.cpp"/>
         <FILE id="sE0Jer" name="midi_manager.h" compile="0" resource="0" file="../src/common/midi_manager.h"/>
@@ -837,19 +904,20 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="builds/osx" customPList="&lt;plist&gt;&#10;  &lt;dict&gt;&#10;    &lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;    &lt;dict&gt;&#10;      &lt;key&gt;NSExceptionDomains&lt;/key&gt;&#10;      &lt;dict&gt;&#10;        &lt;key&gt;tytel.org&lt;/key&gt;&#10;        &lt;dict&gt;&#10;          &lt;key&gt;NSIncludeSubDomains&lt;/key&gt;&#10;          &lt;false/&gt;&#10;          &lt;key&gt;NSTemporaryExceptionAllowsInsecureHTTPLoads&lt;/key&gt;&#10;          &lt;true/&gt;&#10;          &lt;key&gt;NSTemporaryExceptionMinimumTLSVersion&lt;/key&gt;&#10;          &lt;string&gt;TLSv1.1&lt;/string&gt;&#10;        &lt;/dict&gt;&#10;      &lt;/dict&gt;&#10;    &lt;/dict&gt;&#10;  &lt;/dict&gt;&#10;&lt;/plist&gt;"
+    <XCODE_MAC targetFolder="builds/osx" customPList="&lt;plist&gt;&#10;  &lt;dict&gt;&#10;    &lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;    &lt;dict&gt;&#10;      &lt;key&gt;NSExceptionDomains&lt;/key&gt;&#10;      &lt;dict&gt;&#10;        &lt;key&gt;tytel.org&lt;/key&gt;&#10;        &lt;dict&gt;&#10;          &lt;key&gt;NSIncludeSubDomains&lt;/key&gt;&#10;          &lt;false/&gt;&#10;          &lt;key&gt;NSTemporaryExceptionAllowsInsecureHTTPLoads&lt;/key&gt;&#10;          &lt;true/&gt;&#10;          &lt;key&gt;NSTemporaryExceptionMinimumTLSVersion&lt;/key&gt;&#10;          &lt;string&gt;TLSv1.1&lt;/string&gt;&#10;        &lt;/dict&gt;&#10;      &lt;/dict&gt;&#10;    &lt;/dict&gt;&#10;    &lt;key&gt;NSMicrophoneUsageDescription&lt;/key&gt;&#10;    &lt;string&gt;Vial needs microphone access for voice-to-text input to the AI sound designer.&lt;/string&gt;&#10;  &lt;/dict&gt;&#10;&lt;/plist&gt;"
                extraLinkerFlags="" iosDevelopmentTeamID="R4J45Y5SBH" smallIcon="g2GF6b"
                bigIcon="peC6sV" documentExtensions="vital,vitalbank,vitaltable"
                extraDefs="JUCE_OPENGL3=1&#10;NO_AUTH=1" hardenedRuntime="1"
-               externalLibraries="gssapi_krb5" extraFrameworks="Security,GSS"
+               hardenedRuntimeOptions="com.apple.security.device.audio-input"
+               externalLibraries="gssapi_krb5" extraFrameworks="Security,GSS,AVFoundation"
                frameworkSearchPaths="" extraCustomFrameworks="" xcodeValidArchs="arm64,arm64e,x86_64">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" osxCompatibility="10.12 SDK" osxArchitecture="64BitIntel"
-                       isDebug="1" optimisation="1" targetName="Vial" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c"
+                       isDebug="1" optimisation="1" targetName="Vial" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;../../../third_party/ixwebsocket"
                        codeSigningIdentity="" fastMath="1" cppLibType="libc++" enablePluginBinaryCopyStep="1"
                        macOSDeploymentTarget="10.12"/>
         <CONFIGURATION name="Release" osxCompatibility="10.12 SDK" osxArchitecture="64BitIntel"
-                       isDebug="0" optimisation="6" targetName="Vial" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c"
+                       isDebug="0" optimisation="6" targetName="Vial" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;../../../third_party/ixwebsocket"
                        codeSigningIdentity="" cppLibType="libc++" fastMath="1" linkTimeOptimisation="1"
                        enablePluginBinaryCopyStep="1" macOSDeploymentTarget="10.12"/>
       </CONFIGURATIONS>
@@ -876,10 +944,10 @@
                 externalLibraries="secret-1&#10;glib-2.0">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" libraryPath="/usr/X11R6/lib/" isDebug="1" optimisation="1"
-                       targetName="vial" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c"
+                       targetName="vial" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;../../../third_party/ixwebsocket"
                        linuxArchitecture="" defines=""/>
         <CONFIGURATION name="Release" libraryPath="/usr/X11R6/lib/" isDebug="0" optimisation="6"
-                       targetName="vial" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c"
+                       targetName="vial" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;../../../third_party/ixwebsocket"
                        linuxArchitecture="" defines="" linkTimeOptimisation="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>

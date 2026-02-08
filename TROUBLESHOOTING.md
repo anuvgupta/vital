@@ -64,3 +64,23 @@
     - Pre-calculating wrap in `resized()` fails because component dimensions aren't set yet.
     - **Solution**: Override `paintOverChildren()` to calculate word wrapping at paint time when dimensions and font are accurate. Add a `wrapText()` helper to split text into lines. Store placeholder text/color locally since JUCE's members are private (override `setTextToShowWhenEmpty()`).
     - Fixed in `OpenGlTextEditor` class in `src/interface/editor_components/open_gl_image_component.h`.
+
+- **Projucer customPList XML nesting matters**:
+    - Adding entries like `NSMicrophoneUsageDescription` outside the `<dict>` block causes the plist to be silently malformed. Xcode won't warn you; the key just won't appear in the built Info.plist.
+    - **Solution**: Ensure all plist entries are inside `<dict>...</dict>` in the `customPList` field of `vital.jucer`.
+
+- **AVFoundation/JUCE namespace conflicts in unity builds**:
+    - Including `<AVFoundation/AVFoundation.h>` in a `.mm` file that's part of a unity build causes type collisions with JUCE (e.g., `Point`, `Rectangle`, `String`).
+    - **Solution**: Create a separate `.mm` file (e.g., `mic_permission_mac.mm`) that is compiled independently (not included in any unity build file). Set `compile="1"` in the jucer for this file, or exclude it from unity build includes.
+
+- **macOS hardened runtime silently blocks microphone access**:
+    - Even with `NSMicrophoneUsageDescription` in Info.plist, if the hardened runtime is enabled (default for signed apps), mic access is silently denied -- no permission dialog, no error, just silent audio buffers of zeros.
+    - **Solution**: Add `com.apple.security.device.audio-input` to the entitlements file. In Projucer, set `hardenedRuntimeOptions="com.apple.security.device.audio-input"` in `vital.jucer`. Also call `[AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio]` explicitly before opening audio devices.
+
+- **Deepgram endpointing may not trigger on manual stop**:
+    - If the user stops recording quickly, Deepgram's voice activity detection / endpointing may never fire, leaving only interim (non-final) transcripts. The `is_final` field in the response will be false.
+    - **Solution**: On manual stop, grab whatever text is currently displayed in the prompt editor (from interim transcripts) and submit it directly, rather than waiting for a final transcript from Deepgram.
+
+- **Separate AudioDeviceManager for mic input to avoid interfering with synth**:
+    - Using the synth's existing `AudioDeviceManager` for mic capture can reconfigure audio routing and break synth output.
+    - **Solution**: Create a dedicated `AudioDeviceManager` in `MicrophoneCapture` with 1 input channel and 0 output channels. This keeps mic recording fully isolated from synth audio.

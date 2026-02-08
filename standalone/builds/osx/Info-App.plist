@@ -18,6 +18,8 @@
         </dict>
       </dict>
     </dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Vial needs microphone access for voice-to-text input to the AI sound designer.</string>
     <key>CFBundleExecutable</key>
     <string>${EXECUTABLE_NAME}</string>
     <key>CFBundleIconFile</key>

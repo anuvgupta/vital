@@ -607,10 +607,118 @@
     <ClCompile Include="..\..\..\src\common\claude_api_client.cpp">
       <Filter>Vial\src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\common\deepgram_client.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\common\microphone_capture.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\common\mic_permission_mac.mm">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\common\markdown_parser.cpp">
       <Filter>Vial\src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\third_party\md4c\md4c.c">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXBench.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXCancellationRequest.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXConnectionState.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXDNSLookup.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXExponentialBackoff.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXGzipCodec.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXHttp.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXHttpClient.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXNetSystem.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSelectInterrupt.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSelectInterruptEvent.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSelectInterruptFactory.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSelectInterruptPipe.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSetThreadName.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocket.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketAppleSSL.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketConnect.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketFactory.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketMbedTLS.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketOpenSSL.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketTLSOptions.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXStrCaseCompare.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXUrlParser.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXUserAgent.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXUuid.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocket.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketCloseConstants.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketHandshake.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketHttpHeaders.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketPerMessageDeflate.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketPerMessageDeflateCodec.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketPerMessageDeflateOptions.cpp">
+      <Filter>Vial\src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketTransport.cpp">
       <Filter>Vial\src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\common\midi_manager.cpp">
@@ -3394,6 +3502,12 @@
       <Filter>Vial\src\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\common\claude_api_client.h">
+      <Filter>Vial\src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\common\deepgram_client.h">
+      <Filter>Vial\src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\common\microphone_capture.h">
       <Filter>Vial\src\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\common\markdown_parser.h">

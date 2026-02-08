@@ -61,6 +61,8 @@ namespace {
       preset_selector->signIn();
     else if (result == SynthPresetSelector::kLoadApiKey)
       preset_selector->loadApiKeyFile();
+    else if (result == SynthPresetSelector::kLoadDeepgramApiKey)
+      preset_selector->loadDeepgramApiKeyFile();
   }
 
   String redactEmail(const String& email) {
@@ -218,6 +220,7 @@ void SynthPresetSelector::showPopupMenu(Component* anchor) {
 
   options.addItem(-1, "");
   options.addItem(kLoadApiKey, "Load Claude API Key");
+  options.addItem(kLoadDeepgramApiKey, "Load Deepgram API Key");
 
   if (LoadSave::getDefaultSkin().exists()) {
     options.addItem(-1, "");
@@ -435,6 +438,17 @@ void SynthPresetSelector::loadApiKeyFile() {
     FullInterface* full_interface = findParentComponentOfClass<FullInterface>();
     if (full_interface && full_interface->getSidePanel())
       full_interface->getSidePanel()->initializeApiClient();
+  }
+}
+
+void SynthPresetSelector::loadDeepgramApiKeyFile() {
+  FileChooser load_box("Select Deepgram API Key File", File(), "*");
+  if (load_box.browseForFileToOpen()) {
+    std::string path = load_box.getResult().getFullPathName().toStdString();
+    LoadSave::saveDeepgramApiKeyPath(path);
+    FullInterface* full_interface = findParentComponentOfClass<FullInterface>();
+    if (full_interface && full_interface->getSidePanel())
+      full_interface->getSidePanel()->initializeDeepgramClient();
   }
 }
 

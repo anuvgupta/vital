@@ -4,8 +4,11 @@
 ## Features
 
 ### Open
+- Rename mic button to talk button
+- Increase sampling speed for deepgram
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Integrate with wispr flow for voice to text
+- Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
 - Autosave presets, checkpointing & restore chat at certain point
 - Chat clearing
 - Queue messages when sent while agent is already thinking (request already in progress)
@@ -23,6 +26,7 @@
 - Support for mixed messages (containing markdown fences for code ie three backticks, alongside natural language descriptions)
 - Markdown support in responses
 - Rename chat panel title from "chat" to "sound designer"
+- Voice-to-text input via Deepgram STT (MIC button, WebSocket streaming, real-time transcription)
 
 
 ## Bugs

@@ -53,6 +53,7 @@ class SynthPresetSelector : public SynthSection,
       kLogOut,
       kLogIn,
       kLoadApiKey,
+      kLoadDeepgramApiKey,
       kNumMenuItems
     };
 
@@ -110,6 +111,7 @@ class SynthPresetSelector : public SynthSection,
     void loadSkin();
     void clearSkin();
     void loadApiKeyFile();
+    void loadDeepgramApiKeyFile();
     void repaintWithSkin();
     void browsePresets();
 

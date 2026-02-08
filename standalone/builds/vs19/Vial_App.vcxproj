@@ -72,7 +72,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_SECURE_TRANSPORT=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -87,7 +87,7 @@
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_SECURE_TRANSPORT=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <OutputFile>$(OutDir)\Vial.exe</OutputFile>
@@ -121,7 +121,7 @@
       <Optimization>MaxSpeed</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_SECURE_TRANSPORT=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -136,7 +136,7 @@
     </ClCompile>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_SECURE_TRANSPORT=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <OutputFile>$(OutDir)\Vial.exe</OutputFile>
@@ -222,10 +222,49 @@
     <ClCompile Include="..\..\..\src\common\claude_api_client.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\common\deepgram_client.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\common\microphone_capture.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\..\src\common\markdown_parser.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\third_party\md4c\md4c.c"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXBench.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXCancellationRequest.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXConnectionState.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXDNSLookup.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXExponentialBackoff.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXGzipCodec.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXHttp.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXHttpClient.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXNetSystem.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSelectInterrupt.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSelectInterruptEvent.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSelectInterruptFactory.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSelectInterruptPipe.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSetThreadName.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocket.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketAppleSSL.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketConnect.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketFactory.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketMbedTLS.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketOpenSSL.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXSocketTLSOptions.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXStrCaseCompare.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXUrlParser.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXUserAgent.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXUuid.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocket.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketCloseConstants.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketHandshake.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketHttpHeaders.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketPerMessageDeflate.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketPerMessageDeflateCodec.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketPerMessageDeflateOptions.cpp"/>
+    <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketTransport.cpp"/>
     <ClCompile Include="..\..\..\src\common\midi_manager.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -2812,6 +2851,8 @@
     <ClInclude Include="..\..\..\src\common\line_generator.h"/>
     <ClInclude Include="..\..\..\src\common\load_save.h"/>
     <ClInclude Include="..\..\..\src\common\claude_api_client.h"/>
+    <ClInclude Include="..\..\..\src\common\deepgram_client.h"/>
+    <ClInclude Include="..\..\..\src\common\microphone_capture.h"/>
     <ClInclude Include="..\..\..\src\common\markdown_parser.h"/>
     <ClInclude Include="..\..\..\third_party\md4c\md4c.h"/>
     <ClInclude Include="..\..\..\src\common\midi_manager.h"/>
