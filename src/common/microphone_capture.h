@@ -24,13 +24,16 @@
 class MicrophoneCapture : private AudioIODeviceCallback {
   public:
     static constexpr int kTargetSampleRate = 16000;
+    static constexpr float kSilenceThreshold = 0.06f;
+    static constexpr float kDefaultSilenceTimeoutSeconds = 2.5f;
 
     using AudioDataCallback = std::function<void(const void* data, int num_bytes)>;
+    using SilenceCallback = std::function<void()>;
 
     MicrophoneCapture();
     ~MicrophoneCapture();
 
-    bool startCapture(AudioDataCallback callback);
+    bool startCapture(AudioDataCallback callback, SilenceCallback on_silence = nullptr);
     void stopCapture();
     bool isCapturing() const { return capturing_.load(); }
 
@@ -45,10 +48,15 @@ class MicrophoneCapture : private AudioIODeviceCallback {
 
     AudioDeviceManager device_manager_;
     AudioDataCallback audio_callback_;
+    SilenceCallback silence_callback_;
     std::atomic<bool> capturing_{false};
 
     double device_sample_rate_ = 0.0;
     LagrangeInterpolator resampler_;
     std::vector<float> resample_buffer_;
     std::vector<int16_t> conversion_buffer_;
+
+    int silent_callback_count_ = 0;
+    int silence_threshold_callbacks_ = 0;
+    std::atomic<bool> silence_fired_{false};
 };

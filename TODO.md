@@ -7,7 +7,6 @@
 - Rename mic button to talk button
 - Increase sampling speed for deepgram
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
-- Integrate with wispr flow for voice to text
 - Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
 - Autosave presets, checkpointing & restore chat at certain point
 - Chat clearing
@@ -21,12 +20,19 @@
     - first start with "knowledge base" and "preset generator" skills, then add "sound designer" as separate skill to see if it improves interpretation of nontechnical suond design descriptions
     - we need to research if there is already support for this in claude platform or openai platform. if not, we need to build our own latency-optimized orchestrater in AWS for example.
 
+
+## Deprioritized
+- Migrate to wispr flow for voice to text
+- Mic calibration for silence vs talking - do this when app starts (optional)
+
+
 ### Done
 - Move away from Opus because its too expensive
 - Support for mixed messages (containing markdown fences for code ie three backticks, alongside natural language descriptions)
 - Markdown support in responses
 - Rename chat panel title from "chat" to "sound designer"
 - Voice-to-text input via Deepgram STT (MIC button, WebSocket streaming, real-time transcription)
+- Turn off mic feature if no significant input sound for 2.5 seconds - make this configurable
 
 
 ## Bugs
@@ -38,4 +44,6 @@
 - Limit messages to a certain character limit
 - Fix font sizes appearing different on different platforms
 - Placeholder text in textarea doesn't wrap when window is shrunk (resized to be smaller) even though actual text in textarea does
+- Integrate with deepgram for voice to text
+
 

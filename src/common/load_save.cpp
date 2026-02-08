@@ -1719,6 +1719,19 @@ std::string LoadSave::getDeepgramApiKeyPath() {
   return "";
 }
 
+void LoadSave::saveMicSilenceTimeout(float seconds) {
+  json data = getConfigJson();
+  data["mic_silence_timeout"] = seconds;
+  saveJsonToConfig(data);
+}
+
+float LoadSave::getMicSilenceTimeout() {
+  json data = getConfigJson();
+  if (data.count("mic_silence_timeout"))
+    return data["mic_silence_timeout"].get<float>();
+  return 2.5f;  // default
+}
+
 std::pair<wchar_t, wchar_t> LoadSave::getComputerKeyboardOctaveControls() {
   std::pair<wchar_t, wchar_t> octave_controls(vital::kDefaultKeyboardOctaveDown, vital::kDefaultKeyboardOctaveUp);
   json data = getConfigJson();

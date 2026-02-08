@@ -31,11 +31,15 @@ MicrophoneCapture::~MicrophoneCapture() {
   stopCapture();
 }
 
-bool MicrophoneCapture::startCapture(AudioDataCallback callback) {
+bool MicrophoneCapture::startCapture(AudioDataCallback callback, SilenceCallback on_silence) {
   if (capturing_.load())
     stopCapture();
 
   audio_callback_ = std::move(callback);
+  silence_callback_ = std::move(on_silence);
+  silent_callback_count_ = 0;
+  silence_threshold_callbacks_ = 0;
+  silence_fired_.store(false);
 
 #if JUCE_MAC
   if (!requestMicrophonePermission()) {
@@ -65,6 +69,9 @@ void MicrophoneCapture::stopCapture() {
   device_manager_.removeAudioCallback(this);
   device_manager_.closeAudioDevice();
   audio_callback_ = nullptr;
+  silence_callback_ = nullptr;
+  silent_callback_count_ = 0;
+  silence_fired_.store(false);
   resampler_.reset();
   DBG("MicrophoneCapture: Stopped capturing");
 }
@@ -72,6 +79,17 @@ void MicrophoneCapture::stopCapture() {
 void MicrophoneCapture::audioDeviceAboutToStart(AudioIODevice* device) {
   device_sample_rate_ = device->getCurrentSampleRate();
   resampler_.reset();
+
+  float timeout_seconds = LoadSave::getMicSilenceTimeout();
+  int block_size = device->getCurrentBufferSizeSamples();
+  if (timeout_seconds > 0.0f && block_size > 0 && device_sample_rate_ > 0.0) {
+    double callbacks_per_sec = device_sample_rate_ / block_size;
+    silence_threshold_callbacks_ = static_cast<int>(callbacks_per_sec * timeout_seconds);
+  } else {
+    silence_threshold_callbacks_ = 0;  // disabled
+  }
+  silent_callback_count_ = 0;
+  silence_fired_.store(false);
   DBG("MicrophoneCapture: Device started at " + String(device_sample_rate_) + " Hz"
       + " device=\"" + device->getName() + "\""
       + " type=\"" + device->getTypeName() + "\""
@@ -115,21 +133,36 @@ void MicrophoneCapture::audioDeviceIOCallback(const float** inputChannelData,
   if (static_cast<int>(conversion_buffer_.size()) < num_output_samples)
     return;
 
-  // Periodic log to confirm audio is flowing + check actual sample values
+  // Find peak amplitude in raw input (needed for silence detection + logging)
+  float peak = 0.0f;
+  for (int i = 0; i < numSamples; ++i) {
+    float abs_val = std::abs(input[i]);
+    if (abs_val > peak) peak = abs_val;
+  }
+
+  // Silence detection
+  if (peak < kSilenceThreshold) {
+    ++silent_callback_count_;
+    if (silence_threshold_callbacks_ > 0 &&
+        silent_callback_count_ >= silence_threshold_callbacks_ &&
+        !silence_fired_.load() && silence_callback_) {
+      silence_fired_.store(true);
+      auto cb = silence_callback_;
+      MessageManager::callAsync([cb]() { cb(); });
+    }
+  } else {
+    silent_callback_count_ = 0;
+  }
+
+  // Periodic log
   static int callback_count = 0;
   if (callback_count++ % 200 == 0) {
-    // Find peak amplitude in raw input
-    float peak = 0.0f;
-    for (int i = 0; i < numSamples; ++i) {
-      float abs_val = std::abs(input[i]);
-      if (abs_val > peak) peak = abs_val;
-    }
     DBG("MicrophoneCapture: audio callback #" + String(callback_count)
         + " numSamples=" + String(numSamples)
         + " outputSamples=" + String(num_output_samples)
         + " ratio=" + String(speed_ratio)
         + " inputPeak=" + String(peak, 6)
-        + " first3=[" + String(input[0], 6) + "," + String(input[1], 6) + "," + String(input[2], 6) + "]");
+        + " silentCount=" + String(silent_callback_count_) + "/" + String(silence_threshold_callbacks_));
   }
 
   if (std::abs(speed_ratio - 1.0) < 0.001) {

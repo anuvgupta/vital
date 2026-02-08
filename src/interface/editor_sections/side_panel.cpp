@@ -35,6 +35,10 @@ static constexpr int kQuoteBorderWidth = 3;
 static constexpr int kQuoteIndent = 10;
 static constexpr float kHeadingScale[] = { 1.5f, 1.3f, 1.15f, 1.0f, 0.9f, 0.85f };
 
+static const String kMicButtonTalk = "TALK";
+static const String kMicButtonStop = "STOP";
+static const String kSubmitButtonText = "COOK";
+
 Font getRegularFont(float size) {
     return Fonts::instance()->proportional_regular().withPointHeight(size);
 }
@@ -194,12 +198,12 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   action_button_ = std::make_unique<OpenGlToggleButton>("Cook");
   addButton(action_button_.get());
   action_button_->setUiButton(true);
-  action_button_->setText("COOK");
+  action_button_->setText(kSubmitButtonText);
 
   mic_button_ = std::make_unique<OpenGlToggleButton>("Mic");
   addButton(mic_button_.get());
   mic_button_->setUiButton(false);
-  mic_button_->setText("MIC");
+  mic_button_->setText(kMicButtonTalk);
 
   mic_capture_ = std::make_unique<MicrophoneCapture>();
 
@@ -578,6 +582,10 @@ void VitalSidePanel::startRecording() {
   bool capturing = mic_capture_->startCapture(
     [](const void* data, int num_bytes) {
       DeepgramClient::instance().sendAudioData(data, num_bytes);
+    },
+    [this]() {
+      DBG("VitalSidePanel: Silence timeout - stopping recording");
+      stopRecording();
     }
   );
 
@@ -588,7 +596,7 @@ void VitalSidePanel::startRecording() {
   }
 
   recording_ = true;
-  mic_button_->setText("STOP");
+  mic_button_->setText(kMicButtonStop);
   mic_button_->getGlComponent()->text().redrawImage(true);
   recording_indicator_->setActive(true);
   addMessage("Listening... speak your instructions.", ChatMessage::kSystem);
@@ -612,7 +620,7 @@ void VitalSidePanel::stopRecording() {
   DeepgramClient::instance().disconnect();
   recording_ = false;
 
-  mic_button_->setText("MIC");
+  mic_button_->setText(kMicButtonTalk);
   mic_button_->getGlComponent()->text().redrawImage(true);
   recording_indicator_->setActive(false);
 

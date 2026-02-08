@@ -147,6 +147,8 @@ class LoadSave {
     static std::string getApiKeyPath();
     static void saveDeepgramApiKeyPath(const std::string& path);
     static std::string getDeepgramApiKeyPath();
+    static void saveMicSilenceTimeout(float seconds);
+    static float getMicSilenceTimeout();
     static std::pair<wchar_t, wchar_t> getComputerKeyboardOctaveControls();
     static void saveAdditionalFolders(const std::string& name, std::vector<std::string> folders);
     static std::vector<std::string> getAdditionalFolders(const std::string& name);

@@ -54,6 +54,11 @@ class SynthPresetSelector : public SynthSection,
       kLogIn,
       kLoadApiKey,
       kLoadDeepgramApiKey,
+      kSilenceTimeout1_5,
+      kSilenceTimeout2_5,
+      kSilenceTimeout3_5,
+      kSilenceTimeout5,
+      kSilenceTimeoutOff,
       kNumMenuItems
     };
 
