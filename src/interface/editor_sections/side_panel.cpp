@@ -38,7 +38,7 @@ static constexpr float kHeadingScale[] = { 1.5f, 1.3f, 1.15f, 1.0f, 0.9f, 0.85f 
 static const String kAskButtonLabel = "ASK";
 static const String kTalkButtonLabel = "TALK";
 static const String kStopButtonLabel = "STOP";
-static const String kSubmitButtonText = "COOK";
+static const String kSubmitButtonText = "SEND";
 
 Font getRegularFont(float size) {
     return Fonts::instance()->proportional_regular().withPointHeight(size);
