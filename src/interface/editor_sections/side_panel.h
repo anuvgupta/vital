@@ -109,6 +109,7 @@ private:
     void scrollToBottom();
     void setScrollBarRange();
     void paintChatMessages(Graphics &g);
+    void updateMicButtonColors();
 
     std::vector<Listener *> listeners_;
     std::unique_ptr<OpenGlTextEditor> prompt_editor_;

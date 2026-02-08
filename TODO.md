@@ -4,14 +4,12 @@
 ## Features
 
 ### Open
-- Rename mic button to talk button
 - Increase sampling speed for deepgram
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
 - Autosave presets, checkpointing & restore chat at certain point
 - Chat clearing
-- Queue messages when sent while agent is already thinking (request already in progress)
-- multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
+- Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
     - architecture details
         - first, run just the latest user message through sonnet to have it decide which "skill" to call
@@ -33,6 +31,8 @@
 - Rename chat panel title from "chat" to "sound designer"
 - Voice-to-text input via Deepgram STT (MIC button, WebSocket streaming, real-time transcription)
 - Turn off mic feature if no significant input sound for 2.5 seconds - make this configurable
+- Rename mic button to talk button
+- Queue messages when sent while agent is already thinking (request already in progress)
 
 
 ## Bugs

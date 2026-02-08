@@ -202,7 +202,7 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
 
   mic_button_ = std::make_unique<OpenGlToggleButton>("Mic");
   addButton(mic_button_.get());
-  mic_button_->setUiButton(false);
+  mic_button_->setUiButton(true);
   mic_button_->setText(kMicButtonTalk);
 
   mic_capture_ = std::make_unique<MicrophoneCapture>();
@@ -417,6 +417,7 @@ void VitalSidePanel::resized() {
   mic_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
   mic_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
   mic_button_->getGlComponent()->text().redrawImage(true);
+  updateMicButtonColors();
 
   action_button_->setBounds(padding + mic_width + button_gap, button_y, cook_width, button_height);
   action_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
@@ -598,6 +599,7 @@ void VitalSidePanel::startRecording() {
   recording_ = true;
   mic_button_->setText(kMicButtonStop);
   mic_button_->getGlComponent()->text().redrawImage(true);
+  updateMicButtonColors();
   recording_indicator_->setActive(true);
   addMessage("Listening... speak your instructions.", ChatMessage::kSystem);
 }
@@ -622,6 +624,7 @@ void VitalSidePanel::stopRecording() {
 
   mic_button_->setText(kMicButtonTalk);
   mic_button_->getGlComponent()->text().redrawImage(true);
+  updateMicButtonColors();
   recording_indicator_->setActive(false);
 
 #if !defined(NO_TEXT_ENTRY)
@@ -735,4 +738,19 @@ void VitalSidePanel::setScrollBarRange() {
   int visible_height = chat_bounds_.getHeight();
   scroll_bar_->setRangeLimits(0.0, std::max(total_content_height_, visible_height));
   scroll_bar_->setCurrentRange(scroll_position_, visible_height, dontSendNotification);
+}
+
+void VitalSidePanel::updateMicButtonColors() {
+  if (recording_) {
+    // Use the original non-primary button grey for STOP state
+    mic_button_->setColour(Skin::kUiActionButton, findColour(Skin::kUiButton, true));
+    mic_button_->setColour(Skin::kUiActionButtonHover, findColour(Skin::kUiButtonHover, true));
+    mic_button_->setColour(Skin::kUiActionButtonPressed, findColour(Skin::kUiButtonPressed, true));
+  } else {
+    // Remove overrides to use default bright purple
+    mic_button_->removeColour(Skin::kUiActionButton);
+    mic_button_->removeColour(Skin::kUiActionButtonHover);
+    mic_button_->removeColour(Skin::kUiActionButtonPressed);
+  }
+  mic_button_->getGlComponent()->setColors();
 }
