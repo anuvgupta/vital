@@ -89,6 +89,12 @@
     - `MessageBoxIconType::InfoIcon` and similar enum-class-style icon types are JUCE 7+ API. Using them in JUCE 6 causes compilation errors.
     - **Solution**: Use `AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon, ...)` which is the JUCE 6 API. The icon type enum lives on `AlertWindow` directly in JUCE 6, not in a separate `MessageBoxIconType` enum class.
 
+- **Cross-platform resource file loading — AI chat broken on Windows**:
+    - `ClaudeApiClient::loadSystemPrompt()` and `loadPresetSchema()` search for `SYSTEM_PROMPT.md` and `PRESET_SCHEMA.md` at runtime. The first search path (`../../Resources/` relative to exe) only works inside a macOS `.app` bundle. On Windows, `build_windows.bat` copies these files next to the `.exe`, but that directory was never checked.
+    - Without the system prompt and schema, Claude has no instructions to output JSON, so it responds conversationally -- the raw markdown text appears in the chat instead of preset changes being applied.
+    - **Solution**: Added `executable.getParentDirectory()` (exe-adjacent directory) as a search path between the macOS bundle path and the user data dir fallback. Search order: (1) `../../Resources/` for macOS bundles, (2) same dir as exe for Windows, (3) user data dir as fallback.
+    - File: `src/common/claude_api_client.cpp`
+
 - **UTF-8 special characters render as garbage in JUCE button text**:
     - Passing raw UTF-8 hex bytes like `"\xc3\x97"` (multiplication sign) to `setButtonText()` renders as "A" with diacritical marks (e.g., "Å") because JUCE interprets the bytes as Latin-1, not UTF-8.
     - **Solution**: Wrap UTF-8 byte sequences with `String(CharPointer_UTF8("\xc3\x97"))`. This is the established pattern in the Vital codebase (used for bullet characters in markdown rendering in `side_panel.cpp`). Applies to any non-ASCII Unicode character in button labels or drawn text.

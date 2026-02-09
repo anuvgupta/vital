@@ -1,9 +1,9 @@
 # Documenter Agent's Short-Term Memory
 
-## Latest Task: Chat Clear/Reset Button (2026-02-08)
+## Latest Task: Fix Windows AI Chat (2026-02-09)
 
-- Added clear button (x icon) to side panel title row
-- ClaudeApiClient gained `clearConversation()` public method
-- UTF-8 rendering issue: raw hex bytes need `String(CharPointer_UTF8(...))` wrapper in JUCE
-- Files touched: side_panel.h/cpp, claude_api_client.h/cpp
-- Updated all docs: STEERING.md, CHANGELOG.md, TODO.md, TROUBLESHOOTING.md
+- Fixed cross-platform bug: AI chat worked on macOS but not Windows
+- Root cause: ClaudeApiClient resource file search paths didn't include exe-adjacent directory
+- Added executable.getParentDirectory() as search path in loadSystemPrompt() and loadPresetSchema()
+- File touched: src/common/claude_api_client.cpp
+- Updated: CHANGELOG.md, TROUBLESHOOTING.md, TODO.md (moved to Bugs Done)

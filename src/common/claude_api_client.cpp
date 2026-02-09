@@ -85,6 +85,11 @@ bool ClaudeApiClient::loadSystemPrompt() {
   prompt_file = resources_dir.getChildFile("SYSTEM_PROMPT.md");
 
   if (!prompt_file.existsAsFile()) {
+    // Try same directory as executable (Windows: files copied next to .exe)
+    prompt_file = executable.getParentDirectory().getChildFile("SYSTEM_PROMPT.md");
+  }
+
+  if (!prompt_file.existsAsFile()) {
     // Try the user's application data directory
     File app_data = LoadSave::getDataDirectory();
     prompt_file = app_data.getChildFile("SYSTEM_PROMPT.md");
@@ -106,6 +111,11 @@ bool ClaudeApiClient::loadPresetSchema() {
 
   File resources_dir = executable.getParentDirectory().getParentDirectory().getChildFile("Resources");
   prompt_file = resources_dir.getChildFile("PRESET_SCHEMA.md");
+
+  if (!prompt_file.existsAsFile()) {
+    // Try same directory as executable (Windows: files copied next to .exe)
+    prompt_file = executable.getParentDirectory().getChildFile("PRESET_SCHEMA.md");
+  }
 
   if (!prompt_file.existsAsFile()) {
     File app_data = LoadSave::getDataDirectory();
