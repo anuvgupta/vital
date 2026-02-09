@@ -17,6 +17,7 @@
 #include "deepgram_client.h"
 #include "load_save.h"
 #include "../../third_party/ixwebsocket/IXWebSocket.h"
+#include "../../third_party/ixwebsocket/IXNetSystem.h"
 
 using json = nlohmann::json;
 
@@ -43,6 +44,7 @@ DeepgramClient::DeepgramClient() : impl_(std::make_unique<Impl>()) {
 
 DeepgramClient::~DeepgramClient() {
   disconnect();
+  ix::uninitNetSystem();
 }
 
 DeepgramClient& DeepgramClient::instance() {
@@ -51,6 +53,7 @@ DeepgramClient& DeepgramClient::instance() {
 }
 
 bool DeepgramClient::initialize() {
+  ix::initNetSystem();
   initialized_ = false;
   if (!loadApiKey())
     return false;

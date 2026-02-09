@@ -71,8 +71,8 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_SECURE_TRANSPORT=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;../../../third_party/mbedtls/include;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_MBED_TLS=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -86,8 +86,8 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_SECURE_TRANSPORT=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;../../../third_party/mbedtls/include;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_MBED_TLS=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <OutputFile>$(OutDir)\Vial.exe</OutputFile>
@@ -98,14 +98,14 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel\oneAPI\ipp\latest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
-      <AdditionalDependencies>ipps.lib;ippcore.lib;ippvm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ipps.lib;ippcore.lib;ippvm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)\Vial.bsc</OutputFile>
     </Bscmake>
     <Lib>
-      <AdditionalDependencies>ipps.lib;ippcore.lib;ippvm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ipps.lib;ippcore.lib;ippvm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel\oneAPI\ipp\latest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -120,8 +120,8 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_SECURE_TRANSPORT=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;../../../third_party/mbedtls/include;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_MBED_TLS=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -135,8 +135,8 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_SECURE_TRANSPORT=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\JuceLibraryCode;..\..\..\third_party\JUCE\modules;../../../src/common;../../../src/common/wavetable;../../../src/interface/editor_components;../../../src/interface/editor_sections;../../../src/interface/look_and_feel;../../../src/interface/wavetable;../../../src/interface/wavetable/editors;../../../src/interface/wavetable/overlays;../../../src/standalone;../../../src/synthesis/synth_engine;../../../src/synthesis/effects;../../../src/synthesis/filters;../../../src/synthesis/framework;../../../src/synthesis/lookups;../../../src/synthesis/modulators;../../../src/synthesis/modules;../../../src/synthesis/producers;../../../src/synthesis/utilities;../../../third_party;../../../third_party/md4c;../../../third_party/mbedtls/include;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;IXWEBSOCKET_USE_TLS=1;IXWEBSOCKET_USE_MBED_TLS=1;JUCE_OPENGL3=1;NO_AUTH=1;INTEL_IPP=1;WINVER=0x0601;_WIN32_WINNT=0x0601;_ENABLE_EXTENDED_ALIGNED_STORAGE;__SSE2__=1;JUCER_VS2019_B927B5AF=1;JUCE_APP_VERSION=1.0.6;JUCE_APP_VERSION_HEX=0x10006;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <OutputFile>$(OutDir)\Vial.exe</OutputFile>
@@ -150,14 +150,14 @@
       <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel\oneAPI\ipp\latest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>ipps.lib;ippcore.lib;ippvm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ipps.lib;ippcore.lib;ippvm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)\Vial.bsc</OutputFile>
     </Bscmake>
     <Lib>
-      <AdditionalDependencies>ipps.lib;ippcore.lib;ippvm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ipps.lib;ippcore.lib;ippvm.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files (x86)\Intel\oneAPI\ipp\latest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -265,6 +265,114 @@
     <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketPerMessageDeflateCodec.cpp"/>
     <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketPerMessageDeflateOptions.cpp"/>
     <ClCompile Include="..\..\..\third_party\ixwebsocket\IXWebSocketTransport.cpp"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\aes.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\aesce.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\aesni.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\aria.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\asn1parse.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\asn1write.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\base64.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\bignum.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\bignum_core.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\bignum_mod.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\bignum_mod_raw.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\block_cipher.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\camellia.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ccm.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\chacha20.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\chachapoly.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\cipher.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\cipher_wrap.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\cmac.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\constant_time.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ctr_drbg.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\debug.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\des.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\dhm.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ecdh.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ecdsa.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ecjpake.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ecp.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ecp_curves.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ecp_curves_new.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\entropy.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\entropy_poll.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\error.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\gcm.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\hkdf.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\hmac_drbg.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\lmots.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\lms.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\md.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\md5.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\memory_buffer_alloc.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\mps_reader.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\mps_trace.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\net_sockets.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\nist_kw.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\oid.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\padlock.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\pem.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\pk.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\pk_ecc.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\pk_wrap.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\pkcs12.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\pkcs5.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\pkcs7.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\pkparse.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\pkwrite.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\platform.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\platform_util.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\poly1305.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_aead.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_cipher.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_client.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_driver_wrappers_no_static.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_ecp.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_ffdh.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_hash.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_mac.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_pake.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_rsa.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_se.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_slot_management.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_crypto_storage.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_its_file.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\psa_util.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ripemd160.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\rsa.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\rsa_alt_helpers.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\sha1.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\sha256.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\sha3.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\sha512.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_cache.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_ciphersuites.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_client.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_cookie.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_debug_helpers_generated.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_msg.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_ticket.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_tls.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_tls12_client.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_tls12_server.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_tls13_client.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_tls13_generic.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_tls13_keys.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\ssl_tls13_server.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\threading.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\timing.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\version.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\version_features.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\x509.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\x509_create.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\x509_crl.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\x509_crt.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\x509_csr.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\x509write.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\x509write_crt.c"/>
+    <ClCompile Include="..\..\..\third_party\mbedtls\library\x509write_csr.c"/>
     <ClCompile Include="..\..\..\src\common\midi_manager.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>

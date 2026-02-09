@@ -9,7 +9,10 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "WebFetch(domain:developers.deepgram.com)"
+      "WebFetch(domain:developers.deepgram.com)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(tar:*)"
     ]
   }
 }
