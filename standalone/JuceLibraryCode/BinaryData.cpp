@@ -11,61 +11,61 @@ namespace BinaryData
 
 //================== 5 Limit.scl ==================
 static const unsigned char temp_binary_data_0[] =
-"5-limit scaling\r\n"
-" 12\r\n"
-"!\r\n"
-" 16/15\r\n"
-" 9/8\r\n"
-" 6/5\r\n"
-" 5/4\r\n"
-" 4/3\r\n"
-" 45/32\r\n"
-" 3/2\r\n"
-" 8/5\r\n"
-" 5/3\r\n"
-" 9/5\r\n"
-" 15/8\r\n"
-" 2/1\r\n";
+"5-limit scaling\n"
+" 12\n"
+"!\n"
+" 16/15\n"
+" 9/8\n"
+" 6/5\n"
+" 5/4\n"
+" 4/3\n"
+" 45/32\n"
+" 3/2\n"
+" 8/5\n"
+" 5/3\n"
+" 9/5\n"
+" 15/8\n"
+" 2/1\n";
 
 const char* _5_Limit_scl = (const char*) temp_binary_data_0;
 
 //================== 7 Limit.scl ==================
 static const unsigned char temp_binary_data_1[] =
-"7-limit scaling\r\n"
-" 12\r\n"
-"!\r\n"
-" 15/14\r\n"
-" 8/7\r\n"
-" 6/5\r\n"
-" 5/4\r\n"
-" 4/3\r\n"
-" 7/5\r\n"
-" 3/2\r\n"
-" 8/5\r\n"
-" 5/3\r\n"
-" 7/4\r\n"
-" 15/8\r\n"
-" 2/1\r\n";
+"7-limit scaling\n"
+" 12\n"
+"!\n"
+" 15/14\n"
+" 8/7\n"
+" 6/5\n"
+" 5/4\n"
+" 4/3\n"
+" 7/5\n"
+" 3/2\n"
+" 8/5\n"
+" 5/3\n"
+" 7/4\n"
+" 15/8\n"
+" 2/1\n";
 
 const char* _7_Limit_scl = (const char*) temp_binary_data_1;
 
 //================== Pythagorean.scl ==================
 static const unsigned char temp_binary_data_2[] =
-"Pythagorean scaling\r\n"
-" 12\r\n"
-"!\r\n"
-" 256/243\r\n"
-" 9/8\r\n"
-" 32/27\r\n"
-" 81/64\r\n"
-" 4/3\r\n"
-" 729/512\r\n"
-" 3/2\r\n"
-" 128/81\r\n"
-" 27/16\r\n"
-" 16/9\r\n"
-" 243/128\r\n"
-" 2/1\r\n";
+"Pythagorean scaling\n"
+" 12\n"
+"!\n"
+" 256/243\n"
+" 9/8\n"
+" 32/27\n"
+" 81/64\n"
+" 4/3\n"
+" 729/512\n"
+" 3/2\n"
+" 128/81\n"
+" 27/16\n"
+" 16/9\n"
+" 243/128\n"
+" 2/1\n";
 
 const char* Pythagorean_scl = (const char*) temp_binary_data_2;
 
@@ -11244,8 +11244,8 @@ const char* MontserratRegular_ttf = (const char*) temp_binary_data_11;
 
 //================== chorus.svg ==================
 static const unsigned char temp_binary_data_12[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M493.11 160.53L499.57 161.19L505.94 162."
 "1L512.23 163.25L518.43 164.65L524.54 166.29L530.55 168.16L536.46 170.26L542.25 172.58L547.94 175.12L553.5 177.87L558.94 180.83L564.25 183.99L569.43 187.34L574.47 190.89L579.36 194.62L584.1 198.53L588.69 202.62L593.11 206.89L597.38 211.31L601.47 215.9"
 "L605.38 220.64L609.11 225.53L612.66 230.57L616.01 235.75L619.17 241.06L622.13 246.5L624.88 252.06L627.42 257.75L629.74 263.54L631.84 269.45L633.71 275.46L635.35 281.57L636.75 287.77L637.9 294.06L638.81 300.43L639.47 306.89L639.87 313.41L640 320L639.8"
@@ -11309,8 +11309,8 @@ const char* cog_svg = (const char*) temp_binary_data_13;
 
 //================== compressor.svg ==================
 static const unsigned char temp_binary_data_14[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M591.21 300C596.06 300 600 303.94 600 30"
 "8.79C600 315.03 600 324.97 600 331.21C600 336.06 596.06 340 591.21 340C480.97 340 159.03 340 48.79 340C43.94 340 40 336.06 40 331.21C40 324.97 40 315.03 40 308.79C40 303.94 43.94 300 48.79 300C159.03 300 480.97 300 591.21 300Z\" id=\"b26o7SDGbN\"></p"
 "ath><path d=\"M318.08 210C391.74 210 452.52 189.25 500.44 147.74C505.5 143.35 513.07 143.53 517.92 148.16C522.49 152.53 527.67 157.47 532.24 161.84C536.85 166.24 536.72 173.63 531.97 177.87C478.05 225.96 406.76 250 318.08 250C229.49 250 159.46 226.02"
@@ -11329,8 +11329,8 @@ const char* compressor_svg = (const char*) temp_binary_data_14;
 
 //================== delay.svg ==================
 static const unsigned char temp_binary_data_15[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M80.41 100C85.71 100 90 104.29 90 109.59"
 "C90 195.67 90 444.33 90 530.41C90 535.71 85.71 540 80.41 540C74.33 540 65.67 540 59.59 540C54.29 540 50 535.71 50 530.41C50 444.33 50 195.67 50 109.59C50 104.29 54.29 100 59.59 100C65.67 100 74.33 100 80.41 100Z\" id=\"cjuOGdvUI\"></path><path d=\"M1"
 "80.16 160C185.6 160 190 164.4 190 169.84C190 231.87 190 408.13 190 470.16C190 475.6 185.6 480 180.16 480C174.13 480 165.87 480 159.84 480C154.4 480 150 475.6 150 470.16C150 408.13 150 231.87 150 169.84C150 164.4 154.4 160 159.84 160C165.87 160 174.13"
@@ -11350,8 +11350,8 @@ const char* delay_svg = (const char*) temp_binary_data_15;
 
 //================== distortion.svg ==================
 static const unsigned char temp_binary_data_16[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M640 640L640 640L640 641.54L640 641.54L6"
 "40 640Z\" id=\"d2mp8Swwqr\"></path><path d=\"M0 0L0 0L0 1.54L0 1.54L0 0Z\" id=\"b1JJhIoCQq\"></path><path d=\"M125.85 276.15L434.42 103.85L115.22 126.52L125.85 276.15Z\" id=\"m4pEdXDoW\"></path><path d=\"M354.89 325.19L477.75 130.5L163.53 292.26L354."
 "89 325.19Z\" id=\"cSvitjVv\"></path><path d=\"M284.17 533.38L95.83 508.34L119.51 340L284.17 533.38Z\" id=\"etBKZjEqy\"></path><path d=\"M525 478.56L395 350L525 160L525 478.56Z\" id=\"c8CXYEvnlO\"></path><path d=\"M353.68 516.27L483.32 525.89L363.2 38"
@@ -11365,8 +11365,8 @@ const char* distortion_svg = (const char*) temp_binary_data_16;
 
 //================== drag_drop_arrows.svg ==================
 static const unsigned char temp_binary_data_17[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M0 10L0 10L0 11.54L0 11.54L0 10Z\" id=\""
 "bE0EXEhZI\"></path><path d=\"M0 0L0 0L0 1.54L0 1.54L0 0Z\" id=\"g4EJSnoAqS\"></path><path d=\"M640 640L640 640L640 641L640 641L640 640Z\" id=\"aegiG7tRL\"></path><path d=\"M0 0L0 0L0 1L0 1L0 0Z\" id=\"e4WLol4w96\"></path><path d=\"M400 320C400 364.15"
 " 364.15 400 320 400C275.85 400 240 364.15 240 320C240 275.85 275.85 240 320 240C364.15 240 400 275.85 400 320Z\" id=\"dGscSQp9M\"></path><path d=\"M309.89 43.37C315.88 38.88 324.12 38.88 330.11 43.37C344.09 53.85 375.91 77.72 389.89 88.2C396.25 92.98"
@@ -11388,8 +11388,8 @@ const char* drag_drop_arrows_svg = (const char*) temp_binary_data_17;
 
 //================== effects_filter.svg ==================
 static const unsigned char temp_binary_data_18[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M33.51 300C34.23 300 34.82 300.59 34.82 "
 "301.31C34.82 309.05 34.82 330.95 34.82 338.69C34.82 339.41 34.23 340 33.51 340C26.81 340 8.02 340 1.31 340C0.59 340 0 339.41 0 338.69C0 330.95 0 309.05 0 301.31C0 300.59 0.59 300 1.31 300C8.02 300 26.81 300 33.51 300Z\" id=\"baiCk8nNs\"></path><path "
 "d=\"M620 510C395.36 203.79 459.81 164.18 420 163.36C380.19 162.54 411.04 278.61 210 315.8C186.16 321.86 52.57 320.31 22.84 319.98\" id=\"f2soo2jO2L\"></path><path d=\"M636.84 500C637.95 501.54 637.61 503.7 636.06 504.81C630.14 509.1 615.17 519.93 609"
@@ -11401,8 +11401,8 @@ const char* effects_filter_svg = (const char*) temp_binary_data_18;
 
 //================== equalizer.svg ==================
 static const unsigned char temp_binary_data_19[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M115.47 300C117.97 300 120 302.03 120 30"
 "4.53C120 311.62 120 328.38 120 335.47C120 337.97 117.97 340 115.47 340C92.38 340 27.62 340 4.53 340C2.03 340 0 337.97 0 335.47C0 328.38 0 311.62 0 304.53C0 302.03 2.03 300 4.53 300C27.62 300 92.38 300 115.47 300Z\" id=\"a3NoEGzr4C\"></path><path d=\""
 "M620 320C419.95 320.7 411.95 161.31 320 160C228.05 158.69 219.18 322.25 20 320\" id=\"b2XGuuHAyF\"></path><path d=\"M635.47 300C637.97 300 640 302.03 640 304.53C640 311.62 640 328.38 640 335.47C640 337.97 637.97 340 635.47 340C612.38 340 547.62 340 5"
@@ -11420,8 +11420,8 @@ const char* equalizer_svg = (const char*) temp_binary_data_19;
 
 //================== flanger.svg ==================
 static const unsigned char temp_binary_data_20[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M40.05 323.51C39.21 363.1 47.68 399.16 6"
 "5.46 431.68C68.26 436.81 73.64 440 79.49 440C81.6 440 78.42 440 80.52 440C85.76 440 90.01 435.75 90.01 430.51C90.01 408.41 90.01 351.59 90.01 329.49C90.01 324.25 94.25 320 99.49 320C109.6 320 130.42 320 140.52 320C145.76 320 150.01 324.25 150.01 329."
 "49C150.01 351.59 150.01 408.41 150.01 430.51C150.01 435.75 154.25 440 159.49 440C161.6 440 158.42 440 160.52 440C165.76 440 170.01 435.75 170.01 430.51C170.01 408.41 170.01 351.59 170.01 329.49C170.01 324.25 174.25 320 179.49 320C189.6 320 210.42 320"
@@ -11454,8 +11454,8 @@ const char* link_svg = (const char*) temp_binary_data_22;
 
 //================== phaser.svg ==================
 static const unsigned char temp_binary_data_23[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M610 320C607.5 320 609.59 320.24 600 320"
 "C544.42 319.31 544.13 439.96 507.5 439.98C470.87 440.01 432.6 199.91 413.75 199.98C394.9 200.06 357.67 437.77 320 439.98C282.33 442.2 245.74 200.07 226.25 199.98C206.76 199.9 169.4 439.15 132.5 439.98C95.6 440.82 108.07 319 40 320C37.64 319.98 34.31 "
 "319.98 30 320\" id=\"a7lLQpFP0\"></path><path d=\"M38.49 300C39.32 300 40 300.68 40 301.51C40 309.21 40 330.79 40 338.49C40 339.32 39.32 340 38.49 340C30.79 340 9.21 340 1.51 340C0.68 340 0 339.32 0 338.49C0 330.79 0 309.21 0 301.51C0 300.68 0.68 300"
@@ -11467,8 +11467,8 @@ const char* phaser_svg = (const char*) temp_binary_data_23;
 
 //================== reverb.svg ==================
 static const unsigned char temp_binary_data_24[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 640 640\" width=\"640\" height=\"640\"><defs><path d=\"M519.22 80.15L521.01 80.33L522.78 80.58L"
 "524.53 80.9L526.25 81.29L527.95 81.75L529.62 82.26L531.26 82.85L532.87 83.49L534.45 84.2L535.99 84.96L537.5 85.78L538.98 86.66L540.42 87.59L541.81 88.57L543.17 89.61L544.49 90.69L545.76 91.83L546.99 93.01L548.17 94.24L549.31 95.51L550.39 96.83L551.43"
 " 98.19L552.41 99.58L553.34 101.02L554.22 102.5L555.04 104.01L555.8 105.55L556.51 107.13L557.15 108.74L557.74 110.38L558.25 112.05L558.71 113.75L559.1 115.47L559.42 117.22L559.67 118.99L559.85 120.78L559.96 122.59L560 124.42L560 388.3L559.99 389.21L55"
@@ -11539,8 +11539,8 @@ const char* shuffle_svg = (const char*) temp_binary_data_25;
 
 //================== vital_ring.svg ==================
 static const unsigned char temp_binary_data_26[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 1701 1701\" width=\"1701\" height=\"1701\"><defs><path d=\"M155.32 448.98C155.31 449 820.1 1487"
 ".79 850.36 1653.31C850.39 1653.31 850.61 1653.31 850.64 1653.31C855.63 1625.99 1438.76 540.21 1545.82 449.22C1545.81 449.2 1545.76 449.12 1545.68 448.98C688.51 449.26 225.06 449.26 155.32 448.98Z\" id=\"k39Dh1wFs7\"></path></defs><g><g><g><g><filter "
 "id=\"shadow13560384\" x=\"146.32\" y=\"439.98\" width=\"1409.5\" height=\"1223.33\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\"><feFlood></feFlood><feComposite in2=\"SourceAlpha\" operator=\"in\"></feComposite><feGaussianBlur std"
@@ -11557,8 +11557,8 @@ const char* vital_ring_svg = (const char*) temp_binary_data_26;
 
 //================== vital_v.svg ==================
 static const unsigned char temp_binary_data_27[] =
-"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
-"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\r\n"
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n"
 "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\"0 0 1701 1701\" width=\"1701\" height=\"1701\"><defs><path d=\"M155.32 448.98C155.31 449 820.1 1487"
 ".79 850.36 1653.31C850.39 1653.31 850.61 1653.31 850.64 1653.31C855.63 1625.99 1438.76 540.21 1545.82 449.22C1545.81 449.2 1545.76 449.12 1545.68 448.98C688.51 449.26 225.06 449.26 155.32 448.98Z\" id=\"k39Dh1wFs7\"></path></defs><g><g><g><g><filter "
 "id=\"shadow13560384\" x=\"146.32\" y=\"439.98\" width=\"1409.5\" height=\"1223.33\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\"><feFlood></feFlood><feComposite in2=\"SourceAlpha\" operator=\"in\"></feComposite><feGaussianBlur std"
@@ -11713,9 +11713,9 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 
     switch (hash)
     {
-        case 0x34f65c2f:  numBytes = 102; return _5_Limit_scl;
-        case 0x5ebfc1b1:  numBytes = 100; return _7_Limit_scl;
-        case 0xd4ac7689:  numBytes = 123; return Pythagorean_scl;
+        case 0x34f65c2f:  numBytes = 87; return _5_Limit_scl;
+        case 0x5ebfc1b1:  numBytes = 85; return _7_Limit_scl;
+        case 0xd4ac7689:  numBytes = 108; return Pythagorean_scl;
         case 0xd9fa030b:  numBytes = 10485; return default_vitalskin;
         case 0x11764cb9:  numBytes = 119380; return DroidSansMono_ttf;
         case 0xbd046e4d:  numBytes = 77192; return LatoLight_ttf;
@@ -11725,22 +11725,22 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
         case 0x6460aeac:  numBytes = 77732; return LatoBoldItalic_ttf;
         case 0xd060e62b:  numBytes = 228068; return MontserratLight_otf;
         case 0x8abe8fb6:  numBytes = 245708; return MontserratRegular_ttf;
-        case 0x1b852c4b:  numBytes = 12844; return chorus_svg;
+        case 0x1b852c4b:  numBytes = 12842; return chorus_svg;
         case 0x384b39a0:  numBytes = 472; return cog_svg;
-        case 0xa76babea:  numBytes = 3177; return compressor_svg;
-        case 0xe40f2da8:  numBytes = 3336; return delay_svg;
-        case 0x753bc7c2:  numBytes = 2017; return distortion_svg;
-        case 0x07b08c74:  numBytes = 3812; return drag_drop_arrows_svg;
-        case 0xca2ec47a:  numBytes = 1497; return effects_filter_svg;
-        case 0x2c347377:  numBytes = 2818; return equalizer_svg;
-        case 0x2e38fc26:  numBytes = 3336; return flanger_svg;
+        case 0xa76babea:  numBytes = 3175; return compressor_svg;
+        case 0xe40f2da8:  numBytes = 3334; return delay_svg;
+        case 0x753bc7c2:  numBytes = 2015; return distortion_svg;
+        case 0x07b08c74:  numBytes = 3810; return drag_drop_arrows_svg;
+        case 0xca2ec47a:  numBytes = 1495; return effects_filter_svg;
+        case 0x2c347377:  numBytes = 2816; return equalizer_svg;
+        case 0x2e38fc26:  numBytes = 3334; return flanger_svg;
         case 0xceaa2313:  numBytes = 154; return folder_svg;
         case 0x4733109f:  numBytes = 317; return link_svg;
-        case 0xee7a107c:  numBytes = 1590; return phaser_svg;
-        case 0xd06e9e77:  numBytes = 14396; return reverb_svg;
+        case 0xee7a107c:  numBytes = 1588; return phaser_svg;
+        case 0xd06e9e77:  numBytes = 14394; return reverb_svg;
         case 0x1954101e:  numBytes = 382; return shuffle_svg;
-        case 0xa1c1eea8:  numBytes = 2660; return vital_ring_svg;
-        case 0x58c73d28:  numBytes = 2660; return vital_v_svg;
+        case 0xa1c1eea8:  numBytes = 2658; return vital_ring_svg;
+        case 0x58c73d28:  numBytes = 2658; return vital_v_svg;
         case 0xed364e82:  numBytes = 3979; return vital_word_svg;
         case 0xd6989277:  numBytes = 1888; return vital_word_ring_svg;
         default: break;
