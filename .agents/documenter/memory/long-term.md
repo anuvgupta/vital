@@ -28,3 +28,7 @@
 - DeepgramClient: singleton, PIMPL pattern to hide IXWebSocket headers from unity build
 - MicrophoneCapture: separate AudioDeviceManager (1 in, 0 out) to isolate from synth audio
 - Real-time flow: mic -> 16kHz resample -> WebSocket stream -> Deepgram Nova-3 -> interim/final transcripts -> side panel text editor -> auto-submit on endpointing or manual stop
+- TLS backends are per-platform: Apple Secure Transport (macOS), mbedTLS 3.6.5 (Windows)
+- Platform defines go in per-exporter extraDefs in vital.jucer, NOT project-level defines
+- ix::initNetSystem() required on Windows (WSAStartup); called in DeepgramClient::initialize()
+- Never include IXNetSystem.h in unity build files; use forward declarations to avoid Windows header min/max macro pollution

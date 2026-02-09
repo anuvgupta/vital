@@ -17,7 +17,11 @@
 #include "deepgram_client.h"
 #include "load_save.h"
 #include "../../third_party/ixwebsocket/IXWebSocket.h"
-#include "../../third_party/ixwebsocket/IXNetSystem.h"
+
+// Forward-declare instead of including IXNetSystem.h to avoid
+// pulling <winsock2.h>/<windows.h> into the unity build (which
+// defines min/max macros that break std::min/std::max).
+namespace ix { bool initNetSystem(); bool uninitNetSystem(); }
 
 using json = nlohmann::json;
 

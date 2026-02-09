@@ -46,6 +46,7 @@
 ### Open
 
 ### Done
+- Windows Voice Chat crash — null TLS socket due to Apple-only TLS define; fixed by integrating mbedTLS as Windows TLS backend + calling ix::initNetSystem()
 - AI chat not working on Windows — system prompt and preset schema files not found due to macOS-only path resolution in ClaudeApiClient
 - Limit output tokens to prevent wasting money
 - Limit messages to a certain character limit

@@ -95,6 +95,25 @@
     - **Solution**: Added `executable.getParentDirectory()` (exe-adjacent directory) as a search path between the macOS bundle path and the user data dir fallback. Search order: (1) `../../Resources/` for macOS bundles, (2) same dir as exe for Windows, (3) user data dir as fallback.
     - File: `src/common/claude_api_client.cpp`
 
+- **Windows Voice Chat crash -- null TLS socket in ixwebsocket**:
+    - `IXWEBSOCKET_USE_SECURE_TRANSPORT=1` is Apple's Security.framework TLS backend. On Windows, no TLS implementation matched, so `ix::Socket::createTLSSocket()` returned null, crashing on dereference when connecting to `wss://api.deepgram.com`.
+    - Secondary issue: `ix::initNetSystem()` (calls `WSAStartup`) was never called on Windows, so all socket operations would fail even without the TLS problem.
+    - **Solution**: (1) Move `IXWEBSOCKET_USE_SECURE_TRANSPORT` to macOS-only exporter `extraDefs` in `vital.jucer`. (2) Add mbedTLS 3.6.5 as vendored library (`third_party/mbedtls/`), enable via `IXWEBSOCKET_USE_MBED_TLS=1` + `IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3=1` in VS2019 exporter. (3) Add `ix::initNetSystem()` / `ix::uninitNetSystem()` to `DeepgramClient`. (4) Link `crypt32.lib` and `bcrypt.lib` for Windows.
+    - Files: `standalone/vital.jucer`, `src/common/deepgram_client.cpp`, `third_party/mbedtls/`
+
+- **Unity build Windows header pollution via ixwebsocket**:
+    - Including `IXNetSystem.h` in `deepgram_client.cpp` pulls `<winsock2.h>` and `<windows.h>`, which define `min`/`max` macros. In a unity build, these macros leak into every subsequent `#include`, breaking all `std::min`/`std::max` calls with cryptic template errors.
+    - **Solution**: Use forward declarations (`namespace ix { void initNetSystem(); void uninitNetSystem(); }`) instead of `#include "IXNetSystem.h"`. This avoids pulling Windows headers into the unity build translation unit.
+    - File: `src/common/deepgram_client.cpp`
+
+- **Projucer regeneration overwrites manual vcxproj edits**:
+    - Any manual edits to generated project files (e.g., `Vial_App.vcxproj`) are lost when Projucer re-exports from `vital.jucer`. This includes added source files, include paths, library dependencies, and preprocessor defines.
+    - **Solution**: Always make changes in `vital.jucer` (the source of truth). Add source files as `FILE` entries, put per-platform defines in exporter `extraDefs`, and put libraries in exporter `externalLibraries`.
+
+- **mbedTLS 3.x requires both crypt32.lib and bcrypt.lib on Windows**:
+    - mbedTLS uses `BCryptGenRandom` for entropy, requiring `bcrypt.lib`. Certificate validation uses Windows certificate store APIs from `crypt32.lib`. Missing either causes unresolved symbol linker errors.
+    - The `IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3=1` define is required for mbedTLS 3.x because `mbedtls_pk_parse_keyfile` changed from 4 to 5 parameters between v2 and v3.
+
 - **UTF-8 special characters render as garbage in JUCE button text**:
     - Passing raw UTF-8 hex bytes like `"\xc3\x97"` (multiplication sign) to `setButtonText()` renders as "A" with diacritical marks (e.g., "Å") because JUCE interprets the bytes as Latin-1, not UTF-8.
     - **Solution**: Wrap UTF-8 byte sequences with `String(CharPointer_UTF8("\xc3\x97"))`. This is the established pattern in the Vital codebase (used for bullet characters in markdown rendering in `side_panel.cpp`). Applies to any non-ASCII Unicode character in button labels or drawn text.

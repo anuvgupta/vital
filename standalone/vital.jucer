@@ -3,9 +3,9 @@
 <JUCERPROJECT id="GfsdNK" name="Vial" projectType="guiapp" version="1.0.6"
               bundleIdentifier="audio.vital.standalone.custom" includeBinaryInAppConfig="1"
               companyName="Matt Tytel" companyWebsite="vial.audio" companyEmail="matthewtytel@gmail.com"
-              defines="IXWEBSOCKET_USE_TLS=1&#10;IXWEBSOCKET_USE_SECURE_TRANSPORT=1"
-              displaySplashScreen="0" reportAppUsage="0" splashScreenColour="Dark"
-              companyCopyright="Matt Tytel" jucerFormatVersion="1" projectLineFeed="&#10;">
+              defines="IXWEBSOCKET_USE_TLS=1" displaySplashScreen="0" reportAppUsage="0"
+              splashScreenColour="Dark" companyCopyright="Matt Tytel" jucerFormatVersion="1"
+              projectLineFeed="&#10;">
   <MAINGROUP id="CeypXq" name="Vial">
     <GROUP id="{C539C807-A3BC-1AAC-36A3-83E9F431E5C3}" name="tunings">
       <FILE id="ZuM1I1" name="5 Limit.scl" compile="0" resource="1" file="../tunings/5 Limit.scl"/>
@@ -231,6 +231,139 @@
               resource="0" file="../third_party/ixwebsocket/IXWebSocketPerMessageDeflateOptions.cpp"/>
         <FILE id="ix2063" name="IXWebSocketTransport.cpp" compile="1" resource="0"
               file="../third_party/ixwebsocket/IXWebSocketTransport.cpp"/>
+        <FILE id="mb0001" name="aes.c" compile="1" resource="0" file="../third_party/mbedtls/library/aes.c"/>
+        <FILE id="mb0002" name="aesce.c" compile="1" resource="0" file="../third_party/mbedtls/library/aesce.c"/>
+        <FILE id="mb0003" name="aesni.c" compile="1" resource="0" file="../third_party/mbedtls/library/aesni.c"/>
+        <FILE id="mb0004" name="aria.c" compile="1" resource="0" file="../third_party/mbedtls/library/aria.c"/>
+        <FILE id="mb0005" name="asn1parse.c" compile="1" resource="0" file="../third_party/mbedtls/library/asn1parse.c"/>
+        <FILE id="mb0006" name="asn1write.c" compile="1" resource="0" file="../third_party/mbedtls/library/asn1write.c"/>
+        <FILE id="mb0007" name="base64.c" compile="1" resource="0" file="../third_party/mbedtls/library/base64.c"/>
+        <FILE id="mb0008" name="bignum.c" compile="1" resource="0" file="../third_party/mbedtls/library/bignum.c"/>
+        <FILE id="mb0009" name="bignum_core.c" compile="1" resource="0" file="../third_party/mbedtls/library/bignum_core.c"/>
+        <FILE id="mb0010" name="bignum_mod.c" compile="1" resource="0" file="../third_party/mbedtls/library/bignum_mod.c"/>
+        <FILE id="mb0011" name="bignum_mod_raw.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/bignum_mod_raw.c"/>
+        <FILE id="mb0012" name="block_cipher.c" compile="1" resource="0" file="../third_party/mbedtls/library/block_cipher.c"/>
+        <FILE id="mb0013" name="camellia.c" compile="1" resource="0" file="../third_party/mbedtls/library/camellia.c"/>
+        <FILE id="mb0014" name="ccm.c" compile="1" resource="0" file="../third_party/mbedtls/library/ccm.c"/>
+        <FILE id="mb0015" name="chacha20.c" compile="1" resource="0" file="../third_party/mbedtls/library/chacha20.c"/>
+        <FILE id="mb0016" name="chachapoly.c" compile="1" resource="0" file="../third_party/mbedtls/library/chachapoly.c"/>
+        <FILE id="mb0017" name="cipher.c" compile="1" resource="0" file="../third_party/mbedtls/library/cipher.c"/>
+        <FILE id="mb0018" name="cipher_wrap.c" compile="1" resource="0" file="../third_party/mbedtls/library/cipher_wrap.c"/>
+        <FILE id="mb0019" name="cmac.c" compile="1" resource="0" file="../third_party/mbedtls/library/cmac.c"/>
+        <FILE id="mb0020" name="constant_time.c" compile="1" resource="0" file="../third_party/mbedtls/library/constant_time.c"/>
+        <FILE id="mb0021" name="ctr_drbg.c" compile="1" resource="0" file="../third_party/mbedtls/library/ctr_drbg.c"/>
+        <FILE id="mb0022" name="debug.c" compile="1" resource="0" file="../third_party/mbedtls/library/debug.c"/>
+        <FILE id="mb0023" name="des.c" compile="1" resource="0" file="../third_party/mbedtls/library/des.c"/>
+        <FILE id="mb0024" name="dhm.c" compile="1" resource="0" file="../third_party/mbedtls/library/dhm.c"/>
+        <FILE id="mb0025" name="ecdh.c" compile="1" resource="0" file="../third_party/mbedtls/library/ecdh.c"/>
+        <FILE id="mb0026" name="ecdsa.c" compile="1" resource="0" file="../third_party/mbedtls/library/ecdsa.c"/>
+        <FILE id="mb0027" name="ecjpake.c" compile="1" resource="0" file="../third_party/mbedtls/library/ecjpake.c"/>
+        <FILE id="mb0028" name="ecp.c" compile="1" resource="0" file="../third_party/mbedtls/library/ecp.c"/>
+        <FILE id="mb0029" name="ecp_curves.c" compile="1" resource="0" file="../third_party/mbedtls/library/ecp_curves.c"/>
+        <FILE id="mb0030" name="ecp_curves_new.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/ecp_curves_new.c"/>
+        <FILE id="mb0031" name="entropy.c" compile="1" resource="0" file="../third_party/mbedtls/library/entropy.c"/>
+        <FILE id="mb0032" name="entropy_poll.c" compile="1" resource="0" file="../third_party/mbedtls/library/entropy_poll.c"/>
+        <FILE id="mb0033" name="error.c" compile="1" resource="0" file="../third_party/mbedtls/library/error.c"/>
+        <FILE id="mb0034" name="gcm.c" compile="1" resource="0" file="../third_party/mbedtls/library/gcm.c"/>
+        <FILE id="mb0035" name="hkdf.c" compile="1" resource="0" file="../third_party/mbedtls/library/hkdf.c"/>
+        <FILE id="mb0036" name="hmac_drbg.c" compile="1" resource="0" file="../third_party/mbedtls/library/hmac_drbg.c"/>
+        <FILE id="mb0037" name="lmots.c" compile="1" resource="0" file="../third_party/mbedtls/library/lmots.c"/>
+        <FILE id="mb0038" name="lms.c" compile="1" resource="0" file="../third_party/mbedtls/library/lms.c"/>
+        <FILE id="mb0039" name="md.c" compile="1" resource="0" file="../third_party/mbedtls/library/md.c"/>
+        <FILE id="mb0040" name="md5.c" compile="1" resource="0" file="../third_party/mbedtls/library/md5.c"/>
+        <FILE id="mb0041" name="memory_buffer_alloc.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/memory_buffer_alloc.c"/>
+        <FILE id="mb0042" name="mps_reader.c" compile="1" resource="0" file="../third_party/mbedtls/library/mps_reader.c"/>
+        <FILE id="mb0043" name="mps_trace.c" compile="1" resource="0" file="../third_party/mbedtls/library/mps_trace.c"/>
+        <FILE id="mb0044" name="net_sockets.c" compile="1" resource="0" file="../third_party/mbedtls/library/net_sockets.c"/>
+        <FILE id="mb0045" name="nist_kw.c" compile="1" resource="0" file="../third_party/mbedtls/library/nist_kw.c"/>
+        <FILE id="mb0046" name="oid.c" compile="1" resource="0" file="../third_party/mbedtls/library/oid.c"/>
+        <FILE id="mb0047" name="padlock.c" compile="1" resource="0" file="../third_party/mbedtls/library/padlock.c"/>
+        <FILE id="mb0048" name="pem.c" compile="1" resource="0" file="../third_party/mbedtls/library/pem.c"/>
+        <FILE id="mb0049" name="pk.c" compile="1" resource="0" file="../third_party/mbedtls/library/pk.c"/>
+        <FILE id="mb0050" name="pk_ecc.c" compile="1" resource="0" file="../third_party/mbedtls/library/pk_ecc.c"/>
+        <FILE id="mb0051" name="pk_wrap.c" compile="1" resource="0" file="../third_party/mbedtls/library/pk_wrap.c"/>
+        <FILE id="mb0052" name="pkcs12.c" compile="1" resource="0" file="../third_party/mbedtls/library/pkcs12.c"/>
+        <FILE id="mb0053" name="pkcs5.c" compile="1" resource="0" file="../third_party/mbedtls/library/pkcs5.c"/>
+        <FILE id="mb0054" name="pkcs7.c" compile="1" resource="0" file="../third_party/mbedtls/library/pkcs7.c"/>
+        <FILE id="mb0055" name="pkparse.c" compile="1" resource="0" file="../third_party/mbedtls/library/pkparse.c"/>
+        <FILE id="mb0056" name="pkwrite.c" compile="1" resource="0" file="../third_party/mbedtls/library/pkwrite.c"/>
+        <FILE id="mb0057" name="platform.c" compile="1" resource="0" file="../third_party/mbedtls/library/platform.c"/>
+        <FILE id="mb0058" name="platform_util.c" compile="1" resource="0" file="../third_party/mbedtls/library/platform_util.c"/>
+        <FILE id="mb0059" name="poly1305.c" compile="1" resource="0" file="../third_party/mbedtls/library/poly1305.c"/>
+        <FILE id="mb0060" name="psa_crypto.c" compile="1" resource="0" file="../third_party/mbedtls/library/psa_crypto.c"/>
+        <FILE id="mb0061" name="psa_crypto_aead.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_aead.c"/>
+        <FILE id="mb0062" name="psa_crypto_cipher.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_cipher.c"/>
+        <FILE id="mb0063" name="psa_crypto_client.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_client.c"/>
+        <FILE id="mb0064" name="psa_crypto_driver_wrappers_no_static.c" compile="1"
+              resource="0" file="../third_party/mbedtls/library/psa_crypto_driver_wrappers_no_static.c"/>
+        <FILE id="mb0065" name="psa_crypto_ecp.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_ecp.c"/>
+        <FILE id="mb0066" name="psa_crypto_ffdh.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_ffdh.c"/>
+        <FILE id="mb0067" name="psa_crypto_hash.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_hash.c"/>
+        <FILE id="mb0068" name="psa_crypto_mac.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_mac.c"/>
+        <FILE id="mb0069" name="psa_crypto_pake.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_pake.c"/>
+        <FILE id="mb0070" name="psa_crypto_rsa.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_rsa.c"/>
+        <FILE id="mb0071" name="psa_crypto_se.c" compile="1" resource="0" file="../third_party/mbedtls/library/psa_crypto_se.c"/>
+        <FILE id="mb0072" name="psa_crypto_slot_management.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_slot_management.c"/>
+        <FILE id="mb0073" name="psa_crypto_storage.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/psa_crypto_storage.c"/>
+        <FILE id="mb0074" name="psa_its_file.c" compile="1" resource="0" file="../third_party/mbedtls/library/psa_its_file.c"/>
+        <FILE id="mb0075" name="psa_util.c" compile="1" resource="0" file="../third_party/mbedtls/library/psa_util.c"/>
+        <FILE id="mb0076" name="ripemd160.c" compile="1" resource="0" file="../third_party/mbedtls/library/ripemd160.c"/>
+        <FILE id="mb0077" name="rsa.c" compile="1" resource="0" file="../third_party/mbedtls/library/rsa.c"/>
+        <FILE id="mb0078" name="rsa_alt_helpers.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/rsa_alt_helpers.c"/>
+        <FILE id="mb0079" name="sha1.c" compile="1" resource="0" file="../third_party/mbedtls/library/sha1.c"/>
+        <FILE id="mb0080" name="sha256.c" compile="1" resource="0" file="../third_party/mbedtls/library/sha256.c"/>
+        <FILE id="mb0081" name="sha3.c" compile="1" resource="0" file="../third_party/mbedtls/library/sha3.c"/>
+        <FILE id="mb0082" name="sha512.c" compile="1" resource="0" file="../third_party/mbedtls/library/sha512.c"/>
+        <FILE id="mb0083" name="ssl_cache.c" compile="1" resource="0" file="../third_party/mbedtls/library/ssl_cache.c"/>
+        <FILE id="mb0084" name="ssl_ciphersuites.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/ssl_ciphersuites.c"/>
+        <FILE id="mb0085" name="ssl_client.c" compile="1" resource="0" file="../third_party/mbedtls/library/ssl_client.c"/>
+        <FILE id="mb0086" name="ssl_cookie.c" compile="1" resource="0" file="../third_party/mbedtls/library/ssl_cookie.c"/>
+        <FILE id="mb0087" name="ssl_debug_helpers_generated.c" compile="1"
+              resource="0" file="../third_party/mbedtls/library/ssl_debug_helpers_generated.c"/>
+        <FILE id="mb0088" name="ssl_msg.c" compile="1" resource="0" file="../third_party/mbedtls/library/ssl_msg.c"/>
+        <FILE id="mb0089" name="ssl_ticket.c" compile="1" resource="0" file="../third_party/mbedtls/library/ssl_ticket.c"/>
+        <FILE id="mb0090" name="ssl_tls.c" compile="1" resource="0" file="../third_party/mbedtls/library/ssl_tls.c"/>
+        <FILE id="mb0091" name="ssl_tls12_client.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/ssl_tls12_client.c"/>
+        <FILE id="mb0092" name="ssl_tls12_server.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/ssl_tls12_server.c"/>
+        <FILE id="mb0093" name="ssl_tls13_client.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/ssl_tls13_client.c"/>
+        <FILE id="mb0094" name="ssl_tls13_generic.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/ssl_tls13_generic.c"/>
+        <FILE id="mb0095" name="ssl_tls13_keys.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/ssl_tls13_keys.c"/>
+        <FILE id="mb0096" name="ssl_tls13_server.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/ssl_tls13_server.c"/>
+        <FILE id="mb0097" name="threading.c" compile="1" resource="0" file="../third_party/mbedtls/library/threading.c"/>
+        <FILE id="mb0098" name="timing.c" compile="1" resource="0" file="../third_party/mbedtls/library/timing.c"/>
+        <FILE id="mb0099" name="version.c" compile="1" resource="0" file="../third_party/mbedtls/library/version.c"/>
+        <FILE id="mb0100" name="version_features.c" compile="1" resource="0"
+              file="../third_party/mbedtls/library/version_features.c"/>
+        <FILE id="mb0101" name="x509.c" compile="1" resource="0" file="../third_party/mbedtls/library/x509.c"/>
+        <FILE id="mb0102" name="x509_create.c" compile="1" resource="0" file="../third_party/mbedtls/library/x509_create.c"/>
+        <FILE id="mb0103" name="x509_crl.c" compile="1" resource="0" file="../third_party/mbedtls/library/x509_crl.c"/>
+        <FILE id="mb0104" name="x509_crt.c" compile="1" resource="0" file="../third_party/mbedtls/library/x509_crt.c"/>
+        <FILE id="mb0105" name="x509_csr.c" compile="1" resource="0" file="../third_party/mbedtls/library/x509_csr.c"/>
+        <FILE id="mb0106" name="x509write.c" compile="1" resource="0" file="../third_party/mbedtls/library/x509write.c"/>
+        <FILE id="mb0107" name="x509write_crt.c" compile="1" resource="0" file="../third_party/mbedtls/library/x509write_crt.c"/>
+        <FILE id="mb0108" name="x509write_csr.c" compile="1" resource="0" file="../third_party/mbedtls/library/x509write_csr.c"/>
         <FILE id="LN5QQ0" name="midi_manager.cpp" compile="0" resource="0"
               file="../src/common/midi_manager.cpp"/>
         <FILE id="sE0Jer" name="midi_manager.h" compile="0" resource="0" file="../src/common/midi_manager.h"/>
@@ -907,8 +1040,8 @@
     <XCODE_MAC targetFolder="builds/osx" customPList="&lt;plist&gt;&#10;  &lt;dict&gt;&#10;    &lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;    &lt;dict&gt;&#10;      &lt;key&gt;NSExceptionDomains&lt;/key&gt;&#10;      &lt;dict&gt;&#10;        &lt;key&gt;tytel.org&lt;/key&gt;&#10;        &lt;dict&gt;&#10;          &lt;key&gt;NSIncludeSubDomains&lt;/key&gt;&#10;          &lt;false/&gt;&#10;          &lt;key&gt;NSTemporaryExceptionAllowsInsecureHTTPLoads&lt;/key&gt;&#10;          &lt;true/&gt;&#10;          &lt;key&gt;NSTemporaryExceptionMinimumTLSVersion&lt;/key&gt;&#10;          &lt;string&gt;TLSv1.1&lt;/string&gt;&#10;        &lt;/dict&gt;&#10;      &lt;/dict&gt;&#10;    &lt;/dict&gt;&#10;    &lt;key&gt;NSMicrophoneUsageDescription&lt;/key&gt;&#10;    &lt;string&gt;Vial needs microphone access for voice-to-text input to the AI sound designer.&lt;/string&gt;&#10;  &lt;/dict&gt;&#10;&lt;/plist&gt;"
                extraLinkerFlags="" iosDevelopmentTeamID="R4J45Y5SBH" smallIcon="g2GF6b"
                bigIcon="peC6sV" documentExtensions="vital,vitalbank,vitaltable"
-               extraDefs="JUCE_OPENGL3=1&#10;NO_AUTH=1" hardenedRuntime="1"
-               hardenedRuntimeOptions="com.apple.security.device.audio-input"
+               extraDefs="JUCE_OPENGL3=1&#10;NO_AUTH=1&#10;IXWEBSOCKET_USE_SECURE_TRANSPORT=1"
+               hardenedRuntime="1" hardenedRuntimeOptions="com.apple.security.device.audio-input"
                externalLibraries="gssapi_krb5" extraFrameworks="Security,GSS,AVFoundation"
                frameworkSearchPaths="" extraCustomFrameworks="" xcodeValidArchs="arm64,arm64e,x86_64">
       <CONFIGURATIONS>
@@ -969,15 +1102,15 @@
     <VS2017 targetFolder="builds/vs17" extraDefs="JUCE_OPENGL3=1&#10;NO_AUTH=1&#10;INTEL_IPP=1&#10;WINVER=0x0601&#10;_WIN32_WINNT=0x0601&#10;_ENABLE_EXTENDED_ALIGNED_STORAGE&#10;__SSE2__=1"
             IPPLibrary="Sequential" externalLibraries="ipps.lib&#10;ippcore.lib&#10;ippvm.lib">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;../../../third_party/mbedtls/include&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
                        enablePluginBinaryCopyStep="0" winWarningLevel="2" winArchitecture="x64"
                        fastMath="1" libraryPath="C:\Program Files (x86)\Intel\oneAPI\ipp\latest\lib"
                        targetName="Vial"/>
-        <CONFIGURATION isDebug="1" name="Profile" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
+        <CONFIGURATION isDebug="1" name="Profile" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;../../../third_party/mbedtls/include&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
                        fastMath="1" winWarningLevel="2" winArchitecture="x64" alwaysGenerateDebugSymbols="0"
                        optimisation="4" libraryPath="C:\Program Files (x86)\Intel\oneAPI\ipp\latest\lib"
                        targetName="Vial"/>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
+        <CONFIGURATION isDebug="0" name="Release" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;../../../third_party/mbedtls/include&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
                        fastMath="1" winWarningLevel="2" winArchitecture="x64" alwaysGenerateDebugSymbols="0"
                        optimisation="4" libraryPath="C:\Program Files (x86)\Intel\oneAPI\ipp\latest\lib"
                        targetName="Vial"/>
@@ -998,13 +1131,13 @@
         <MODULEPATH id="juce_audio_basics" path="../third_party/JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
-    <VS2019 targetFolder="builds/vs19" extraDefs="JUCE_OPENGL3=1&#10;NO_AUTH=1&#10;INTEL_IPP=1&#10;WINVER=0x0601&#10;_WIN32_WINNT=0x0601&#10;_ENABLE_EXTENDED_ALIGNED_STORAGE&#10;__SSE2__=1"
-            IPPLibrary="Sequential" externalLibraries="ipps.lib&#10;ippcore.lib&#10;ippvm.lib">
+    <VS2019 targetFolder="builds/vs19" extraDefs="JUCE_OPENGL3=1&#10;NO_AUTH=1&#10;INTEL_IPP=1&#10;WINVER=0x0601&#10;_WIN32_WINNT=0x0601&#10;_ENABLE_EXTENDED_ALIGNED_STORAGE&#10;__SSE2__=1&#10;IXWEBSOCKET_USE_MBED_TLS=1&#10;IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3=1"
+            IPPLibrary="Sequential" externalLibraries="ipps.lib&#10;ippcore.lib&#10;ippvm.lib&#10;crypt32.lib&#10;bcrypt.lib">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
+        <CONFIGURATION isDebug="1" name="Debug" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;../../../third_party/mbedtls/include&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
                        winArchitecture="x64" fastMath="1" winWarningLevel="2" libraryPath="C:\Program Files (x86)\Intel\oneAPI\ipp\latest\lib"
                        targetName="Vial"/>
-        <CONFIGURATION isDebug="0" name="Release" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
+        <CONFIGURATION isDebug="0" name="Release" headerPath="../../../src/common&#10;../../../src/common/wavetable&#10;../../../src/interface/editor_components&#10;../../../src/interface/editor_sections&#10;../../../src/interface/look_and_feel&#10;../../../src/interface/wavetable&#10;../../../src/interface/wavetable/editors&#10;../../../src/interface/wavetable/overlays&#10;../../../src/standalone&#10;../../../src/synthesis/synth_engine&#10;../../../src/synthesis/effects&#10;../../../src/synthesis/filters&#10;../../../src/synthesis/framework&#10;../../../src/synthesis/lookups&#10;../../../src/synthesis/modulators&#10;../../../src/synthesis/modules&#10;../../../src/synthesis/producers&#10;../../../src/synthesis/utilities&#10;../../../third_party&#10;../../../third_party/md4c&#10;../../../third_party/mbedtls/include&#10;C:\Program Files (x86)\Intel\oneAPI\ipp\latest\include\ipp"
                        winArchitecture="x64" winWarningLevel="2" fastMath="1" optimisation="4"
                        libraryPath="C:\Program Files (x86)\Intel\oneAPI\ipp\latest\lib"
                        targetName="Vial"/>

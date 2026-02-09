@@ -12,7 +12,8 @@
       "WebFetch(domain:developers.deepgram.com)",
       "Bash(curl:*)",
       "Bash(python3:*)",
-      "Bash(tar:*)"
+      "Bash(tar:*)",
+      "Bash(cmd.exe /c \"cd /d C:\\\\Users\\\\anuvc\\\\Documents\\\\Code\\\\Workspace\\\\synth\\\\vital && build_windows.bat --skip-regenerate --no-run\")"
     ]
   }
 }
