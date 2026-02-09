@@ -5,6 +5,7 @@
  */
 
 #include "IXSocketFactory.h"
+#include "IXSocket.h"
 
 #include "IXUniquePtr.h"
 #ifdef IXWEBSOCKET_USE_TLS

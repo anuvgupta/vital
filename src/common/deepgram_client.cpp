@@ -16,7 +16,7 @@
 
 #include "deepgram_client.h"
 #include "load_save.h"
-#include "IXWebSocket.h"
+#include "../../third_party/ixwebsocket/IXWebSocket.h"
 
 using json = nlohmann::json;
 

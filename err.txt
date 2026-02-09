@@ -1,0 +1,300 @@
+Detected platform: windows
+
+========================================
+Step 1: Setting up build environment
+========================================
+[+] Found Intel oneAPI, initializing environment...
+[+] Intel oneAPI environment initialized
+
+========================================
+Step 2: Verifying dependencies
+========================================
+[+] MSBuild found: C:\Program Files\Microsoft Visual Studio\18\Insiders\MSBuild\Current\Bin\MSBuild.exe
+[+] Projucer found: C:\Users\Shishir\JUCE\Projucer.exe
+
+========================================
+Step 3: Regenerating VS project
+========================================
+Running: "C:\Users\Shishir\JUCE\Projucer.exe" --resave "c:\Users\Shishir\Downloads\vital\standalone\vital.jucer"
+Re-saving file: c:\Users\Shishir\Downloads\vital\standalone\vital.jucer
+Finished saving: Xcode (macOS) - builds/osx
+Finished saving: Linux Makefile - builds/linux
+Finished saving: Visual Studio 2019 - builds/vs19
+[+] VS project regenerated successfully
+
+========================================
+Step 4: Building with MSBuild (Debug)
+========================================
+Building...
+MSBuild version 18.3.0-release-26070-10+3972042b7 for .NET Framework
+
+  IXSocketAppleSSL.cpp
+  IXSocketFactory.cpp
+  common.cpp
+c:\Users\Shishir\Downloads\vital\third_party\ixwebsocket\IXSocketFactory.cpp(57,12): error C2027: use of undefined type 'ix::Socket' [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\third_party\ixwebsocket\IXSocketFactory.h(16): message : see declaration of 'ix::Socket' [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\third_party\ixwebsocket\IXSocketFactory.cpp(57,22): error C2039: 'init': is not a member of 'std::unique_ptr<ix::Socket,std::default_delete<ix::Socket>>' [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\third_party\ixwebsocket\IXSocketFactory.h(17): message : see declaration of 'std::unique_ptr<ix::Socket,std::default_delete<ix::Socket>>' [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\third_party\ixwebsocket\IXSocketAppleSSL.h(13,10): fatal error C1083: Cannot open include file: 'Security/SecureTransport.h': No such file or directory (compiling source file ..\..\..\third_party\ixwebsocket\IXSocketAppleSSL.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\utils.h(210,20): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\poly_utils.h(622,72): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\poly_utils.h(625,70): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\poly_utils.h(637,22): warning C4244: '=': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\poly_utils.h(639,24): warning C4244: '=': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\poly_utils.h(658,28): warning C4244: '=': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(200,18): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(201,47): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(202,19): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(206,100): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(206,71): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(206,39): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(207,80): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(207,61): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(207,39): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(208,100): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(208,71): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(208,39): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(210,60): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(210,53): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(210,46): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(210,39): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(218,18): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(219,47): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(223,80): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(223,61): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(223,39): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(224,80): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(224,69): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(224,47): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(227,60): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(227,53): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(227,46): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(227,39): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(268,47): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(269,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(270,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(292,29): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(295,60): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(295,53): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(295,46): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\look_and_feel\paths.h(295,39): warning C4244: 'argument': conversion from 'int' to 'ValueType', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              ValueType=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\operators.h(678,57): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\operators.h(694,63): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(161,28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(161,20): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(167,51): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(167,32): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(169,51): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(169,32): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(200,55): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(200,39): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(200,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_components\open_gl_image_component.h(200,28): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\tuning.h(44,72): warning C4244: '=': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\wavetable\file_source.h(78,57): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\lookups\wavetable.h(68,23): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\synth_section.h(120,64): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\synth_section.h(305,63): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\synth_section.h(306,71): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\bank_exporter.h(118,44): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\bank_exporter.h(140,23): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\bank_exporter.h(141,89): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\popup_browser.h(69,45): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\popup_browser.h(104,91): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\popup_browser.h(167,45): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\popup_browser.h(168,50): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\popup_browser.h(221,93): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\preset_browser.h(227,45): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\preset_browser.h(266,23): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\preset_browser.h(267,90): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\synthesis\lookups\memory.h(124,9): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\lookups\memory.h(143,9): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\modulators\synth_lfo.h(95,72): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\modulation_matrix.h(49,17): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\modulation_matrix.h(137,63): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\modulation_matrix.h(138,73): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\interface\editor_sections\modulation_matrix.h(259,48): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\border_bounds_constrainer.cpp(42,20): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\border_bounds_constrainer.cpp(48,19): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\line_generator.cpp(217,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\midi_manager.cpp(213,86): warning C4244: 'argument': conversion from 'int' to 'vital::mono_float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\midi_manager.cpp(213,35): warning C4244: 'argument': conversion from 'vital::mono_float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\midi_manager.cpp(215,86): warning C4244: 'argument': conversion from 'int' to 'vital::mono_float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\midi_manager.cpp(215,35): warning C4244: 'argument': conversion from 'vital::mono_float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\midi_manager.cpp(253,30): warning C4244: 'argument': conversion from 'int' to 'vital::mono_float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\midi_manager.cpp(313,84): warning C4244: 'argument': conversion from 'int' to 'vital::mono_float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\tuning.cpp(64,17): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\tuning.cpp(243,47): warning C4244: '=': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\tuning.cpp(248,54): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\tuning.cpp(249,63): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\tuning.cpp(266,21): warning C4244: 'argument': conversion from 'int' to '_Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\common\tuning.cpp(352,20): warning C4244: '=': conversion from 'int' to 'vital::mono_float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\tuning.cpp(356,22): warning C4244: 'argument': conversion from 'int' to '_Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=float
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\common\synth_gui_interface.cpp(211,13): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\synth_gui_interface.cpp(212,14): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(110,19): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(152,40): warning C4244: 'argument': conversion from 'int' to 'vital::mono_float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(155,38): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(253,44): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(284,21): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(311,76): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(322,23): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(354,78): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(365,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(396,37): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(419,22): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\spectral_morph.h(451,31): warning C4244: 'argument': conversion from 'float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\voice_handler.h(76,60): warning C4244: 'return': conversion from 'int' to 'vital::mono_float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\framework\voice_handler.h(79,55): warning C4244: 'return': conversion from 'int' to 'vital::mono_float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\common\synth_parameters.cpp(333,88): warning C4244: 'initializing': conversion from 'int' to 'vital::mono_float', possible loss of data (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+c:\Users\Shishir\Downloads\vital\src\synthesis\producers\sample_source.h(68,50): warning C4244: 'argument': conversion from 'vital::mono_float' to 'const _Ty', possible loss of data [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+          with
+          [
+              _Ty=int
+          ] (compiling source file ..\..\..\src\unity_build\common.cpp)
+c:\Users\Shishir\Downloads\vital\src\common\deepgram_client.cpp(19,10): fatal error C1083: Cannot open include file: 'IXWebSocket.h': No such file or directory (compiling source file ..\..\..\src\unity_build\common.cpp) [c:\Users\Shishir\Downloads\vital\standalone\builds\vs19\Vial_App.vcxproj]
+[] Build failed
