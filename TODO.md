@@ -4,12 +4,7 @@
 ## Features
 
 ### Open
-- VOICE CHAT mode: intelligent local VAD gating to avoid sending silence to Deepgram
-    - Deepgram charges per-second of all audio sent, including silence. Always-on streaming is expensive.
-    - Implement two-tier gating: (1) local energy/amplitude detection using existing `MicrophoneCapture` silence threshold (`kSilenceThreshold`) to gate whether audio is streamed to Deepgram; (2) Deepgram validates actual speech - if only noise/coughs with no valid transcripts, stop streaming and go back to local-only detection.
-    - Flow: [always-on mic] -> local energy check -> above threshold? -> stream to Deepgram -> valid transcript? -> submit as message. Below threshold = free local listening only.
-    - Future enhancement: wake word detection (e.g. "Hey Vital" via Picovoice Porcupine) as an additional gating layer for either ASK or TALK mode.
-- Increase sampling speed for deepgram
+
 - Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
 - Autosave presets, checkpointing & restore chat at certain point
@@ -25,8 +20,12 @@
 
 ## Deprioritized
 - Migrate to wispr flow for voice to text
-- Mic calibration for silence vs talking - do this when app starts (optional)
-
+- Mic calibration for silence vs talking (establish ambient noise level baseline) - do this when app starts (optional)
+- VOICE CHAT mode: intelligent local VAD gating to avoid sending silence to Deepgram
+    - Deepgram charges per-second of all audio sent, including silence. Always-on streaming is expensive.
+    - Implement two-tier gating: (1) local energy/amplitude detection using existing `MicrophoneCapture` silence threshold (`kSilenceThreshold`) to gate whether audio is streamed to Deepgram; (2) Deepgram validates actual speech - if only noise/coughs with no valid transcripts, stop streaming and go back to local-only detection.
+    - Flow: [always-on mic] -> local energy check -> above threshold? -> stream to Deepgram -> valid transcript? -> submit as message. Below threshold = free local listening only.
+    - Future enhancement: wake word detection (e.g. "Hey Vital" via Picovoice Porcupine) as an additional gating layer for either ASK or TALK mode.
 
 ### Done
 - Chat clearing (clear/reset button in title row resets chat UI and API conversation history)
