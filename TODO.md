@@ -5,8 +5,8 @@
 
 ### Open
 
-- Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
 - Autosave presets, checkpointing & restore chat at certain point
+    - Prompt: we have this todo: `Autosave presets, checkpointing & restore chat at certain point` - this means, every time a user sends or receives a chat message, we save the current preset at time of sending or receiving. we can save into the main vital preset folder (research if this exists) under a subfolder called `autosaves`. and then, when a person hovers over a chat message sent or received, we chould see a restore button show up on the top right of that message's box, with a return or rounded arrow icon. clicking that button should open up a prompt asking if user wants to restore to this message. if user selects no/cancel, nothing happens. but if user selects yes/ok, then we should do three things: 1) reload the autosave preset from that save point, 2) remove the chat messages after that point from the ui, and 3) remove the chat messages after that point from the conversation history log in memory that will get sent on the next user message. do you have any questionst? do you think you can plan and implement this?
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
     - architecture details
@@ -38,6 +38,8 @@
 - Turn off mic feature if no significant input sound for 2.5 seconds - make this configurable
 - Rename mic button to talk button
 - Queue messages when sent while agent is already thinking (request already in progress)
+- Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
+
 
 
 ## Bugs
