@@ -5,6 +5,11 @@
 
 ### Open
 
+- ...
+
+
+### Long-Term
+
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
     - architecture details

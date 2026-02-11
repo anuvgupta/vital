@@ -113,10 +113,7 @@ class Paths {
         "29.613 44.285 65.316 44.277 107.1 0 41.82-14.785 77.508-44.336 107.06-29.547 29.551"
         "-65.23 44.324-107.05 44.336h-193z\" fill-rule=\"evenodd\" fill=\"#000000\"/>"
         "</svg>";
-      Path path = fromSvgData(svg, sizeof(svg) - 1);
-      path.addLineSegment(Line<float>(0.0f, 0.0f, 0.0f, 0.0f), 0.2f);
-      path.addLineSegment(Line<float>(1.0f, 1.0f, 1.0f, 1.0f), 0.2f);
-      return path;
+      return fromSvgData(svg, sizeof(svg) - 1);
     }
 
     static Path prev() {

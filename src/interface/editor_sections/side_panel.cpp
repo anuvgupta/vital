@@ -302,17 +302,26 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
     }
 
     if (msg_idx == hovered_message_index_ && has_checkpoint) {
-      float btn_size = size_ratio_ * 20.0f;
-      float btn_x = msg_bounds.getRight() - btn_size - 4.0f * size_ratio_;
-      float btn_y_pos = (float)msg_bounds.getY() + 4.0f * size_ratio_;
+      float icon_size = size_ratio_ * 10.0f;
+      float box_padding = size_ratio_ * 7.0f;
+      float box_size = icon_size + box_padding * 2.0f;
+      float box_x = (float)msg_bounds.getRight() - box_size;
+      float box_y = (float)msg_bounds.getY() - box_size * 0.5f;
 
-      restore_button_bounds_ = Rectangle<int>((int)btn_x, (int)btn_y_pos,
-                                               (int)btn_size, (int)btn_size);
+      restore_button_bounds_ = Rectangle<int>((int)box_x, (int)box_y,
+                                               (int)box_size, (int)box_size);
 
-      // Draw restore icon from SVG path
+      // Rounded rectangle background (darker purple)
+      Colour bg_colour = findColour(Skin::kWidgetPrimary1, true).darker(1.2f);
+      g.setColour(bg_colour);
+      g.fillRoundedRectangle(box_x, box_y, box_size, box_size, size_ratio_ * 5.0f);
+
+      // Draw restore icon centered in the box
       Path icon = Paths::restoreIcon();
-      Rectangle<float> icon_bounds(btn_x, btn_y_pos, btn_size, btn_size);
-      g.setColour(text_color.withAlpha(0.7f));
+      float icon_x = box_x + (box_size - icon_size) * 0.5f;
+      float icon_y = box_y + (box_size - icon_size) * 0.5f;
+      Rectangle<float> icon_bounds(icon_x, icon_y, icon_size, icon_size);
+      g.setColour(text_color.withAlpha(0.85f));
       g.fillPath(icon, icon.getTransformToScaleToFit(icon_bounds, true));
     }
 
