@@ -32,3 +32,11 @@
 - Platform defines go in per-exporter extraDefs in vital.jucer, NOT project-level defines
 - ix::initNetSystem() required on Windows (WSAStartup); called in DeepgramClient::initialize()
 - Never include IXNetSystem.h in unity build files; use forward declarations to avoid Windows header min/max macro pollution
+
+### Checkpoint/Autosave Pattern
+- Checkpoints are saved as full .vital preset files to disk, indexed by message position in the chat
+- `ChatCheckpoint` struct in `side_panel.h` holds filepath + message index
+- Restore maps user message index to next system message's checkpoint (post-AI state)
+- `ClaudeApiClient::truncateHistoryTo(int)` trims conversation history to match UI truncation
+- SVG icons can be embedded as string literals in `paths.h` using `fromSvgData()` -- avoids BinaryData regeneration
+- MSVC quirk: `vector::resize()` instantiates default constructor even when only shrinking; use `erase()` for types without default constructors

@@ -118,6 +118,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     // VitalSidePanel::Listener
     void sidePanelButtonClicked() override {}
     void sidePanelMessageSubmitted(const String& message) override;
+    void sidePanelRestoreRequested(int message_index) override;
 
     static String getCompletionPhrase();
     static void mergeJson(json& target, const json& patch);
@@ -173,6 +174,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     void toggleFilter2Zoom();
 
     void stripBase64DataForLLM(json& state);
+    File saveAutosaveCheckpoint();
 
   private:
     bool wavetableEditorsInitialized() {

@@ -1075,6 +1075,19 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
   }
 
   api_request_in_flight_ = true;
+
+  // Autosave checkpoint for the user message
+  VitalSidePanel* panel = side_panel_.get();
+  if (panel) {
+    File checkpoint = saveAutosaveCheckpoint();
+    if (checkpoint.exists()) {
+      // User message is second-to-last (last is "Thinking...")
+      int user_msg_idx = panel->getMessageCount() - 2;
+      int api_size = ClaudeApiClient::instance().getHistorySize();
+      panel->addCheckpoint(user_msg_idx, api_size, checkpoint);
+    }
+  }
+
   StringArray messages;
   messages.add(message);
   sendApiRequest(messages);
@@ -1155,6 +1168,15 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
             // Show surrounding text if any, otherwise a random completion phrase
             String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
             panel->addResponseMessage(msg);
+
+            // Autosave checkpoint for the response
+            {
+              File cp = saveAutosaveCheckpoint();
+              if (cp.exists())
+                panel->addCheckpoint(panel->getMessageCount() - 1,
+                                     ClaudeApiClient::instance().getHistorySize(), cp);
+            }
+
             // Check queue after successful response
             if (!queued_messages_.isEmpty()) {
               StringArray pending;
@@ -1179,6 +1201,14 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
 
     panel->addResponseMessage(response);
 
+    // Autosave checkpoint for the text-only response
+    {
+      File cp = saveAutosaveCheckpoint();
+      if (cp.exists())
+        panel->addCheckpoint(panel->getMessageCount() - 1,
+                             ClaudeApiClient::instance().getHistorySize(), cp);
+    }
+
     // Check queue after text-only response too
     if (!queued_messages_.isEmpty()) {
       StringArray pending;
@@ -1189,4 +1219,69 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       api_request_in_flight_ = false;
     }
   }, preset_json);
+}
+
+File FullInterface::saveAutosaveCheckpoint() {
+  SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
+  if (!gui || !gui->getSynth())
+    return File();
+
+  File dir = LoadSave::getDataDirectory().getChildFile("autosaves");
+  if (!dir.exists())
+    dir.createDirectory();
+
+  int64 now = Time::currentTimeMillis();
+  File file = dir.getChildFile("checkpoint_" + String(now) + ".vital");
+
+  json state = gui->getSynth()->getStateAsJson();
+  file.replaceWithText(String(state.dump()));
+  return file;
+}
+
+void FullInterface::sidePanelRestoreRequested(int message_index) {
+  VitalSidePanel* panel = side_panel_.get();
+  if (!panel) return;
+
+  // If the user clicked on a user message, remap to the next system message's
+  // checkpoint (the state *after* Claude applied changes for that exchange).
+  int resolve_index = message_index;
+  if (panel->getMessageType(message_index) == ChatMessage::kUser) {
+    int next_idx = message_index + 1;
+    if (panel->getCheckpoint(next_idx) != nullptr)
+      resolve_index = next_idx;
+  }
+
+  const ChatCheckpoint* cp = panel->getCheckpoint(resolve_index);
+  if (!cp || !cp->autosave_file.exists()) return;
+
+  SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
+  if (!gui || !gui->getSynth()) return;
+
+  try {
+    json state = json::parse(cp->autosave_file.loadFileAsString().toStdString());
+    bool loaded = gui->getSynth()->loadStateFromJson(state);
+    if (!loaded) {
+      panel->addResponseMessage("Failed to restore checkpoint.");
+      return;
+    }
+    gui->updateFullGui();
+    gui->notifyFresh();
+  } catch (const json::exception&) {
+    panel->addResponseMessage("Failed to restore checkpoint: corrupt file.");
+    return;
+  }
+
+  // Truncate UI messages (keep through the resolved checkpoint's message)
+  int truncate_to = cp->ui_message_index + 1;
+  panel->truncateMessagesTo(truncate_to);
+
+  // Truncate API conversation history
+  ClaudeApiClient::instance().truncateHistoryTo(cp->api_history_size);
+
+  // Remove checkpoints after the restored point
+  panel->removeCheckpointsAfter(cp->ui_message_index);
+
+  // Cancel any in-flight API requests
+  api_request_in_flight_ = false;
+  queued_messages_.clear();
 }

@@ -5,8 +5,6 @@
 
 ### Open
 
-- Autosave presets, checkpointing & restore chat at certain point
-    - Prompt: we have this todo: `Autosave presets, checkpointing & restore chat at certain point` - this means, every time a user sends or receives a chat message, we save the current preset at time of sending or receiving. we can save into the main vital preset folder (research if this exists) under a subfolder called `autosaves`. and then, when a person hovers over a chat message sent or received, we chould see a restore button show up on the top right of that message's box, with a return or rounded arrow icon. clicking that button should open up a prompt asking if user wants to restore to this message. if user selects no/cancel, nothing happens. but if user selects yes/ok, then we should do three things: 1) reload the autosave preset from that save point, 2) remove the chat messages after that point from the ui, and 3) remove the chat messages after that point from the conversation history log in memory that will get sent on the next user message. do you have any questionst? do you think you can plan and implement this?
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
     - architecture details
@@ -27,6 +25,7 @@
     - Future enhancement: wake word detection (e.g. "Hey Vital" via Picovoice Porcupine) as an additional gating layer for either ASK or TALK mode.
 
 ### Done
+- Autosave presets, checkpointing & restore chat at certain point (hover restore button on user messages, archive on clear, orphan cleanup on startup, 50/20 caps)
 - Add a command shortcut (Cmd+K / Ctrl+K) to focus the chat prompt editor
 - Chat clearing (clear/reset button in title row resets chat UI and API conversation history)
 - Split mic into VOICE CHAT (always-on, 20s silence timeout, popup warning) and TALK (auto-stops on configurable silence) modes with SEND button

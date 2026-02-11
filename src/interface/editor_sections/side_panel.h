@@ -28,6 +28,12 @@ class OpenGlToggleButton;
 class OpenGlTextEditor;
 class Fonts;
 
+struct ChatCheckpoint {
+    int ui_message_index;
+    int api_history_size;
+    File autosave_file;
+};
+
 // Simple data structure for chat messages
 struct ChatMessage
 {
@@ -73,6 +79,7 @@ public:
         virtual ~Listener() = default;
         virtual void sidePanelButtonClicked() = 0;
         virtual void sidePanelMessageSubmitted(const String &message) {}
+        virtual void sidePanelRestoreRequested(int message_index) {}
     };
 
     VitalSidePanel();
@@ -89,8 +96,11 @@ public:
     // ScrollBar::Listener
     void scrollBarMoved(ScrollBar *scrollBar, double newRangeStart) override;
 
-    // Mouse wheel scrolling
+    // Mouse events
     void mouseWheelMove(const MouseEvent& e, const MouseWheelDetails& wheel) override;
+    void mouseMove(const MouseEvent& e) override;
+    void mouseExit(const MouseEvent& e) override;
+    void mouseUp(const MouseEvent& e) override;
 
     void addListener(Listener *listener) { listeners_.push_back(listener); }
 
@@ -105,6 +115,20 @@ public:
     void addResponseMessage(const String &text);
     void clearChat();
     void focusPromptEditor();
+
+    // Checkpoint methods
+    int getMessageCount() const { return (int)messages_.size(); }
+    ChatMessage::Type getMessageType(int index) const {
+        if (index >= 0 && index < (int)messages_.size())
+            return messages_[index].type;
+        return ChatMessage::kSystem;
+    }
+    void addCheckpoint(int ui_message_index, int api_history_size, File autosave_file);
+    void truncateMessagesTo(int count);
+    void removeCheckpointsAfter(int message_index);
+    const ChatCheckpoint* getCheckpoint(int message_index) const;
+    void archiveCheckpoints();
+    void archiveLooseCheckpointsOnStartup();
 
     // Voice recording
     void startTalkRecording();
@@ -134,6 +158,11 @@ private:
     Rectangle<int> chat_bounds_;
     int total_content_height_ = 0;
     int scroll_position_ = 0;
+
+    // Checkpoint state
+    std::vector<ChatCheckpoint> checkpoints_;
+    int hovered_message_index_ = -1;
+    Rectangle<int> restore_button_bounds_;
 
     // Voice recording state
     std::unique_ptr<MicrophoneCapture> mic_capture_;

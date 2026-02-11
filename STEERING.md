@@ -42,7 +42,7 @@
 
 ### AI Chatbot Addition
 
-**Side Panel (`side_panel.h/cpp`):** `VitalSidePanel` extends `SynthSection` and provides the chat UI. It contains a scrollable message area (manual scroll tracking, no `juce::Viewport`), an `OpenGlTextEditor` for input, and a submit button. Messages are rendered directly in `paintBackground()` -> `paintChatMessages()` using `TextLayout` for word-wrapped text. System messages support markdown rendering. A clear button (x icon) in the title row resets the chat to its initial state: clears all messages, stops any active recording, clears the text editor, and calls `ClaudeApiClient::clearConversation()` to reset conversation history.
+**Side Panel (`side_panel.h/cpp`):** `VitalSidePanel` extends `SynthSection` and provides the chat UI. It contains a scrollable message area (manual scroll tracking, no `juce::Viewport`), an `OpenGlTextEditor` for input, and a submit button. Messages are rendered directly in `paintBackground()` -> `paintChatMessages()` using `TextLayout` for word-wrapped text. System messages support markdown rendering. A clear button (x icon) in the title row resets the chat to its initial state: clears all messages, stops any active recording, clears the text editor, and calls `ClaudeApiClient::clearConversation()` to reset conversation history. The panel also manages **autosave checkpoints**: each message send/receive triggers a preset snapshot saved to `<data_dir>/autosaves/checkpoint_<timestamp>.vital`. Hovering over a user message reveals a restore button (return arrow SVG icon) that, on click, shows a confirmation dialog and restores the preset + truncates chat history. On clear, checkpoints are archived by session name; on startup, orphaned checkpoints are archived to `unsaved_session/`. Capped at 50 checkpoints per session and 20 archived sessions.
 
 **Listener Pattern:** `VitalSidePanel` defines an inner `Listener` class. `FullInterface` implements this listener and handles `sidePanelMessageSubmitted()` -- it serializes the current preset to JSON (stripping base64 data), passes it along with the user message to the API client, and applies the returned JSON diff to the live preset.
 
@@ -87,7 +87,8 @@
 - [full_interface.h/cpp](src/interface/editor_sections/full_interface.cpp) - Main UI container, handles VitalSidePanel listener callbacks and keyboard shortcuts (Cmd+K / Ctrl+K)
 - [synth_section.h/cpp](src/interface/editor_sections/synth_section.h) - Base class for all UI sections, includes `paintBackground()` for OpenGL rendering
 - [synth_button.h](src/interface/editor_components/synth_button.h) - OpenGlToggleButton, SynthButton components
-- [side_panel.h/cpp](src/interface/editor_sections/side_panel.cpp) - **Our AI chat panel (VitalSidePanel)** with listener pattern and `focusPromptEditor()` for keyboard focus
+- [side_panel.h/cpp](src/interface/editor_sections/side_panel.cpp) - **Our AI chat panel (VitalSidePanel)** with listener pattern, checkpoint/restore, and `focusPromptEditor()`
+- [paths.h](src/interface/look_and_feel/paths.h) - SVG icon paths including `restoreIcon()`
 - [open_gl_image_component.h](src/interface/editor_components/open_gl_image_component.h) - OpenGlTextEditor, PlainTextComponent, OpenGlAutoImageComponent
 - [open_gl_multi_quad.h](src/interface/editor_components/open_gl_multi_quad.h) - OpenGlQuad (rounded rectangles), OpenGlScrollBar
 - [open_gl_component.h/cpp](src/interface/editor_components/open_gl_component.cpp) - Base OpenGL component, parent/findValue system

@@ -17,10 +17,13 @@
 #include "side_panel.h"
 
 #include "fonts.h"
+#include "load_save.h"
+#include "paths.h"
 #include "skin.h"
 #include "synth_button.h"
 #include "shaders.h"
 #include <cmath>
+#include <algorithm>
 
 // ============================================================================
 // ChatMessage Implementation
@@ -274,7 +277,10 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
   Colour quote_border_color = text_color.withAlpha(0.3f);
   Colour hr_color = text_color.withAlpha(0.2f);
 
-  for (const auto& message : messages_) {
+  restore_button_bounds_ = {};
+
+  for (int msg_idx = 0; msg_idx < (int)messages_.size(); ++msg_idx) {
+    const auto& message = messages_[msg_idx];
     int msg_y = chat_bounds_.getY() + message.y_position - scroll_position_;
     int msg_bottom = msg_y + message.height;
 
@@ -287,6 +293,27 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
     if (message.type == ChatMessage::kUser) {
       g.setColour(bubble_color);
       g.fillRoundedRectangle(msg_bounds.toFloat(), ChatMessage::kCornerRadius);
+    }
+
+    // Draw restore button only on hovered user messages that have a restorable checkpoint
+    bool has_checkpoint = false;
+    if (message.type == ChatMessage::kUser) {
+      has_checkpoint = getCheckpoint(msg_idx + 1) != nullptr || getCheckpoint(msg_idx) != nullptr;
+    }
+
+    if (msg_idx == hovered_message_index_ && has_checkpoint) {
+      float btn_size = size_ratio_ * 20.0f;
+      float btn_x = msg_bounds.getRight() - btn_size - 4.0f * size_ratio_;
+      float btn_y_pos = (float)msg_bounds.getY() + 4.0f * size_ratio_;
+
+      restore_button_bounds_ = Rectangle<int>((int)btn_x, (int)btn_y_pos,
+                                               (int)btn_size, (int)btn_size);
+
+      // Draw restore icon from SVG path
+      Path icon = Paths::restoreIcon();
+      Rectangle<float> icon_bounds(btn_x, btn_y_pos, btn_size, btn_size);
+      g.setColour(text_color.withAlpha(0.7f));
+      g.fillPath(icon, icon.getTransformToScaleToFit(icon_bounds, true));
     }
 
     Rectangle<float> text_bounds((float)(msg_bounds.getX() + ChatMessage::kPadding),
@@ -570,6 +597,8 @@ void VitalSidePanel::mouseWheelMove(const MouseEvent& e, const MouseWheelDetails
 }
 
 void VitalSidePanel::initializeApiClient() {
+  archiveLooseCheckpointsOnStartup();
+
   ClaudeApiClient& api_client = ClaudeApiClient::instance();
   if (api_client.initialize())
     addMessage("Ready to create!", ChatMessage::kSystem);
@@ -885,10 +914,15 @@ void VitalSidePanel::clearChat() {
   if (isRecording())
     stopRecording();
 
+  // Archive checkpoints before clearing
+  archiveCheckpoints();
+
   // Clear UI messages
   messages_.clear();
   total_content_height_ = 0;
   scroll_position_ = 0;
+  hovered_message_index_ = -1;
+  restore_button_bounds_ = {};
   setScrollBarRange();
 
   // Clear text editor
@@ -922,4 +956,192 @@ void VitalSidePanel::updateVoiceChatButtonColors() {
     voice_chat_button_->removeColour(Skin::kUiActionButtonPressed);
   }
   voice_chat_button_->getGlComponent()->setColors();
+}
+
+// ============================================================================
+// Checkpoint Methods
+// ============================================================================
+
+void VitalSidePanel::addCheckpoint(int ui_message_index, int api_history_size, File autosave_file) {
+  static constexpr int kMaxCheckpoints = 50;
+
+  if ((int)checkpoints_.size() >= kMaxCheckpoints) {
+    checkpoints_.front().autosave_file.deleteFile();
+    checkpoints_.erase(checkpoints_.begin());
+  }
+
+  checkpoints_.push_back({ ui_message_index, api_history_size, std::move(autosave_file) });
+}
+
+void VitalSidePanel::truncateMessagesTo(int count) {
+  if (count >= 0 && count < (int)messages_.size()) {
+    messages_.erase(messages_.begin() + count, messages_.end());
+    layoutMessages();
+    scrollToBottom();
+    repaintBackground();
+  }
+}
+
+void VitalSidePanel::removeCheckpointsAfter(int message_index) {
+  auto it = std::remove_if(checkpoints_.begin(), checkpoints_.end(),
+      [message_index](const ChatCheckpoint& cp) {
+        return cp.ui_message_index > message_index;
+      });
+  for (auto del = it; del != checkpoints_.end(); ++del)
+    del->autosave_file.deleteFile();
+  checkpoints_.erase(it, checkpoints_.end());
+}
+
+const ChatCheckpoint* VitalSidePanel::getCheckpoint(int message_index) const {
+  for (const auto& cp : checkpoints_) {
+    if (cp.ui_message_index == message_index)
+      return &cp;
+  }
+  return nullptr;
+}
+
+static String sanitizeForFilename(const String& text, int max_words = 7) {
+  StringArray words = StringArray::fromTokens(text, " ", "");
+  String result;
+  int count = std::min(max_words, words.size());
+  for (int i = 0; i < count; ++i) {
+    if (i > 0) result += "_";
+    for (int j = 0; j < words[i].length(); ++j) {
+      juce_wchar c = words[i][j];
+      if (CharacterFunctions::isLetterOrDigit(c))
+        result += String::charToString(CharacterFunctions::toLowerCase(c));
+      else
+        result += "_";
+    }
+  }
+  return result.substring(0, 60);
+}
+
+void VitalSidePanel::archiveCheckpoints() {
+  if (checkpoints_.empty())
+    return;
+
+  File autosave_dir = LoadSave::getDataDirectory().getChildFile("autosaves");
+  if (!autosave_dir.exists())
+    return;
+
+  // Find first user message for naming
+  String session_name = "unnamed_session";
+  for (const auto& msg : messages_) {
+    if (msg.type == ChatMessage::kUser && msg.text != "Thinking...") {
+      session_name = sanitizeForFilename(msg.text);
+      if (session_name.isEmpty())
+        session_name = "unnamed_session";
+      break;
+    }
+  }
+
+  // Find unique subdirectory name
+  File archive_dir = autosave_dir.getChildFile(session_name);
+  int suffix = 2;
+  while (archive_dir.exists()) {
+    archive_dir = autosave_dir.getChildFile(session_name + "_" + String(suffix));
+    suffix++;
+  }
+  archive_dir.createDirectory();
+
+  // Move checkpoint files into archive
+  for (auto& cp : checkpoints_) {
+    if (cp.autosave_file.exists())
+      cp.autosave_file.moveFileTo(archive_dir.getChildFile(cp.autosave_file.getFileName()));
+  }
+  checkpoints_.clear();
+
+  // Cap archived sessions to 20
+  static constexpr int kMaxArchivedSessions = 20;
+  Array<File> subdirs;
+  autosave_dir.findChildFiles(subdirs, File::findDirectories, false);
+  if (subdirs.size() > kMaxArchivedSessions) {
+    subdirs.sort();
+    for (int i = 0; i < subdirs.size() - kMaxArchivedSessions; ++i)
+      subdirs[i].deleteRecursively();
+  }
+}
+
+void VitalSidePanel::archiveLooseCheckpointsOnStartup() {
+  File autosave_dir = LoadSave::getDataDirectory().getChildFile("autosaves");
+  if (!autosave_dir.exists())
+    return;
+
+  // Find any loose .vital files (not in subdirectories)
+  Array<File> loose_files;
+  autosave_dir.findChildFiles(loose_files, File::findFiles, false, "*.vital");
+  if (loose_files.isEmpty())
+    return;
+
+  File archive_dir = autosave_dir.getChildFile("unsaved_session");
+  int suffix = 2;
+  while (archive_dir.exists()) {
+    archive_dir = autosave_dir.getChildFile("unsaved_session_" + String(suffix));
+    suffix++;
+  }
+  archive_dir.createDirectory();
+
+  for (auto& file : loose_files)
+    file.moveFileTo(archive_dir.getChildFile(file.getFileName()));
+}
+
+// ============================================================================
+// Mouse Events for Hover/Restore
+// ============================================================================
+
+void VitalSidePanel::mouseMove(const MouseEvent& e) {
+  if (!chat_bounds_.contains(e.getPosition())) {
+    if (hovered_message_index_ != -1) {
+      hovered_message_index_ = -1;
+      restore_button_bounds_ = {};
+      repaintBackground();
+    }
+    return;
+  }
+
+  int mouse_y = e.getPosition().getY() - chat_bounds_.getY() + scroll_position_;
+  int new_hovered = -1;
+
+  for (int i = 0; i < (int)messages_.size(); ++i) {
+    if (mouse_y >= messages_[i].y_position &&
+        mouse_y < messages_[i].y_position + messages_[i].height) {
+      new_hovered = i;
+      break;
+    }
+  }
+
+  if (new_hovered != hovered_message_index_) {
+    hovered_message_index_ = new_hovered;
+    restore_button_bounds_ = {};
+    repaintBackground();
+  }
+}
+
+void VitalSidePanel::mouseExit(const MouseEvent& e) {
+  if (hovered_message_index_ != -1) {
+    hovered_message_index_ = -1;
+    restore_button_bounds_ = {};
+    repaintBackground();
+  }
+}
+
+void VitalSidePanel::mouseUp(const MouseEvent& e) {
+  if (hovered_message_index_ < 0 || restore_button_bounds_.isEmpty())
+    return;
+
+  if (!restore_button_bounds_.contains(e.getPosition()))
+    return;
+
+  int idx = hovered_message_index_;
+  AlertWindow::showOkCancelBox(AlertWindow::QuestionIcon,
+      "Restore Checkpoint",
+      "Restore synth to this point in the conversation? Messages after this point will be removed.",
+      "Restore", "Cancel", nullptr,
+      ModalCallbackFunction::create([this, idx](int result) {
+        if (result == 1) {
+          for (Listener* l : listeners_)
+            l->sidePanelRestoreRequested(idx);
+        }
+      }));
 }

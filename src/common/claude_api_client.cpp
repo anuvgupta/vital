@@ -167,6 +167,11 @@ void ClaudeApiClient::clearConversation() {
   conversation_history_.clear();
 }
 
+void ClaudeApiClient::truncateHistoryTo(int size) {
+  if (size >= 0 && size < (int)conversation_history_.size())
+    conversation_history_.resize(size);
+}
+
 void ClaudeApiClient::addMessage(const String& role, const String& content) {
   while (conversation_history_.size() >= kMaxMessages)
     conversation_history_.erase(conversation_history_.begin());

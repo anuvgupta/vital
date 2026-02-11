@@ -114,6 +114,16 @@
     - mbedTLS uses `BCryptGenRandom` for entropy, requiring `bcrypt.lib`. Certificate validation uses Windows certificate store APIs from `crypt32.lib`. Missing either causes unresolved symbol linker errors.
     - The `IXWEBSOCKET_USE_MBED_TLS_MIN_VERSION_3=1` define is required for mbedTLS 3.x because `mbedtls_pk_parse_keyfile` changed from 4 to 5 parameters between v2 and v3.
 
+- **MSVC `vector::resize()` requires default constructor even when shrinking**:
+    - `ChatMessage` had no default constructor (uses member initializer for `MessageType`). Calling `messages_.resize(n)` to truncate the vector caused MSVC compile error: `ChatMessage::ChatMessage: no appropriate default constructor available`.
+    - Root cause: MSVC's STL instantiates the default-construct path of `vector::resize()` at compile time regardless of whether you only shrink. GCC/Clang may not.
+    - **Solution**: Use `messages_.erase(messages_.begin() + n, messages_.end())` instead of `resize(n)`. `erase()` only requires move/copy, not default construction.
+    - File: `src/interface/editor_sections/side_panel.cpp`
+
+- **SVG icons can be embedded as string literals in Paths class**:
+    - Instead of adding SVG files to BinaryData (which requires Projucer regeneration), you can embed SVG markup directly as a `const char*` and use `Drawable::createFromSVG(XmlDocument::parse(svgString))` or the `fromSvgData()` pattern.
+    - Used for the restore/return arrow icon in `src/interface/look_and_feel/paths.h`.
+
 - **UTF-8 special characters render as garbage in JUCE button text**:
     - Passing raw UTF-8 hex bytes like `"\xc3\x97"` (multiplication sign) to `setButtonText()` renders as "A" with diacritical marks (e.g., "Å") because JUCE interprets the bytes as Latin-1, not UTF-8.
     - **Solution**: Wrap UTF-8 byte sequences with `String(CharPointer_UTF8("\xc3\x97"))`. This is the established pattern in the Vital codebase (used for bullet characters in markdown rendering in `side_panel.cpp`). Applies to any non-ASCII Unicode character in button labels or drawn text.
