@@ -5,7 +5,6 @@
 
 ### Open
 
-- Add a command shortcut to activate the chat window. Use something familiar like command+esc
 - Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
 - Autosave presets, checkpointing & restore chat at certain point
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
@@ -28,6 +27,7 @@
     - Future enhancement: wake word detection (e.g. "Hey Vital" via Picovoice Porcupine) as an additional gating layer for either ASK or TALK mode.
 
 ### Done
+- Add a command shortcut (Cmd+K / Ctrl+K) to focus the chat prompt editor
 - Chat clearing (clear/reset button in title row resets chat UI and API conversation history)
 - Split mic into VOICE CHAT (always-on, 20s silence timeout, popup warning) and TALK (auto-stops on configurable silence) modes with SEND button
 - Move away from Opus because its too expensive

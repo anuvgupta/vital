@@ -84,10 +84,10 @@
 
 **UI / Interface:**
 
-- [full_interface.h/cpp](src/interface/editor_sections/full_interface.cpp) - Main UI container, handles VitalSidePanel listener callbacks
+- [full_interface.h/cpp](src/interface/editor_sections/full_interface.cpp) - Main UI container, handles VitalSidePanel listener callbacks and keyboard shortcuts (Cmd+K / Ctrl+K)
 - [synth_section.h/cpp](src/interface/editor_sections/synth_section.h) - Base class for all UI sections, includes `paintBackground()` for OpenGL rendering
 - [synth_button.h](src/interface/editor_components/synth_button.h) - OpenGlToggleButton, SynthButton components
-- [side_panel.h/cpp](src/interface/editor_sections/side_panel.cpp) - **Our AI chat panel (VitalSidePanel)** with listener pattern for message submission
+- [side_panel.h/cpp](src/interface/editor_sections/side_panel.cpp) - **Our AI chat panel (VitalSidePanel)** with listener pattern and `focusPromptEditor()` for keyboard focus
 - [open_gl_image_component.h](src/interface/editor_components/open_gl_image_component.h) - OpenGlTextEditor, PlainTextComponent, OpenGlAutoImageComponent
 - [open_gl_multi_quad.h](src/interface/editor_components/open_gl_multi_quad.h) - OpenGlQuad (rounded rectangles), OpenGlScrollBar
 - [open_gl_component.h/cpp](src/interface/editor_components/open_gl_component.cpp) - Base OpenGL component, parent/findValue system

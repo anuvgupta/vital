@@ -906,6 +906,11 @@ void VitalSidePanel::clearChat() {
   addMessage("Ready to create!", ChatMessage::kSystem);
 }
 
+void VitalSidePanel::focusPromptEditor() {
+  if (prompt_editor_)
+    prompt_editor_->grabKeyboardFocus();
+}
+
 void VitalSidePanel::updateVoiceChatButtonColors() {
   if (recording_mode_ == kRecordingVoiceChat) {
     voice_chat_button_->setColour(Skin::kUiActionButton, findColour(Skin::kUiButton, true));

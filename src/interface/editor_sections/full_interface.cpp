@@ -739,6 +739,15 @@ void FullInterface::modulationsScrolled() {
   modulation_manager_->setVisibleMeterBounds();
 }
 
+bool FullInterface::keyPressed(const KeyPress& key) {
+  if (key == KeyPress('k', ModifierKeys::commandModifier, 0)) {
+    if (side_panel_ && side_panel_->isVisible())
+      side_panel_->focusPromptEditor();
+    return true;
+  }
+  return SynthSection::keyPressed(key);
+}
+
 void FullInterface::setFocus() {
   if (authentication_ && authentication_->isShowing())
     authentication_->setFocus();

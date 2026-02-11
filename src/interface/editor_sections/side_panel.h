@@ -104,6 +104,7 @@ public:
     void clearThinkingMessage();
     void addResponseMessage(const String &text);
     void clearChat();
+    void focusPromptEditor();
 
     // Voice recording
     void startTalkRecording();

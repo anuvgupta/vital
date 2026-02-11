@@ -85,6 +85,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
       checkShouldReposition();
     }
     virtual void resized() override;
+    bool keyPressed(const KeyPress& key) override;
     void animate(bool animate) override;
     void reset() override;
     void setAllValues(vital::control_map& controls) override;
