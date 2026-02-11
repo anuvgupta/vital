@@ -648,7 +648,7 @@ void VitalSidePanel::startTalkRecording() {
   talk_button_->getGlComponent()->text().redrawImage(true);
   updateTalkButtonColors();
   talk_recording_indicator_->setActive(true);
-  addMessage("Listening... speak your instructions.", ChatMessage::kSystem);
+  addMessage("Listening...", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::startVoiceChatRecording() {
@@ -723,7 +723,7 @@ void VitalSidePanel::startVoiceChatRecording() {
   voice_chat_button_->getGlComponent()->text().redrawImage(true);
   updateVoiceChatButtonColors();
   voice_chat_recording_indicator_->setActive(true);
-  addMessage("Voice chat active. Listening until you stop or 20s of silence.", ChatMessage::kSystem);
+  addMessage("Listening until you stop...", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::stopRecording() {
