@@ -311,8 +311,8 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
       restore_button_bounds_ = Rectangle<int>((int)box_x, (int)box_y,
                                                (int)box_size, (int)box_size);
 
-      // Rounded rectangle background (darker purple)
-      Colour bg_colour = findColour(Skin::kWidgetPrimary1, true).darker(1.2f);
+      // Rounded rectangle background — darken on hover over button
+      Colour bg_colour = findColour(Skin::kWidgetPrimary1, true).darker(hovering_restore_button_ ? 0.35f : 0.2f);
       g.setColour(bg_colour);
       g.fillRoundedRectangle(box_x, box_y, box_size, box_size, size_ratio_ * 5.0f);
 
@@ -1109,6 +1109,20 @@ void VitalSidePanel::mouseMove(const MouseEvent& e) {
     return;
   }
 
+  // If mouse is over the restore button, keep the current hover state
+  bool over_button = !restore_button_bounds_.isEmpty() && restore_button_bounds_.contains(e.getPosition());
+  if (over_button) {
+    if (!hovering_restore_button_) {
+      hovering_restore_button_ = true;
+      repaintBackground();
+    }
+    return;
+  }
+  if (hovering_restore_button_) {
+    hovering_restore_button_ = false;
+    repaintBackground();
+  }
+
   int mouse_y = e.getPosition().getY() - chat_bounds_.getY() + scroll_position_;
   int new_hovered = -1;
 
@@ -1128,8 +1142,9 @@ void VitalSidePanel::mouseMove(const MouseEvent& e) {
 }
 
 void VitalSidePanel::mouseExit(const MouseEvent& e) {
-  if (hovered_message_index_ != -1) {
+  if (hovered_message_index_ != -1 || hovering_restore_button_) {
     hovered_message_index_ = -1;
+    hovering_restore_button_ = false;
     restore_button_bounds_ = {};
     repaintBackground();
   }

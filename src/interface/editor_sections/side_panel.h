@@ -162,6 +162,7 @@ private:
     // Checkpoint state
     std::vector<ChatCheckpoint> checkpoints_;
     int hovered_message_index_ = -1;
+    bool hovering_restore_button_ = false;
     Rectangle<int> restore_button_bounds_;
 
     // Voice recording state
