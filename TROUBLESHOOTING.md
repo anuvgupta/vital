@@ -124,6 +124,12 @@
     - Instead of adding SVG files to BinaryData (which requires Projucer regeneration), you can embed SVG markup directly as a `const char*` and use `Drawable::createFromSVG(XmlDocument::parse(svgString))` or the `fromSvgData()` pattern.
     - Used for the restore/return arrow icon in `src/interface/look_and_feel/paths.h`.
 
+- **Conversation history context pollution in ClaudeApiClient**:
+    - `sendMessagesAsync` was calling `addMessage("user", preset_context)` every turn, storing stale preset JSON snapshots in `conversation_history_`. These accumulated and wasted context window tokens since the preset is re-fetched fresh each turn anyway.
+    - Additionally, assistant responses containing full preset JSON blobs inside markdown code fences were stored verbatim in history, further polluting context with stale data.
+    - **Solution**: (1) Inject preset JSON ephemerally into the `messagesArray` built for each API call (just before the current user message) without adding it to `conversation_history_`. (2) Strip JSON fence content from assistant responses before storing in history using `extractFenceContent()`. (3) Extract the inline fence-stripping logic from `full_interface.cpp` into a shared static utility `ClaudeApiClient::extractFenceContent()`.
+    - Files: `src/common/claude_api_client.h`, `src/common/claude_api_client.cpp`, `src/interface/editor_sections/full_interface.cpp`
+
 - **UTF-8 special characters render as garbage in JUCE button text**:
     - Passing raw UTF-8 hex bytes like `"\xc3\x97"` (multiplication sign) to `setButtonText()` renders as "A" with diacritical marks (e.g., "Å") because JUCE interprets the bytes as Latin-1, not UTF-8.
     - **Solution**: Wrap UTF-8 byte sequences with `String(CharPointer_UTF8("\xc3\x97"))`. This is the established pattern in the Vital codebase (used for bullet characters in markdown rendering in `side_panel.cpp`). Applies to any non-ASCII Unicode character in button labels or drawn text.

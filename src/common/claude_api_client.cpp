@@ -172,6 +172,36 @@ void ClaudeApiClient::truncateHistoryTo(int size) {
     conversation_history_.resize(size);
 }
 
+void ClaudeApiClient::extractFenceContent(const String& response, String& textOut, String& jsonOut) {
+  textOut = String();
+  jsonOut = String();
+
+  int fenceStart = response.indexOf(String("```"));
+  if (fenceStart < 0)
+    return;
+
+  textOut = response.substring(0, fenceStart).trim();
+
+  int contentStart = response.substring(fenceStart).indexOf(String("\n"));
+  if (contentStart < 0)
+    return;
+
+  contentStart += fenceStart + 1;
+  int fenceEnd = response.substring(contentStart).indexOf(String("```"));
+  if (fenceEnd < 0)
+    return;
+
+  fenceEnd += contentStart;
+  jsonOut = response.substring(contentStart, fenceEnd).trim();
+
+  String trailing = response.substring(fenceEnd + 3).trim();
+  if (trailing.isNotEmpty()) {
+    if (textOut.isNotEmpty())
+      textOut += " ";
+    textOut += trailing;
+  }
+}
+
 void ClaudeApiClient::addMessage(const String& role, const String& content) {
   while (conversation_history_.size() >= kMaxMessages)
     conversation_history_.erase(conversation_history_.begin());
@@ -188,13 +218,7 @@ void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback c
 
 void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCallback callback,
                                          const String& preset_json) {
-  // If preset JSON is provided, inject it as a user message before the actual messages
-  if (preset_json.isNotEmpty()) {
-    String preset_context = "This is the current preset JSON:\n```json\n" + preset_json + "\n```";
-    addMessage("user", preset_context);
-  }
-
-  // Add all user messages to conversation history
+  // Add all user messages to conversation history (preset context is NOT stored — it's ephemeral)
   for (const auto& message : messages) {
     String truncated_message = message.length() > 1024 ? message.substring(0, 1024) : message;
     addMessage("user", truncated_message);
@@ -221,14 +245,40 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
     requestBody->setProperty("system", systemArray);
   }
 
-  // Build messages array from conversation history
+  // Build messages array: prior turns from history, then preset context (ephemeral), then current turn
+  int new_message_count = messages.size();
+  int history_size = (int)conversation_history_.size();
+  int prior_count = history_size - new_message_count;
+
   Array<var> messagesArray;
-  for (const auto& msg : conversation_history_) {
+
+  // All prior-turn messages (no stale preset snapshots)
+  for (int i = 0; i < prior_count; ++i) {
+    const auto& msg = conversation_history_[i];
     DynamicObject::Ptr msgObj = new DynamicObject();
     msgObj->setProperty("role", msg.role);
     msgObj->setProperty("content", msg.content);
     messagesArray.add(var(msgObj.get()));
   }
+
+  // Inject current preset context just before this turn's user message(s) — not stored in history
+  if (preset_json.isNotEmpty()) {
+    String preset_context = "This is the current preset JSON:\n```json\n" + preset_json + "\n```";
+    DynamicObject::Ptr presetMsg = new DynamicObject();
+    presetMsg->setProperty("role", "user");
+    presetMsg->setProperty("content", preset_context);
+    messagesArray.add(var(presetMsg.get()));
+  }
+
+  // Current turn's user message(s)
+  for (int i = prior_count; i < history_size; ++i) {
+    const auto& msg = conversation_history_[i];
+    DynamicObject::Ptr msgObj = new DynamicObject();
+    msgObj->setProperty("role", msg.role);
+    msgObj->setProperty("content", msg.content);
+    messagesArray.add(var(msgObj.get()));
+  }
+
   requestBody->setProperty("messages", messagesArray);
 
   String jsonBody = JSON::toString(var(requestBody.get()));
@@ -316,8 +366,11 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
 
   String responseText = firstContent["text"].toString();
 
-  // Add assistant response to conversation history
-  addMessage("assistant", responseText);
+  // Store only the text portion in history — strip the JSON fence since the preset
+  // state is always re-injected fresh at the start of each turn anyway.
+  String textOnly, jsonOnly;
+  extractFenceContent(responseText, textOnly, jsonOnly);
+  addMessage("assistant", textOnly.isNotEmpty() ? textOnly : responseText);
 
   MessageManager::callAsync([callback, responseText]() {
     callback(responseText, true);
