@@ -219,6 +219,12 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   clear_button_->setUiButton(true);
   clear_button_->setText(String(CharPointer_UTF8("\xc3\x97")));
 
+  cancel_edit_button_ = std::make_unique<OpenGlToggleButton>("CancelEdit");
+  addButton(cancel_edit_button_.get());
+  cancel_edit_button_->setUiButton(true);
+  cancel_edit_button_->setText(String(CharPointer_UTF8("\xc3\x97")));
+  cancel_edit_button_->setVisible(false);
+
   mic_capture_ = std::make_unique<MicrophoneCapture>();
 
   talk_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
@@ -528,6 +534,17 @@ void VitalSidePanel::resized() {
   }
 #endif
 
+  // Cancel edit button overlapping top-right of textarea
+  if (cancel_edit_button_) {
+    int cancel_size = 24;
+    int cancel_x = padding + button_width - cancel_size - 4;
+    int cancel_y = textarea_y + 4;
+    cancel_edit_button_->setBounds(cancel_x, cancel_y, cancel_size, cancel_size);
+    cancel_edit_button_->getGlComponent()->text().setTextSize(size_ratio_ * 14.0f);
+    cancel_edit_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
+    cancel_edit_button_->getGlComponent()->text().redrawImage(true);
+  }
+
   // Chat area between title and textarea
   int chat_top = padding + title_height + widget_margin;
   int chat_bottom = textarea_y - widget_margin;
@@ -556,6 +573,9 @@ void VitalSidePanel::buttonClicked(Button* clicked_button) {
   else if (clicked_button == clear_button_.get()) {
     clearChat();
   }
+  else if (clicked_button == cancel_edit_button_.get()) {
+    cancelEditMode();
+  }
   else if (clicked_button == talk_button_.get()) {
     if (recording_mode_ == kRecordingTalk) {
       stopRecording();
@@ -581,6 +601,11 @@ void VitalSidePanel::buttonClicked(Button* clicked_button) {
 
 void VitalSidePanel::textEditorReturnKeyPressed(TextEditor& editor) {
   submitMessage();
+}
+
+void VitalSidePanel::textEditorEscapeKeyPressed(TextEditor& editor) {
+  if (edit_mode_)
+    cancelEditMode();
 }
 
 void VitalSidePanel::scrollBarMoved(ScrollBar* scrollBar, double newRangeStart) {
@@ -817,6 +842,14 @@ void VitalSidePanel::submitMessage() {
   String text = prompt_editor_->getText().trim();
   if (text.isEmpty())
     return;
+
+  // Exit edit mode if active (discard snapshot, hide cancel button)
+  if (edit_mode_) {
+    edit_mode_ = false;
+    edit_snapshot_.reset();
+    if (cancel_edit_button_)
+      cancel_edit_button_->setVisible(false);
+  }
 
   // Remove existing thinking indicator so user message appears above it
   clearThinkingMessage();
@@ -1096,6 +1129,90 @@ void VitalSidePanel::archiveLooseCheckpointsOnStartup() {
 }
 
 // ============================================================================
+// Edit Mode
+// ============================================================================
+
+void VitalSidePanel::enterEditMode(int message_index) {
+  if (edit_mode_ || message_index < 0 || message_index >= (int)messages_.size())
+    return;
+
+  if (messages_[message_index].type != ChatMessage::kUser)
+    return;
+
+  // Save the message text before any modifications
+  String message_text = messages_[message_index].text;
+
+  // Save snapshot for cancel/undo
+  edit_snapshot_ = std::make_unique<EditModeSnapshot>();
+  edit_snapshot_->saved_messages = messages_;
+  edit_snapshot_->saved_checkpoints = checkpoints_;
+
+  // Save current state via listeners before restoring
+  for (Listener* l : listeners_) {
+    edit_snapshot_->saved_api_history_size = l->sidePanelGetApiHistorySize();
+    edit_snapshot_->saved_synth_checkpoint = l->sidePanelSaveCheckpoint();
+  }
+
+  // Trigger the restore (truncates messages, restores synth state, truncates API history)
+  for (Listener* l : listeners_)
+    l->sidePanelRestoreRequested(message_index);
+
+  // Set edit mode state
+  edit_mode_ = true;
+
+  // Put the message text in the textbox
+#if !defined(NO_TEXT_ENTRY)
+  if (prompt_editor_) {
+    prompt_editor_->setText(message_text, false);
+    prompt_editor_->redoImage();
+    prompt_editor_->grabKeyboardFocus();
+  }
+#endif
+
+  // Show cancel button
+  if (cancel_edit_button_)
+    cancel_edit_button_->setVisible(true);
+
+  // Clear hover state since messages changed
+  hovered_message_index_ = -1;
+  hovering_restore_button_ = false;
+  restore_button_bounds_ = {};
+}
+
+void VitalSidePanel::cancelEditMode() {
+  if (!edit_mode_ || !edit_snapshot_)
+    return;
+
+  // Restore messages and checkpoints from snapshot
+  messages_ = std::move(edit_snapshot_->saved_messages);
+  checkpoints_ = std::move(edit_snapshot_->saved_checkpoints);
+
+  // Restore synth state and API history via listener
+  for (Listener* l : listeners_)
+    l->sidePanelCancelEditRequested(edit_snapshot_->saved_synth_checkpoint,
+                                     edit_snapshot_->saved_api_history_size);
+
+  // Clear textbox
+#if !defined(NO_TEXT_ENTRY)
+  if (prompt_editor_) {
+    prompt_editor_->clear();
+    prompt_editor_->redoImage();
+  }
+#endif
+
+  // Hide cancel button and exit edit mode
+  if (cancel_edit_button_)
+    cancel_edit_button_->setVisible(false);
+
+  edit_mode_ = false;
+  edit_snapshot_.reset();
+
+  layoutMessages();
+  scrollToBottom();
+  repaintBackground();
+}
+
+// ============================================================================
 // Mouse Events for Hover/Restore
 // ============================================================================
 
@@ -1157,15 +1274,5 @@ void VitalSidePanel::mouseUp(const MouseEvent& e) {
   if (!restore_button_bounds_.contains(e.getPosition()))
     return;
 
-  int idx = hovered_message_index_;
-  AlertWindow::showOkCancelBox(AlertWindow::QuestionIcon,
-      "Restore Checkpoint",
-      "Restore synth to this point in the conversation? Messages after this point will be removed.",
-      "Restore", "Cancel", nullptr,
-      ModalCallbackFunction::create([this, idx](int result) {
-        if (result == 1) {
-          for (Listener* l : listeners_)
-            l->sidePanelRestoreRequested(idx);
-        }
-      }));
+  enterEditMode(hovered_message_index_);
 }

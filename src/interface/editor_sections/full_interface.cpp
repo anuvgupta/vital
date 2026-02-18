@@ -1220,16 +1220,8 @@ void FullInterface::sidePanelRestoreRequested(int message_index) {
   VitalSidePanel* panel = side_panel_.get();
   if (!panel) return;
 
-  // If the user clicked on a user message, remap to the next system message's
-  // checkpoint (the state *after* Claude applied changes for that exchange).
-  int resolve_index = message_index;
-  if (panel->getMessageType(message_index) == ChatMessage::kUser) {
-    int next_idx = message_index + 1;
-    if (panel->getCheckpoint(next_idx) != nullptr)
-      resolve_index = next_idx;
-  }
-
-  const ChatCheckpoint* cp = panel->getCheckpoint(resolve_index);
+  // Use the user message's own checkpoint (pre-response state)
+  const ChatCheckpoint* cp = panel->getCheckpoint(message_index);
   if (!cp || !cp->autosave_file.exists()) return;
 
   SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
@@ -1249,15 +1241,47 @@ void FullInterface::sidePanelRestoreRequested(int message_index) {
     return;
   }
 
-  // Truncate UI messages (keep through the resolved checkpoint's message)
-  int truncate_to = cp->ui_message_index + 1;
-  panel->truncateMessagesTo(truncate_to);
+  // Truncate UI messages — remove the user message itself and everything after
+  panel->truncateMessagesTo(message_index);
 
   // Truncate API conversation history
   ClaudeApiClient::instance().truncateHistoryTo(cp->api_history_size);
 
-  // Remove checkpoints after the restored point
-  panel->removeCheckpointsAfter(cp->ui_message_index);
+  // Remove checkpoints at and after the edited message
+  panel->removeCheckpointsAfter(message_index - 1);
+
+  // Cancel any in-flight API requests
+  api_request_in_flight_ = false;
+  queued_messages_.clear();
+}
+
+int FullInterface::sidePanelGetApiHistorySize() {
+  return ClaudeApiClient::instance().getHistorySize();
+}
+
+File FullInterface::sidePanelSaveCheckpoint() {
+  return saveAutosaveCheckpoint();
+}
+
+void FullInterface::sidePanelCancelEditRequested(const File& checkpoint, int api_history_size) {
+  if (!checkpoint.exists()) return;
+
+  SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
+  if (!gui || !gui->getSynth()) return;
+
+  try {
+    json state = json::parse(checkpoint.loadFileAsString().toStdString());
+    bool loaded = gui->getSynth()->loadStateFromJson(state);
+    if (loaded) {
+      gui->updateFullGui();
+      gui->notifyFresh();
+    }
+  } catch (const json::exception&) {
+    // Silently fail — state will remain as-is
+  }
+
+  // Restore API history size
+  ClaudeApiClient::instance().truncateHistoryTo(api_history_size);
 
   // Cancel any in-flight API requests
   api_request_in_flight_ = false;

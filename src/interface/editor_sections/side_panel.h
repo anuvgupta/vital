@@ -62,6 +62,13 @@ struct ChatMessage
     static constexpr float kCornerRadius = 8.0f;
 };
 
+struct EditModeSnapshot {
+    std::vector<ChatMessage> saved_messages;
+    std::vector<ChatCheckpoint> saved_checkpoints;
+    int saved_api_history_size = 0;
+    File saved_synth_checkpoint;
+};
+
 class VitalSidePanel : public SynthSection,
                        public TextEditor::Listener,
                        public ScrollBar::Listener
@@ -80,6 +87,9 @@ public:
         virtual void sidePanelButtonClicked() = 0;
         virtual void sidePanelMessageSubmitted(const String &message) {}
         virtual void sidePanelRestoreRequested(int message_index) {}
+        virtual int sidePanelGetApiHistorySize() { return 0; }
+        virtual File sidePanelSaveCheckpoint() { return File(); }
+        virtual void sidePanelCancelEditRequested(const File& checkpoint, int api_history_size) {}
     };
 
     VitalSidePanel();
@@ -92,6 +102,7 @@ public:
 
     // TextEditor::Listener
     void textEditorReturnKeyPressed(TextEditor &editor) override;
+    void textEditorEscapeKeyPressed(TextEditor &editor) override;
 
     // ScrollBar::Listener
     void scrollBarMoved(ScrollBar *scrollBar, double newRangeStart) override;
@@ -130,6 +141,11 @@ public:
     void archiveCheckpoints();
     void archiveLooseCheckpointsOnStartup();
 
+    // Edit mode
+    void enterEditMode(int message_index);
+    void cancelEditMode();
+    bool isInEditMode() const { return edit_mode_; }
+
     // Voice recording
     void startTalkRecording();
     void startVoiceChatRecording();
@@ -164,6 +180,11 @@ private:
     int hovered_message_index_ = -1;
     bool hovering_restore_button_ = false;
     Rectangle<int> restore_button_bounds_;
+
+    // Edit mode state
+    bool edit_mode_ = false;
+    std::unique_ptr<EditModeSnapshot> edit_snapshot_;
+    std::unique_ptr<OpenGlToggleButton> cancel_edit_button_;
 
     // Voice recording state
     std::unique_ptr<MicrophoneCapture> mic_capture_;
