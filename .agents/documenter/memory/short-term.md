@@ -1,12 +1,14 @@
 # Documenter Agent's Short-Term Memory
 
-## Latest Task: Fix conversation history context pollution (2026-02-17)
+## Latest Task: Implement Claude-style edit mode for restore button (2026-02-17)
 
-- Fixed two bugs: preset JSON stored in history every turn (stale), assistant JSON fences stored verbatim (stale)
-- Preset context now injected ephemerally into API call message array only
-- Assistant responses stripped of JSON fences before storing in history
-- Extracted `ClaudeApiClient::extractFenceContent()` static utility from inline code in full_interface.cpp
-- Files: claude_api_client.h/cpp, full_interface.cpp
+- Changed restore button from confirmation-dialog pattern to instant edit mode (Claude web UI)
+- Clicking restore: removes user message + everything after, restores text to input box, shows X cancel button
+- User can edit and re-submit, or press ESC / click X to undo edit and restore everything from snapshot
+- `EditModeSnapshot` struct: stores full messages list, checkpoints, API history size, synth state
+- Edit mode state machine: Normal → Edit (click restore) → Normal (submit or cancel)
+- Files: side_panel.h/cpp, full_interface.h/cpp
+- No bugs encountered; built successfully on first try
 
 ## Previous Task: Autosave Checkpoints & Chat Restore (2026-02-10)
 

@@ -41,6 +41,7 @@
 
 ### Done
 - Autosave presets, checkpointing & restore chat at certain point (hover restore button on user messages, archive on clear, orphan cleanup on startup, 50/20 caps)
+- Edit mode for restore button (instant Claude-style, no confirmation dialog) — click to enter edit mode, edit and re-submit or ESC to cancel. Fully implemented with EditModeSnapshot state machine, cancel button, keyboard handler, and synth state rollback.
 - Add a command shortcut (Cmd+K / Ctrl+K) to focus the chat prompt editor
 - Chat clearing (clear/reset button in title row resets chat UI and API conversation history)
 - Split mic into VOICE CHAT (always-on, 20s silence timeout, popup warning) and TALK (auto-stops on configurable silence) modes with SEND button
