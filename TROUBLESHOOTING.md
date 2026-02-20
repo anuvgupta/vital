@@ -133,3 +133,21 @@
 - **UTF-8 special characters render as garbage in JUCE button text**:
     - Passing raw UTF-8 hex bytes like `"\xc3\x97"` (multiplication sign) to `setButtonText()` renders as "A" with diacritical marks (e.g., "Å") because JUCE interprets the bytes as Latin-1, not UTF-8.
     - **Solution**: Wrap UTF-8 byte sequences with `String(CharPointer_UTF8("\xc3\x97"))`. This is the established pattern in the Vital codebase (used for bullet characters in markdown rendering in `side_panel.cpp`). Applies to any non-ASCII Unicode character in button labels or drawn text.
+
+- **ChatMessage markdown blocks not updating when text changes**:
+    - `updateStatusMessage()` was replacing `message.text` but not `message.blocks` (the parsed markdown structure), so the UI showed stale content or nothing at all because rendering uses `blocks` not `text`.
+    - `ChatMessage` constructor parses markdown into `blocks` via `parseMarkdown()`, creating `MarkdownBlock` and `StyledRun` structs that are cached. Simply reassigning `text` breaks this invariant.
+    - **Solution**: After updating `message.text`, also call `message.blocks = parseMarkdown(text)` to re-parse. Apply this whenever modifying ChatMessage content after construction.
+    - File: `src/interface/editor_sections/side_panel.cpp` (`updateStatusMessage()` method)
+
+- **System message padding conflict in chat UI**:
+    - System messages were using same padding constant (`kPadding=12`) as user messages, but system status messages ("Step 1/N...", "Breaking it down...") looked vertically oversized/clunky compared to user bubbles.
+    - The `kPadding` constant was used for both top/bottom padding on all message types, but system messages are typically simpler and need less space.
+    - **Solution**: Split padding into `kPadding=14` for user/assistant messages and `kSystemPadding=4` for system messages. Update `calculateHeight()` and `paint()` calls to use the appropriate constant based on message type.
+    - File: `src/interface/editor_sections/side_panel.h/cpp`
+
+- **Router splitting too aggressively for simple requests**:
+    - "turn on osc 2, turn on osc 3, turn on reverb, raise envelope release" was split into 4 separate API calls because the router prompt didn't encourage batching independent changes.
+    - Each sub-action includes full system prompt + preset schema + conversation history, so aggressive splitting causes significant latency and token waste (even though each individual call is cheaper).
+    - **Solution**: Update router system prompt (`kRouterSystemPrompt` in `claude_api_client.cpp`) to explicitly instruct batching of simple independent changes and cap at 3-5 actions for realistic workflows. Guidance: "Group simple, independent changes together... Only split when genuinely complex sound design where each step builds meaningfully on previous."
+    - File: `src/common/claude_api_client.cpp` (line ~29, `kRouterSystemPrompt` constant)

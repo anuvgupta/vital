@@ -1088,8 +1088,82 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
     }
   }
 
+  routeAndExecute(message);
+}
+
+void FullInterface::routeAndExecute(const String& message) {
+  VitalSidePanel* panel = side_panel_.get();
+
+  ClaudeApiClient::instance().routeMessage(message, [this, panel, message](
+      const StringArray& actions, bool success, const String& error) {
+    if (!panel) {
+      api_request_in_flight_ = false;
+      queued_messages_.clear();
+      return;
+    }
+
+    if (!success || actions.isEmpty()) {
+      // Router failed — fall back to sending the original message directly
+      DBG("Router failed (" + error + "), falling back to direct send");
+      StringArray messages;
+      messages.add(message);
+      sendApiRequest(messages);
+      return;
+    }
+
+    if (actions.size() == 1) {
+      // Single action — pass through directly with original message
+      StringArray messages;
+      messages.add(message);
+      sendApiRequest(messages);
+      return;
+    }
+
+    // Multiple actions — store the original message in history, then execute sequentially
+    ClaudeApiClient::instance().addToHistory("user", message);
+
+    pending_actions_ = actions;
+    total_actions_ = actions.size();
+    current_action_index_ = 0;
+
+    panel->updateStatusMessage("Breaking it down...");
+    executeNextAction();
+  });
+}
+
+void FullInterface::executeNextAction(bool replaceExisting) {
+  VitalSidePanel* panel = side_panel_.get();
+  if (!panel || current_action_index_ >= pending_actions_.size()) {
+    // All actions done
+    pending_actions_.clear();
+    total_actions_ = 0;
+    current_action_index_ = 0;
+    api_request_in_flight_ = false;
+
+    // Check queued messages
+    if (!queued_messages_.isEmpty()) {
+      StringArray pending;
+      pending.swapWith(queued_messages_);
+      api_request_in_flight_ = true;
+      panel->addMessage("Thinking...", ChatMessage::kSystem);
+      routeAndExecute(pending[0]);
+    }
+    return;
+  }
+
+  String action = pending_actions_[current_action_index_];
+  int stepNum = current_action_index_ + 1;
+  String stepMsg = "Step " + String(stepNum) + "/" + String(total_actions_) + ": " + action;
+
+  if (replaceExisting)
+    panel->updateStatusMessage(stepMsg);
+  else
+    panel->addMessage(stepMsg, ChatMessage::kSystem);
+
+  current_action_index_++;
+
   StringArray messages;
-  messages.add(message);
+  messages.add(action);
   sendApiRequest(messages);
 }
 
@@ -1113,11 +1187,20 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       return;
     }
 
-    panel->clearThinkingMessage();
+    bool is_multi_action = total_actions_ > 1;
+
+    if (!is_multi_action)
+      panel->clearThinkingMessage();
 
     if (!success) {
-      panel->addResponseMessage(response);
-      // On failure, clear queue and stop — don't hammer a broken API
+      if (is_multi_action)
+        panel->updateStatusMessage("Error: " + response);
+      else
+        panel->addResponseMessage(response);
+      // On failure, clear multi-action state, queue, and stop
+      pending_actions_.clear();
+      total_actions_ = 0;
+      current_action_index_ = 0;
       api_request_in_flight_ = false;
       queued_messages_.clear();
       return;
@@ -1143,9 +1226,34 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
           if (loaded) {
             gui->updateFullGui();
             gui->notifyFresh();
-            // Show surrounding text if any, otherwise a random completion phrase
-            String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
-            panel->addResponseMessage(msg);
+
+            if (is_multi_action) {
+              if (current_action_index_ < pending_actions_.size()) {
+                // More steps remaining
+                if (textMessage.isNotEmpty()) {
+                  // Show text output, then add next step as new message below
+                  panel->updateStatusMessage(textMessage);
+                  executeNextAction(false);
+                } else {
+                  // No text — silently replace step message with next step
+                  executeNextAction(true);
+                }
+                return;
+              }
+
+              // Final step
+              String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
+              panel->updateStatusMessage(msg);
+
+              // All multi-actions done
+              pending_actions_.clear();
+              total_actions_ = 0;
+              current_action_index_ = 0;
+            } else {
+              String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
+              // Single action — show as normal response
+              panel->addResponseMessage(msg);
+            }
 
             // Autosave checkpoint for the response
             {
@@ -1160,14 +1268,20 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
               StringArray pending;
               pending.swapWith(queued_messages_);
               panel->addMessage("Thinking...", ChatMessage::kSystem);
-              sendApiRequest(pending);
+              routeAndExecute(pending[0]);
             } else {
               api_request_in_flight_ = false;
             }
             return;
           }
         }
-        panel->addResponseMessage("Failed to load preset from response.");
+        if (is_multi_action)
+          panel->updateStatusMessage("Failed to load preset from response.");
+        else
+          panel->addResponseMessage("Failed to load preset from response.");
+        pending_actions_.clear();
+        total_actions_ = 0;
+        current_action_index_ = 0;
         api_request_in_flight_ = false;
         queued_messages_.clear();
         return;
@@ -1177,7 +1291,27 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       // Not valid JSON - fall through to show as text
     }
 
-    panel->addResponseMessage(response);
+    // Text-only response
+    String displayText = textMessage.isNotEmpty() ? textMessage : response;
+
+    if (is_multi_action) {
+      if (current_action_index_ < pending_actions_.size()) {
+        // More steps — text-only always has text, so show it then add next step below
+        panel->updateStatusMessage(displayText);
+        executeNextAction(false);
+        return;
+      }
+
+      // Final step — show text
+      panel->updateStatusMessage(displayText);
+
+      // All multi-actions done
+      pending_actions_.clear();
+      total_actions_ = 0;
+      current_action_index_ = 0;
+    } else {
+      panel->addResponseMessage(response);
+    }
 
     // Autosave checkpoint for the text-only response
     {
@@ -1192,7 +1326,7 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       StringArray pending;
       pending.swapWith(queued_messages_);
       panel->addMessage("Thinking...", ChatMessage::kSystem);
-      sendApiRequest(pending);
+      routeAndExecute(pending[0]);
     } else {
       api_request_in_flight_ = false;
     }
@@ -1250,9 +1384,12 @@ void FullInterface::sidePanelRestoreRequested(int message_index) {
   // Remove checkpoints at and after the edited message
   panel->removeCheckpointsAfter(message_index - 1);
 
-  // Cancel any in-flight API requests
+  // Cancel any in-flight API requests and multi-action state
   api_request_in_flight_ = false;
   queued_messages_.clear();
+  pending_actions_.clear();
+  total_actions_ = 0;
+  current_action_index_ = 0;
 }
 
 int FullInterface::sidePanelGetApiHistorySize() {
@@ -1283,7 +1420,10 @@ void FullInterface::sidePanelCancelEditRequested(const File& checkpoint, int api
   // Restore API history size
   ClaudeApiClient::instance().truncateHistoryTo(api_history_size);
 
-  // Cancel any in-flight API requests
+  // Cancel any in-flight API requests and multi-action state
   api_request_in_flight_ = false;
   queued_messages_.clear();
+  pending_actions_.clear();
+  total_actions_ = 0;
+  current_action_index_ = 0;
 }

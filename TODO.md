@@ -11,22 +11,10 @@
 ### Long-Term
 
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
-- Multiple thinking & ouptut rounds
-    - For larger commands - have llm decide if command is long - use tool to split up into multiple subprompts
-- Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
-    - new plan
-        - initial decision call - just a tool call without the json schema, which asks llm to do three things:
-            1. Pass through single simple commands --> tool function will pass this to our current patch update/generation mechanism (calling claude with json schema & current preset & convo so far)
-            2. Split up large complex commands into multiple simpler single commands --> tool function will first indicate to UI that we are "Breaking it down..." and then sequentially pass each command to our current patch update/generation mechanism (calling claude with json schema & current preset & convo so far with the latest request including each sequential previous subcommand)
-            3. TBD
-            3. Indicate if command is a non-technical patch description --> tool function will first indicate to UI that we are "Designing your sound..." and then call claude with the conversation and same prompt, but instead of json schema, we give claude the synth cookbook (this is in `agents/vital-assistant/SYNTHESIZER_COOKBOOK.md`) as part of the prompt with current preset and convo history, and we ask claude to come up with a natural language list of technical synth setting/param updates that will result in a sound patch which fulfills the original non-technical description - the tool should then send this list as a message (not visiable to ui) such that it gets processed with the above logic - it gets split up into subcommands by the tool call
-    - old plan
-        - architecture details
-            - first, run just the latest user message through sonnet to have it decide which "skill" to call
-            - then call the opus with the system prompt, selected skill prompt, preset schema, and if necessary also the vital handbook and sound design cookbook. add the conversation history with latest user message, and the current preset json.
-            - DONT have a final summarization step - this would waste tokens and add latency - in future we could have it print out a natural language response as one of the preset json fields, and extract that. but for now a hardcoded "preset updated" is just fine.
-        - first start with "knowledge base" and "preset generator" skills, then add "sound designer" as separate skill to see if it improves interpretation of nontechnical suond design descriptions
-        - we need to research if there is already support for this in claude platform or openai platform. if not, we need to build our own latency-optimized orchestrater in AWS for example.
+- Multiple thinking & output rounds (partially complete)
+    - Router layer analyzes each message and decides: single-action (pass through) vs multi-action (split and execute sequentially)
+    - Each sub-action sees updated preset state from previous steps
+    - Future: Handle non-technical sound design descriptions (TBD -- currently returns sentinel "THIS REQUIRES COMPLEX SOUND DESIGN")
     
 
 
@@ -40,6 +28,7 @@
     - Future enhancement: wake word detection (e.g. "Hey Vital" via Picovoice Porcupine) as an additional gating layer for either ASK or TALK mode.
 
 ### Done
+- Multi-layer agentic router flow — router uses tool_use to analyze message and decide single-action pass-through vs multi-action split/sequential execution
 - Autosave presets, checkpointing & restore chat at certain point (hover restore button on user messages, archive on clear, orphan cleanup on startup, 50/20 caps)
 - Edit mode for restore button (instant Claude-style, no confirmation dialog) — click to enter edit mode, edit and re-submit or ESC to cancel. Fully implemented with EditModeSnapshot state machine, cancel button, keyboard handler, and synth state rollback.
 - Add a command shortcut (Cmd+K / Ctrl+K) to focus the chat prompt editor
@@ -60,6 +49,7 @@
 ## Bugs
 
 ### Open
+- Restore function is not working after first restore and replace
 
 ### Done
 - Conversation history context pollution -- stale preset JSON and assistant JSON fences accumulating in history, wasting tokens

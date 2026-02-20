@@ -40,3 +40,13 @@
 - `ClaudeApiClient::truncateHistoryTo(int)` trims conversation history to match UI truncation
 - SVG icons can be embedded as string literals in `paths.h` using `fromSvgData()` -- avoids BinaryData regeneration
 - MSVC quirk: `vector::resize()` instantiates default constructor even when only shrinking; use `erase()` for types without default constructors
+
+### Multi-Layer Router Pattern
+- User message → router call (Claude tool_use, lightweight, no preset schema) → action list
+- Router response contains `tool_use` block with `input.actions` array (forced via `tool_choice`)
+- Single action: pass through to existing preset generation (no latency penalty perceived)
+- Multiple actions: orchestrate via `routeAndExecute()` → `executeNextAction()` chain
+- Each sub-action is added to conversation history manually via `ClaudeApiClient::addToHistory()` so LLM sees context
+- Status messages ("Breaking it down...", "Step 1/3...", etc) replace last system message via `VitalSidePanel::updateStatusMessage()`
+- Router system prompt tuned to batch simple independent changes and minimize splitting (most real requests = 1 action)
+- ChatMessage stores both `text` and `blocks` (parsed markdown) — updating text requires re-parsing: `message.blocks = parseMarkdown(text)`

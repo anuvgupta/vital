@@ -1,0 +1,1 @@
+tun on osc 3, and turn on rever, and also increase env 121 release, then have filter 1 apply to all 3 oscscs, then have osc 3 on as well, then set osc 2 to uniosn 5 voices and lower the detune fo the unison, then turn on filter 2 and have to ti smp osc while turninig on smp osc an dlowering its detune

@@ -1,16 +1,24 @@
 # Documenter Agent's Short-Term Memory
 
-## Latest Task: Implement Claude-style edit mode for restore button (2026-02-17)
+## Latest Task: Multi-Layer Agentic Chat Flow with Router (2026-02-19)
 
-- Changed restore button from confirmation-dialog pattern to instant edit mode (Claude web UI)
-- Clicking restore: removes user message + everything after, restores text to input box, shows X cancel button
-- User can edit and re-submit, or press ESC / click X to undo edit and restore everything from snapshot
-- `EditModeSnapshot` struct: stores full messages list, checkpoints, API history size, synth state
-- Edit mode state machine: Normal → Edit (click restore) → Normal (submit or cancel)
-- Files: side_panel.h/cpp, full_interface.h/cpp
-- No bugs encountered; built successfully on first try
+- Implemented router layer that analyzes user messages via Claude tool_use before sending to preset generation
+- Router decides: single-action (pass through transparently) vs multi-action (split and execute sequentially)
+- Multi-action flow: routeAndExecute() → router call → if >1 action, executeNextAction() chains them sequentially
+- Each sub-action sees updated preset state; status messages transition ("Breaking it down..." → "Step 1/N..." → ...)
+- Added to ClaudeApiClient: routeMessage() (tool_use router), addToHistory() (store messages without API call)
+- Added to FullInterface: routeAndExecute(), executeNextAction() for orchestration
+- Added to VitalSidePanel: updateStatusMessage() to replace last system message in-place
+- Files modified: claude_api_client.h/cpp, full_interface.h/cpp, side_panel.h/cpp
+- **Bugs fixed**:
+  1. updateStatusMessage() wasn't visually updating → message.text updated but message.blocks not re-parsed; fixed by adding `message.blocks = parseMarkdown(text)`
+  2. clearThinkingMessage() only matched "Thinking..." exactly → step status messages weren't cleaned up; fixed by pattern matching
+  3. System message padding too large → split kPadding (14 for user) and kSystemPadding (4 for system)
+  4. Router splitting too aggressively → tuned router prompt to batch simple changes and minimize splitting
+- Complex sound design returns sentinel "THIS REQUIRES COMPLEX SOUND DESIGN" (TBD handling)
+- Updated: STEERING.md, CHANGELOG.md, TODO.md, TROUBLESHOOTING.md
 
-## Previous Task: Autosave Checkpoints & Chat Restore (2026-02-10)
+## Previous Task: Implement Claude-style edit mode for restore button (2026-02-17)
 
 - Implemented preset autosaving on every chat message send/receive
 - Checkpoints saved to `<data_dir>/autosaves/checkpoint_<timestamp>.vital`

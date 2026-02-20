@@ -156,7 +156,7 @@ int ChatMessage::calculateHeight(const String& text, int width, float fontSize) 
 }
 
 int ChatMessage::calculateMarkdownHeight(const std::vector<MarkdownBlock>& blocks, int width, float fontSize) {
-  int text_width = width - 2 * kPadding;
+  int text_width = width - 2 * kSystemPadding;
   int total = 0;
   int total_chars = 0;
 
@@ -169,7 +169,7 @@ int ChatMessage::calculateMarkdownHeight(const std::vector<MarkdownBlock>& block
       total_chars += blocks[i].code_text.length();
   }
 
-  int height = total + 2 * kPadding;
+  int height = total + 2 * kSystemPadding;
 
   // Extra buffer for long messages to prevent cutoff
   if (total_chars > 200)
@@ -331,10 +331,11 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
       g.fillPath(icon, icon.getTransformToScaleToFit(icon_bounds, true));
     }
 
-    Rectangle<float> text_bounds((float)(msg_bounds.getX() + ChatMessage::kPadding),
-                                  (float)(msg_bounds.getY() + ChatMessage::kPadding),
-                                  (float)(msg_bounds.getWidth() - 2 * ChatMessage::kPadding),
-                                  (float)(msg_bounds.getHeight() - 2 * ChatMessage::kPadding));
+    int pad = (message.type == ChatMessage::kUser) ? ChatMessage::kPadding : ChatMessage::kSystemPadding;
+    Rectangle<float> text_bounds((float)(msg_bounds.getX() + pad),
+                                  (float)(msg_bounds.getY() + pad),
+                                  (float)(msg_bounds.getWidth() - 2 * pad),
+                                  (float)(msg_bounds.getHeight() - 2 * pad));
 
     // User messages and non-markdown system messages: plain text
     if (message.type == ChatMessage::kUser || message.blocks.empty()) {
@@ -887,6 +888,22 @@ void VitalSidePanel::clearThinkingMessage() {
       repaintBackground();
     }
   }
+}
+
+void VitalSidePanel::updateStatusMessage(const String& text) {
+  if (!messages_.empty()) {
+    auto& last = messages_.back();
+    if (last.type == ChatMessage::kSystem) {
+      last.text = text;
+      last.blocks = parseMarkdown(text);
+      layoutMessages();
+      scrollToBottom();
+      repaintBackground();
+      return;
+    }
+  }
+  // Fallback: add as new system message
+  addMessage(text, ChatMessage::kSystem);
 }
 
 void VitalSidePanel::addResponseMessage(const String& text) {

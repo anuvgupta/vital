@@ -57,7 +57,8 @@ struct ChatMessage
     static int calculateHeight(const String &text, int width, float fontSize);
     static int calculateMarkdownHeight(const std::vector<MarkdownBlock>& blocks, int width, float fontSize);
 
-    static constexpr int kPadding = 12;
+    static constexpr int kPadding = 14;       // User message padding
+    static constexpr int kSystemPadding = 4;   // System message padding
     static constexpr float kBaseFontSize = 15.0f;  // Multiplied by size_ratio_
     static constexpr float kCornerRadius = 8.0f;
 };
@@ -123,6 +124,7 @@ public:
     void submitMessage();
     void addMessage(const String &text, ChatMessage::Type type);
     void clearThinkingMessage();
+    void updateStatusMessage(const String& text);
     void addResponseMessage(const String &text);
     void clearChat();
     void focusPromptEditor();
