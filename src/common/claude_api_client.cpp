@@ -23,7 +23,17 @@ namespace {
   const String kModelOpus = "claude-opus-4-5-20251101";
   const String kModel = kModelOpus;
   const int kMaxTokens = 1024;
+  const int kRouterMaxTokens = 512;
   const int kTimeoutMs = 30000;
+
+  const String kRouterSystemPrompt =
+    "You are a routing assistant for a synthesizer preset modification tool. "
+    "Analyze the user's request and break it into atomic preset modification actions. "
+    "Each action should be a single, self-contained instruction that can be executed independently. "
+    "For simple requests (single parameter change, one effect toggle, a question), return a single action matching the original request. "
+    "For complex multi-part requests (e.g. 'make a dark dubstep bass with wobble and distortion'), "
+    "split into ordered steps where each step builds on the previous. "
+    "For questions or non-modification requests, return the original request as a single action.";
 }
 
 ClaudeApiClient::ClaudeApiClient() { }
@@ -374,5 +384,177 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
 
   MessageManager::callAsync([callback, responseText]() {
     callback(responseText, true);
+  });
+}
+
+void ClaudeApiClient::addToHistory(const String& role, const String& content) {
+  addMessage(role, content);
+}
+
+void ClaudeApiClient::routeMessage(const String& message, RouterCallback callback) {
+  if (!initialized_ || api_key_.empty()) {
+    callback(StringArray(), false, "API client not initialized.");
+    return;
+  }
+
+  Thread::launch([this, message, callback]() {
+    routeMessageAsync(message, callback);
+  });
+}
+
+void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback callback) {
+  // Build request body
+  DynamicObject::Ptr requestBody = new DynamicObject();
+  requestBody->setProperty("model", kModel);
+  requestBody->setProperty("max_tokens", kRouterMaxTokens);
+
+  // System prompt
+  {
+    DynamicObject::Ptr systemBlock = new DynamicObject();
+    systemBlock->setProperty("type", "text");
+    systemBlock->setProperty("text", kRouterSystemPrompt);
+    Array<var> systemArray;
+    systemArray.add(var(systemBlock.get()));
+    requestBody->setProperty("system", systemArray);
+  }
+
+  // Messages: conversation history (read-only, for context) + current user message
+  Array<var> messagesArray;
+  for (const auto& msg : conversation_history_) {
+    DynamicObject::Ptr msgObj = new DynamicObject();
+    msgObj->setProperty("role", msg.role);
+    msgObj->setProperty("content", msg.content);
+    messagesArray.add(var(msgObj.get()));
+  }
+
+  // Current user message
+  {
+    DynamicObject::Ptr msgObj = new DynamicObject();
+    msgObj->setProperty("role", "user");
+    msgObj->setProperty("content", message);
+    messagesArray.add(var(msgObj.get()));
+  }
+  requestBody->setProperty("messages", messagesArray);
+
+  // Tool definition: route_actions
+  {
+    DynamicObject::Ptr actionItems = new DynamicObject();
+    actionItems->setProperty("type", "string");
+
+    DynamicObject::Ptr actionsProp = new DynamicObject();
+    actionsProp->setProperty("type", "array");
+    actionsProp->setProperty("items", var(actionItems.get()));
+    actionsProp->setProperty("description", "Ordered list of atomic actions to execute sequentially");
+
+    DynamicObject::Ptr properties = new DynamicObject();
+    properties->setProperty("actions", var(actionsProp.get()));
+
+    Array<var> required;
+    required.add("actions");
+
+    DynamicObject::Ptr inputSchema = new DynamicObject();
+    inputSchema->setProperty("type", "object");
+    inputSchema->setProperty("properties", var(properties.get()));
+    inputSchema->setProperty("required", required);
+
+    DynamicObject::Ptr tool = new DynamicObject();
+    tool->setProperty("name", "route_actions");
+    tool->setProperty("description", "Route user request into sequential preset modification actions");
+    tool->setProperty("input_schema", var(inputSchema.get()));
+
+    Array<var> toolsArray;
+    toolsArray.add(var(tool.get()));
+    requestBody->setProperty("tools", toolsArray);
+  }
+
+  // Force tool use
+  {
+    DynamicObject::Ptr toolChoice = new DynamicObject();
+    toolChoice->setProperty("type", "tool");
+    toolChoice->setProperty("name", "route_actions");
+    requestBody->setProperty("tool_choice", var(toolChoice.get()));
+  }
+
+  String jsonBody = JSON::toString(var(requestBody.get()));
+  DBG("ClaudeApiClient::routeMessage: Sending request: " + jsonBody);
+
+  // Build headers
+  String headers = "x-api-key: " + String(api_key_) + "\r\n"
+                   "anthropic-version: 2023-06-01\r\n"
+                   "content-type: application/json";
+
+  URL url(kApiEndpoint);
+  url = url.withPOSTData(jsonBody);
+
+  std::unique_ptr<InputStream> stream(url.createInputStream(
+    true, nullptr, nullptr, headers, kTimeoutMs, nullptr, nullptr, 0, "POST"
+  ));
+
+  if (!stream) {
+    MessageManager::callAsync([callback]() {
+      callback(StringArray(), false, "Failed to connect to Claude API.");
+    });
+    return;
+  }
+
+  String response = stream->readEntireStreamAsString();
+  DBG("ClaudeApiClient::routeMessage: Response: " + response);
+
+  var parsedResponse = JSON::parse(response);
+  if (!parsedResponse.isObject()) {
+    MessageManager::callAsync([callback]() {
+      callback(StringArray(), false, "Failed to parse router API response.");
+    });
+    return;
+  }
+
+  if (parsedResponse.hasProperty("error")) {
+    var error = parsedResponse["error"];
+    String errorMessage = error.isObject() && error.hasProperty("message")
+      ? error["message"].toString() : "Router API error";
+    MessageManager::callAsync([callback, errorMessage]() {
+      callback(StringArray(), false, errorMessage);
+    });
+    return;
+  }
+
+  // Parse tool_use response: find content block with type "tool_use"
+  var content = parsedResponse["content"];
+  if (!content.isArray()) {
+    MessageManager::callAsync([callback]() {
+      callback(StringArray(), false, "Unexpected router response format.");
+    });
+    return;
+  }
+
+  for (int i = 0; i < content.size(); ++i) {
+    var block = content[i];
+    if (block.isObject() && block["type"].toString() == "tool_use") {
+      var input = block["input"];
+      if (input.isObject() && input.hasProperty("actions")) {
+        var actionsVar = input["actions"];
+        if (actionsVar.isArray()) {
+          StringArray actions;
+          for (int j = 0; j < actionsVar.size(); ++j)
+            actions.add(actionsVar[j].toString());
+
+          if (actions.isEmpty()) {
+            MessageManager::callAsync([callback]() {
+              callback(StringArray(), false, "Router returned empty actions.");
+            });
+          } else {
+            MessageManager::callAsync([callback, actions]() {
+              callback(actions, true, String());
+            });
+          }
+          return;
+        }
+      }
+    }
+  }
+
+  // No tool_use block found
+  MessageManager::callAsync([callback]() {
+    callback(StringArray(), false, "Router did not return expected tool_use response.");
   });
 }

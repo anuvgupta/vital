@@ -13,14 +13,14 @@
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Multiple thinking & ouptut rounds
     - For larger commands - have llm decide if command is long - use tool to split up into multiple subprompts
-- Multi layer agentic flow with skills provided above - should execute on cloud to minimize network hops
+- Multi layer agentic flow
     - new plan
         - initial decision call - just a tool call without the json schema, which asks llm to do three things:
             1. Pass through single simple commands --> tool function will pass this to our current patch update/generation mechanism (calling claude with json schema & current preset & convo so far)
             2. Split up large complex commands into multiple simpler single commands --> tool function will first indicate to UI that we are "Breaking it down..." and then sequentially pass each command to our current patch update/generation mechanism (calling claude with json schema & current preset & convo so far with the latest request including each sequential previous subcommand)
             3. TBD
             3. Indicate if command is a non-technical patch description --> tool function will first indicate to UI that we are "Designing your sound..." and then call claude with the conversation and same prompt, but instead of json schema, we give claude the synth cookbook (this is in `agents/vital-assistant/SYNTHESIZER_COOKBOOK.md`) as part of the prompt with current preset and convo history, and we ask claude to come up with a natural language list of technical synth setting/param updates that will result in a sound patch which fulfills the original non-technical description - the tool should then send this list as a message (not visiable to ui) such that it gets processed with the above logic - it gets split up into subcommands by the tool call
-    - old plan
+    - old plan - with skills provided above - should execute on cloud to minimize network hops
         - architecture details
             - first, run just the latest user message through sonnet to have it decide which "skill" to call
             - then call the opus with the system prompt, selected skill prompt, preset schema, and if necessary also the vital handbook and sound design cookbook. add the conversation history with latest user message, and the current preset json.

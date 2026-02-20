@@ -127,6 +127,8 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     static void mergeJson(json& target, const json& patch);
 
     void sendApiRequest(const StringArray& messages);
+    void routeAndExecute(const String& message);
+    void executeNextAction();
 
     void setFocus();
     void notifyChange();
@@ -236,6 +238,9 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     bool needs_download_;
     bool api_request_in_flight_ = false;
     StringArray queued_messages_;
+    StringArray pending_actions_;
+    int total_actions_ = 0;
+    int current_action_index_ = 0;
     CriticalSection open_gl_critical_section_;
     OpenGLContext open_gl_context_;
     std::unique_ptr<Shaders> shaders_;

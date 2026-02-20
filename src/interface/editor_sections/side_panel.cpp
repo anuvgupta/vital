@@ -889,6 +889,21 @@ void VitalSidePanel::clearThinkingMessage() {
   }
 }
 
+void VitalSidePanel::updateStatusMessage(const String& text) {
+  if (!messages_.empty()) {
+    auto& last = messages_.back();
+    if (last.type == ChatMessage::kSystem) {
+      last.text = text;
+      layoutMessages();
+      scrollToBottom();
+      repaintBackground();
+      return;
+    }
+  }
+  // Fallback: add as new system message
+  addMessage(text, ChatMessage::kSystem);
+}
+
 void VitalSidePanel::addResponseMessage(const String& text) {
   clearThinkingMessage();
   addMessage(text, ChatMessage::kSystem);

@@ -123,6 +123,7 @@ public:
     void submitMessage();
     void addMessage(const String &text, ChatMessage::Type type);
     void clearThinkingMessage();
+    void updateStatusMessage(const String& text);
     void addResponseMessage(const String &text);
     void clearChat();
     void focusPromptEditor();

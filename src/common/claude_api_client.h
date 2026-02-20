@@ -24,6 +24,7 @@
 class ClaudeApiClient {
   public:
     using ResponseCallback = std::function<void(const String& response, bool success)>;
+    using RouterCallback = std::function<void(const StringArray& actions, bool success, const String& error)>;
 
     static ClaudeApiClient& instance();
 
@@ -37,6 +38,14 @@ class ClaudeApiClient {
                      const String& preset_json = String());
     void sendMessages(const StringArray& messages, ResponseCallback callback,
                       const String& preset_json = String());
+
+    // Router: analyzes a message and splits it into atomic actions via tool_use.
+    // Does NOT modify conversation history.
+    void routeMessage(const String& message, RouterCallback callback);
+
+    // Add a message to conversation history without sending an API call.
+    void addToHistory(const String& role, const String& content);
+
     void clearConversation();
 
     // Splits a response into plain text and the content inside the first ``` fence.
@@ -57,6 +66,7 @@ class ClaudeApiClient {
                           const String& preset_json);
     void sendMessagesAsync(const StringArray& messages, ResponseCallback callback,
                            const String& preset_json);
+    void routeMessageAsync(const String& message, RouterCallback callback);
     void addMessage(const String& role, const String& content);
 
     static const int kMaxMessages = 20;
