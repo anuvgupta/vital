@@ -87,7 +87,7 @@ public:
         virtual ~Listener() = default;
         virtual void sidePanelButtonClicked() = 0;
         virtual void sidePanelMessageSubmitted(const String &message) {}
-        virtual void sidePanelRestoreRequested(int message_index) {}
+        virtual bool sidePanelRestoreRequested(int message_index) { return false; }
         virtual int sidePanelGetApiHistorySize() { return 0; }
         virtual File sidePanelSaveCheckpoint() { return File(); }
         virtual void sidePanelCancelEditRequested(const File& checkpoint, int api_history_size) {}
@@ -138,7 +138,7 @@ public:
     }
     void addCheckpoint(int ui_message_index, int api_history_size, File autosave_file);
     void truncateMessagesTo(int count);
-    void removeCheckpointsAfter(int message_index);
+    void removeCheckpointsAfter(int message_index, bool delete_files = true);
     const ChatCheckpoint* getCheckpoint(int message_index) const;
     void archiveCheckpoints();
     void archiveLooseCheckpointsOnStartup();
@@ -156,6 +156,11 @@ public:
     RecordingMode recordingMode() const { return recording_mode_; }
 
 private:
+    // Commits and exits edit mode: deletes orphaned checkpoint files that were
+    // preserved during the tentative restore, then resets edit state. Called from
+    // submitMessage(), processRecordedSpeech(), and clearChat().
+    void exitEditMode();
+
     void layoutMessages();
     void scrollToBottom();
     void setScrollBarRange();

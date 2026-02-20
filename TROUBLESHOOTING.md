@@ -146,6 +146,14 @@
     - **Solution**: Split padding into `kPadding=14` for user/assistant messages and `kSystemPadding=4` for system messages. Update `calculateHeight()` and `paint()` calls to use the appropriate constant based on message type.
     - File: `src/interface/editor_sections/side_panel.h/cpp`
 
+- **CRITICAL: Restore button broken after first use — checkpoint files deleted during edit mode**:
+    - After clicking restore on a message (entering edit mode), then cancelling or clearing, subsequent restores to the same or later messages silently fail. The restore button appears (checkpoint objects exist in memory) but clicking it does nothing — messages are not truncated and the API conversation history is NOT cleaned up, causing stale context to be sent to the LLM.
+    - **Root cause**: `sidePanelRestoreRequested()` called `removeCheckpointsAfter()` which deleted checkpoint `.vital` files from disk. But `enterEditMode()` saved a snapshot of the checkpoint vector BEFORE the restore. On cancel, `cancelEditMode()` restored the checkpoint objects into memory — but their files were gone. Subsequent restores found the checkpoint via `getCheckpoint()` but `autosave_file.exists()` returned false → early return, no truncation, no API history cleanup.
+    - **Secondary issues**: (1) `clearChat()` didn't reset `edit_mode_`, so after restore→clear, `edit_mode_` was stuck true and `enterEditMode()` returned early on subsequent calls. (2) `processRecordedSpeech()` (voice input) didn't clear `edit_mode_` like `submitMessage()` does.
+    - **Solution**: (1) Added `delete_files` parameter to `removeCheckpointsAfter(int, bool)` — `sidePanelRestoreRequested` passes `false` to preserve files for cancel. (2) Extracted `exitEditMode()` private helper that diffs snapshot checkpoints against current vector and deletes only orphaned files, then resets edit state. Called from `submitMessage()`, `processRecordedSpeech()`, and `clearChat()`. (3) `sidePanelRestoreRequested` now returns `bool`; `enterEditMode` checks success before setting `edit_mode_ = true`.
+    - **Key invariant**: During edit-mode restore, checkpoint files must remain on disk until the edit is committed (`exitEditMode`) or cancelled (`cancelEditMode`). The snapshot holds file references that must stay valid.
+    - Files: `src/interface/editor_sections/side_panel.h`, `src/interface/editor_sections/side_panel.cpp`, `src/interface/editor_sections/full_interface.h`, `src/interface/editor_sections/full_interface.cpp`
+
 - **Router splitting too aggressively for simple requests**:
     - "turn on osc 2, turn on osc 3, turn on reverb, raise envelope release" was split into 4 separate API calls because the router prompt didn't encourage batching independent changes.
     - Each sub-action includes full system prompt + preset schema + conversation history, so aggressive splitting causes significant latency and token waste (even though each individual call is cheaper).

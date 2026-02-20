@@ -40,6 +40,8 @@
 - `ClaudeApiClient::truncateHistoryTo(int)` trims conversation history to match UI truncation
 - SVG icons can be embedded as string literals in `paths.h` using `fromSvgData()` -- avoids BinaryData regeneration
 - MSVC quirk: `vector::resize()` instantiates default constructor even when only shrinking; use `erase()` for types without default constructors
+- **Checkpoint file lifecycle invariant**: checkpoint files on disk must only be deleted when the in-memory checkpoint object is permanently removed (not during edit-mode restore where cancel may need to resurrect it). Use `delete_files=false` when removing checkpoints that may be restored by cancel. `exitEditMode()` handles orphan cleanup by diffing snapshot vs current state.
+- Edit mode state must be reset on ALL exit paths: submitMessage, processRecordedSpeech, clearChat, cancelEditMode. Missing any path leaves `edit_mode_=true` blocking future enterEditMode calls.
 
 ### Multi-Layer Router Pattern
 - User message → router call (Claude tool_use, lightweight, no preset schema) → action list

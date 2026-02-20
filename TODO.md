@@ -49,9 +49,9 @@
 ## Bugs
 
 ### Open
-- Restore function is not working after first restore and replace
 
 ### Done
+- Restore function not working after first restore and cancel — checkpoint files deleted during restore, stale objects restored on cancel; fixed with `delete_files` param, `exitEditMode()` helper, and multiple secondary fixes
 - Conversation history context pollution -- stale preset JSON and assistant JSON fences accumulating in history, wasting tokens
 - Windows Voice Chat crash — null TLS socket due to Apple-only TLS define; fixed by integrating mbedTLS as Windows TLS backend + calling ix::initNetSystem()
 - AI chat not working on Windows — system prompt and preset schema files not found due to macOS-only path resolution in ClaudeApiClient

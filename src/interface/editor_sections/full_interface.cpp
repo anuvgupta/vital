@@ -1350,29 +1350,29 @@ File FullInterface::saveAutosaveCheckpoint() {
   return file;
 }
 
-void FullInterface::sidePanelRestoreRequested(int message_index) {
+bool FullInterface::sidePanelRestoreRequested(int message_index) {
   VitalSidePanel* panel = side_panel_.get();
-  if (!panel) return;
+  if (!panel) return false;
 
   // Use the user message's own checkpoint (pre-response state)
   const ChatCheckpoint* cp = panel->getCheckpoint(message_index);
-  if (!cp || !cp->autosave_file.exists()) return;
+  if (!cp || !cp->autosave_file.exists()) return false;
 
   SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
-  if (!gui || !gui->getSynth()) return;
+  if (!gui || !gui->getSynth()) return false;
 
   try {
     json state = json::parse(cp->autosave_file.loadFileAsString().toStdString());
     bool loaded = gui->getSynth()->loadStateFromJson(state);
     if (!loaded) {
       panel->addResponseMessage("Failed to restore checkpoint.");
-      return;
+      return false;
     }
     gui->updateFullGui();
     gui->notifyFresh();
   } catch (const json::exception&) {
     panel->addResponseMessage("Failed to restore checkpoint: corrupt file.");
-    return;
+    return false;
   }
 
   // Truncate UI messages — remove the user message itself and everything after
@@ -1381,8 +1381,11 @@ void FullInterface::sidePanelRestoreRequested(int message_index) {
   // Truncate API conversation history
   ClaudeApiClient::instance().truncateHistoryTo(cp->api_history_size);
 
-  // Remove checkpoints at and after the edited message
-  panel->removeCheckpointsAfter(message_index - 1);
+  // Remove checkpoint entries from the vector but do NOT delete files from disk.
+  // enterEditMode() saved a snapshot that references these files — they must remain
+  // intact so cancelEditMode() can restore them. Files are cleaned up by
+  // exitEditMode() when the edit is committed (submit) or discarded (clear).
+  panel->removeCheckpointsAfter(message_index - 1, false);
 
   // Cancel any in-flight API requests and multi-action state
   api_request_in_flight_ = false;
@@ -1390,6 +1393,7 @@ void FullInterface::sidePanelRestoreRequested(int message_index) {
   pending_actions_.clear();
   total_actions_ = 0;
   current_action_index_ = 0;
+  return true;
 }
 
 int FullInterface::sidePanelGetApiHistorySize() {

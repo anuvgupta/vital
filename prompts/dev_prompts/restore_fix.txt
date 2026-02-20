@@ -1,0 +1,1 @@
+Ok hold on, I think the problem is, if I restore to a certain point in the conversation, then after it's restored and then cancelled or cleared, I can no longer restore to any messages after that point in the conversation. I can restore to messages before it, but when I restore to the same message or after it, nothing happens so it's broken. Can you investigate and tell me why?

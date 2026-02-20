@@ -118,7 +118,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     // VitalSidePanel::Listener
     void sidePanelButtonClicked() override {}
     void sidePanelMessageSubmitted(const String& message) override;
-    void sidePanelRestoreRequested(int message_index) override;
+    bool sidePanelRestoreRequested(int message_index) override;
     int sidePanelGetApiHistorySize() override;
     File sidePanelSaveCheckpoint() override;
     void sidePanelCancelEditRequested(const File& checkpoint, int api_history_size) override;

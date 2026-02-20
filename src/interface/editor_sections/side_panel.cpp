@@ -823,6 +823,9 @@ void VitalSidePanel::stopRecording() {
 #endif
 
   if (pending_text.isNotEmpty()) {
+    // Commit and exit edit mode if active (cleans up orphaned checkpoint files)
+    exitEditMode();
+
     clearThinkingMessage();
     addMessage(pending_text, ChatMessage::kUser);
     addMessage("Thinking...", ChatMessage::kSystem);
@@ -844,13 +847,8 @@ void VitalSidePanel::submitMessage() {
   if (text.isEmpty())
     return;
 
-  // Exit edit mode if active (discard snapshot, hide cancel button)
-  if (edit_mode_) {
-    edit_mode_ = false;
-    edit_snapshot_.reset();
-    if (cancel_edit_button_)
-      cancel_edit_button_->setVisible(false);
-  }
+  // Commit and exit edit mode if active (cleans up orphaned checkpoint files)
+  exitEditMode();
 
   // Remove existing thinking indicator so user message appears above it
   clearThinkingMessage();
@@ -973,6 +971,9 @@ void VitalSidePanel::clearChat() {
   if (isRecording())
     stopRecording();
 
+  // Commit and exit edit mode if active (cleans up orphaned checkpoint files)
+  exitEditMode();
+
   // Archive checkpoints before clearing
   archiveCheckpoints();
 
@@ -1041,13 +1042,18 @@ void VitalSidePanel::truncateMessagesTo(int count) {
   }
 }
 
-void VitalSidePanel::removeCheckpointsAfter(int message_index) {
+// NOTE: pass delete_files=false during edit-mode restore. The snapshot holds
+// references to these files and cancelEditMode needs them intact. Files are
+// cleaned up later by exitEditMode() when the edit is committed or discarded.
+void VitalSidePanel::removeCheckpointsAfter(int message_index, bool delete_files) {
   auto it = std::remove_if(checkpoints_.begin(), checkpoints_.end(),
       [message_index](const ChatCheckpoint& cp) {
         return cp.ui_message_index > message_index;
       });
-  for (auto del = it; del != checkpoints_.end(); ++del)
-    del->autosave_file.deleteFile();
+  if (delete_files) {
+    for (auto del = it; del != checkpoints_.end(); ++del)
+      del->autosave_file.deleteFile();
+  }
   checkpoints_.erase(it, checkpoints_.end());
 }
 
@@ -1149,6 +1155,30 @@ void VitalSidePanel::archiveLooseCheckpointsOnStartup() {
 // Edit Mode
 // ============================================================================
 
+void VitalSidePanel::exitEditMode() {
+  if (!edit_mode_)
+    return;
+
+  // During edit-mode restore, removeCheckpointsAfter() removed entries from the
+  // checkpoint vector but deliberately preserved the .vital files on disk (so
+  // cancelEditMode could restore them). Now that the edit is being committed or
+  // discarded (not cancelled), delete any orphaned files that are no longer
+  // referenced by the current checkpoint vector.
+  if (edit_snapshot_) {
+    for (const auto& old_cp : edit_snapshot_->saved_checkpoints) {
+      bool still_referenced = std::any_of(checkpoints_.begin(), checkpoints_.end(),
+          [&](const ChatCheckpoint& cp) { return cp.autosave_file == old_cp.autosave_file; });
+      if (!still_referenced && old_cp.autosave_file.exists())
+        old_cp.autosave_file.deleteFile();
+    }
+  }
+
+  edit_mode_ = false;
+  edit_snapshot_.reset();
+  if (cancel_edit_button_)
+    cancel_edit_button_->setVisible(false);
+}
+
 void VitalSidePanel::enterEditMode(int message_index) {
   if (edit_mode_ || message_index < 0 || message_index >= (int)messages_.size())
     return;
@@ -1170,9 +1200,20 @@ void VitalSidePanel::enterEditMode(int message_index) {
     edit_snapshot_->saved_synth_checkpoint = l->sidePanelSaveCheckpoint();
   }
 
-  // Trigger the restore (truncates messages, restores synth state, truncates API history)
+  // Trigger the restore (truncates messages, restores synth state, truncates API history).
+  // IMPORTANT: sidePanelRestoreRequested removes checkpoint entries from the vector but
+  // does NOT delete their .vital files from disk. The snapshot above holds references to
+  // those files, and cancelEditMode() needs them intact to fully restore state. Orphaned
+  // files are cleaned up by exitEditMode() when the edit is committed or discarded.
+  bool restored = false;
   for (Listener* l : listeners_)
-    l->sidePanelRestoreRequested(message_index);
+    restored = l->sidePanelRestoreRequested(message_index) || restored;
+
+  if (!restored) {
+    // Restore failed — discard snapshot and bail out
+    edit_snapshot_.reset();
+    return;
+  }
 
   // Set edit mode state
   edit_mode_ = true;
