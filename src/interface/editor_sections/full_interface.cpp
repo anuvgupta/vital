@@ -1146,7 +1146,6 @@ void FullInterface::executeNextAction() {
       pending.swapWith(queued_messages_);
       api_request_in_flight_ = true;
       panel->addMessage("Thinking...", ChatMessage::kSystem);
-      // Route each queued message — for now just send the first one
       routeAndExecute(pending[0]);
     }
     return;
@@ -1155,7 +1154,8 @@ void FullInterface::executeNextAction() {
   String action = pending_actions_[current_action_index_];
   int stepNum = current_action_index_ + 1;
 
-  panel->updateStatusMessage("Step " + String(stepNum) + "/" + String(total_actions_) + ": " + action);
+  // Add a NEW system message for this step (doesn't replace previous)
+  panel->addMessage("Step " + String(stepNum) + "/" + String(total_actions_) + ": " + action, ChatMessage::kSystem);
   current_action_index_++;
 
   StringArray messages;
@@ -1183,10 +1183,16 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       return;
     }
 
-    panel->clearThinkingMessage();
+    bool is_multi_action = total_actions_ > 1;
+
+    if (!is_multi_action)
+      panel->clearThinkingMessage();
 
     if (!success) {
-      panel->addResponseMessage(response);
+      if (is_multi_action)
+        panel->updateStatusMessage("Error: " + response);
+      else
+        panel->addResponseMessage(response);
       // On failure, clear multi-action state, queue, and stop
       pending_actions_.clear();
       total_actions_ = 0;
@@ -1217,19 +1223,26 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
             gui->updateFullGui();
             gui->notifyFresh();
 
-            // If more multi-actions pending, continue the chain (no message shown yet)
-            if (current_action_index_ < pending_actions_.size()) {
-              executeNextAction();
-              return;
-            }
-
-            // All actions done (or single action) — show completion message
-            pending_actions_.clear();
-            total_actions_ = 0;
-            current_action_index_ = 0;
-
             String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
-            panel->addResponseMessage(msg);
+
+            if (is_multi_action) {
+              // Replace the "Step N/M: ..." message with the completion message
+              panel->updateStatusMessage(msg);
+
+              // If more actions, continue the chain
+              if (current_action_index_ < pending_actions_.size()) {
+                executeNextAction();
+                return;
+              }
+
+              // All multi-actions done
+              pending_actions_.clear();
+              total_actions_ = 0;
+              current_action_index_ = 0;
+            } else {
+              // Single action — show as normal response
+              panel->addResponseMessage(msg);
+            }
 
             // Autosave checkpoint for the response
             {
@@ -1251,7 +1264,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
             return;
           }
         }
-        panel->addResponseMessage("Failed to load preset from response.");
+        if (is_multi_action)
+          panel->updateStatusMessage("Failed to load preset from response.");
+        else
+          panel->addResponseMessage("Failed to load preset from response.");
         pending_actions_.clear();
         total_actions_ = 0;
         current_action_index_ = 0;
@@ -1264,20 +1280,26 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       // Not valid JSON - fall through to show as text
     }
 
-    // Text-only response — if multi-action, continue chain anyway
-    if (current_action_index_ < pending_actions_.size()) {
-      // Show the text response briefly but continue
-      panel->addResponseMessage(textMessage.isNotEmpty() ? textMessage : response);
-      executeNextAction();
-      return;
+    // Text-only response
+    String displayText = textMessage.isNotEmpty() ? textMessage : response;
+
+    if (is_multi_action) {
+      // Replace step message with the text response
+      panel->updateStatusMessage(displayText);
+
+      // Continue chain if more actions
+      if (current_action_index_ < pending_actions_.size()) {
+        executeNextAction();
+        return;
+      }
+
+      // All multi-actions done
+      pending_actions_.clear();
+      total_actions_ = 0;
+      current_action_index_ = 0;
+    } else {
+      panel->addResponseMessage(response);
     }
-
-    // All done
-    pending_actions_.clear();
-    total_actions_ = 0;
-    current_action_index_ = 0;
-
-    panel->addResponseMessage(response);
 
     // Autosave checkpoint for the text-only response
     {
