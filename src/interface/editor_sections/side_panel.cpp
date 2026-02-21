@@ -932,7 +932,8 @@ void VitalSidePanel::saveChatLog() {
 }
 
 void VitalSidePanel::layoutMessages() {
-  static constexpr int kMessageSpacing = 8;
+  static constexpr int kSystemSpacing = 4;    // Between adjacent system/step messages
+  static constexpr int kUserSpacing = 12;     // Around user messages (before or after)
 
   int message_width = chat_bounds_.getWidth();
   if (message_width <= 0)
@@ -941,7 +942,17 @@ void VitalSidePanel::layoutMessages() {
   float scaled_font_size = size_ratio_ * ChatMessage::kBaseFontSize;
   int y_position = 0;
 
-  for (auto& message : messages_) {
+  for (int i = 0; i < (int)messages_.size(); ++i) {
+    auto& message = messages_[i];
+
+    // Add spacing before this message (except the first)
+    if (i > 0) {
+      bool prev_is_user = messages_[i - 1].type == ChatMessage::kUser;
+      bool curr_is_user = message.type == ChatMessage::kUser;
+      // Use larger spacing if either adjacent message is a user message
+      y_position += (prev_is_user || curr_is_user) ? kUserSpacing : kSystemSpacing;
+    }
+
     int height;
     if (message.type != ChatMessage::kUser && !message.blocks.empty())
       height = ChatMessage::calculateMarkdownHeight(message.blocks, message_width, scaled_font_size);
@@ -949,11 +960,11 @@ void VitalSidePanel::layoutMessages() {
       height = ChatMessage::calculateHeight(message.text, message_width, scaled_font_size);
     message.y_position = y_position;
     message.height = height;
-    y_position += height + kMessageSpacing;
+    y_position += height;
   }
 
   // Calculate total content height
-  total_content_height_ = y_position > 0 ? y_position - kMessageSpacing : 0;
+  total_content_height_ = y_position;
 
   setScrollBarRange();
 }

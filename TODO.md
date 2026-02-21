@@ -48,6 +48,7 @@
 
 
 ## Bugs
+- Clear button is present when the chat is empty
 
 ### Open
 
