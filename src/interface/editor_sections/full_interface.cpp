@@ -1213,9 +1213,9 @@ void FullInterface::executeNextAction(bool replaceExisting) {
   String stepMsg = "Step " + String(stepNum) + "/" + String(total_actions_) + ": " + action;
 
   if (replaceExisting)
-    panel->updateStatusMessage(stepMsg);
+    panel->updateStatusMessage(stepMsg, ChatMessage::kStep);
   else
-    panel->addMessage(stepMsg, ChatMessage::kSystem);
+    panel->addMessage(stepMsg, ChatMessage::kStep);
 
   current_action_index_++;
 

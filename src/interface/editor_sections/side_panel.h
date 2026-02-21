@@ -40,7 +40,8 @@ struct ChatMessage
     enum Type
     {
         kUser,
-        kSystem
+        kSystem,
+        kStep      // dimmer system message for step progress (e.g. "Step 1/3: ...")
     };
 
     String text;
@@ -50,7 +51,7 @@ struct ChatMessage
     int height = 0;
 
     ChatMessage(const String &t, Type tp) : text(t), type(tp) {
-        if (tp == kSystem)
+        if (tp == kSystem || tp == kStep)
             blocks = parseMarkdown(t);
     }
 
@@ -124,7 +125,7 @@ public:
     void submitMessage();
     void addMessage(const String &text, ChatMessage::Type type);
     void clearThinkingMessage();
-    void updateStatusMessage(const String& text);
+    void updateStatusMessage(const String& text, ChatMessage::Type newType = ChatMessage::kSystem);
     void addResponseMessage(const String &text);
     void clearChat();
     void focusPromptEditor();

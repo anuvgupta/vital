@@ -279,6 +279,7 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
   Colour bubble_color = findColour(Skin::kWidgetPrimary1, true).darker(0.4f);
   Colour text_color = findColour(Skin::kBodyText, true);
   Colour system_text_color = text_color.withAlpha(0.98f);
+  Colour step_text_color = text_color.withAlpha(0.45f);
   Colour code_bg_color = Colours::black.withAlpha(0.3f);
   Colour quote_border_color = text_color.withAlpha(0.3f);
   Colour hr_color = text_color.withAlpha(0.2f);
@@ -339,7 +340,8 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
 
     // User messages and non-markdown system messages: plain text
     if (message.type == ChatMessage::kUser || message.blocks.empty()) {
-      Colour col = (message.type == ChatMessage::kUser) ? text_color : system_text_color;
+      Colour col = (message.type == ChatMessage::kUser) ? text_color :
+                   (message.type == ChatMessage::kStep) ? step_text_color : system_text_color;
       AttributedString attr_text;
       attr_text.setText(message.text);
       attr_text.setFont(font);
@@ -352,7 +354,8 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
       continue;
     }
 
-    // Markdown rendering for system messages
+    // Markdown rendering for system/step messages
+    Colour msg_text_color = (message.type == ChatMessage::kStep) ? step_text_color : system_text_color;
     float y = text_bounds.getY();
     float width = text_bounds.getWidth();
     float x = text_bounds.getX();
@@ -368,7 +371,7 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
         case MarkdownBlock::kHeading: {
           int level = jlimit(1, 6, block.level);
           float scale = kHeadingScale[level - 1];
-          auto attr = buildStyledString(block.runs, fontSize * scale, system_text_color);
+          auto attr = buildStyledString(block.runs, fontSize * scale, msg_text_color);
           TextLayout layout;
           layout.createLayout(attr, width);
           layout.draw(g, Rectangle<float>(x, y, width, layout.getHeight()));
@@ -381,7 +384,7 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
           AttributedString attr;
           attr.setText(block.code_text);
           attr.setFont(mono);
-          attr.setColour(system_text_color);
+          attr.setColour(msg_text_color);
           attr.setJustification(Justification::topLeft);
           TextLayout layout;
           float inner_width = width - 2 * kCodeBlockPadding;
@@ -405,12 +408,12 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
           // Draw bullet or number
           String marker = block.ordered ? String(block.list_index) + ". " : String(CharPointer_UTF8("\xe2\x80\xa2 "));
           Font marker_font = getRegularFont(fontSize);
-          g.setColour(system_text_color);
+          g.setColour(msg_text_color);
           g.setFont(marker_font);
           float marker_width = marker_font.getStringWidthFloat(marker);
           g.drawText(marker, Rectangle<float>(item_x, y, marker_width, fontSize), Justification::topLeft);
 
-          auto attr = buildStyledString(block.runs, fontSize, system_text_color);
+          auto attr = buildStyledString(block.runs, fontSize, msg_text_color);
           TextLayout layout;
           layout.createLayout(attr, item_width - marker_width);
           layout.draw(g, Rectangle<float>(item_x + marker_width, y,
@@ -425,7 +428,7 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
 
           float quote_x = x + kQuoteBorderWidth + kQuoteIndent;
           float quote_width = width - kQuoteBorderWidth - kQuoteIndent;
-          Colour quote_color = system_text_color.withAlpha(0.7f);
+          Colour quote_color = msg_text_color.withAlpha(0.7f);
           auto attr = buildStyledString(block.runs, fontSize, quote_color);
           TextLayout layout;
           layout.createLayout(attr, quote_width);
@@ -443,7 +446,7 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
 
         case MarkdownBlock::kParagraph:
         default: {
-          auto attr = buildStyledString(block.runs, fontSize, system_text_color);
+          auto attr = buildStyledString(block.runs, fontSize, msg_text_color);
           TextLayout layout;
           layout.createLayout(attr, width);
           layout.draw(g, Rectangle<float>(x, y, width, layout.getHeight()));
@@ -889,11 +892,12 @@ void VitalSidePanel::clearThinkingMessage() {
   }
 }
 
-void VitalSidePanel::updateStatusMessage(const String& text) {
+void VitalSidePanel::updateStatusMessage(const String& text, ChatMessage::Type newType) {
   if (!messages_.empty()) {
     auto& last = messages_.back();
-    if (last.type == ChatMessage::kSystem) {
+    if (last.type == ChatMessage::kSystem || last.type == ChatMessage::kStep) {
       last.text = text;
+      last.type = newType;
       last.blocks = parseMarkdown(text);
       layoutMessages();
       scrollToBottom();
@@ -918,7 +922,8 @@ void VitalSidePanel::saveChatLog() {
 
   for (int i = 0; i < (int)messages_.size(); ++i) {
     const auto& msg = messages_[i];
-    String role = (msg.type == ChatMessage::kUser) ? "USER" : "SYSTEM";
+    String role = (msg.type == ChatMessage::kUser) ? "USER" :
+                  (msg.type == ChatMessage::kStep) ? "STEP" : "SYSTEM";
     content += "--- [" + String(i) + "] " + role + " ---\n";
     content += msg.text + "\n\n";
   }
@@ -938,7 +943,7 @@ void VitalSidePanel::layoutMessages() {
 
   for (auto& message : messages_) {
     int height;
-    if (message.type == ChatMessage::kSystem && !message.blocks.empty())
+    if (message.type != ChatMessage::kUser && !message.blocks.empty())
       height = ChatMessage::calculateMarkdownHeight(message.blocks, message_width, scaled_font_size);
     else
       height = ChatMessage::calculateHeight(message.text, message_width, scaled_font_size);
