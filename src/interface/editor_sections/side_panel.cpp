@@ -874,6 +874,7 @@ void VitalSidePanel::addMessage(const String& text, ChatMessage::Type type) {
   layoutMessages();
   scrollToBottom();
   repaintBackground();
+  saveChatLog();
 }
 
 void VitalSidePanel::clearThinkingMessage() {
@@ -897,6 +898,7 @@ void VitalSidePanel::updateStatusMessage(const String& text) {
       layoutMessages();
       scrollToBottom();
       repaintBackground();
+      saveChatLog();
       return;
     }
   }
@@ -907,6 +909,21 @@ void VitalSidePanel::updateStatusMessage(const String& text) {
 void VitalSidePanel::addResponseMessage(const String& text) {
   clearThinkingMessage();
   addMessage(text, ChatMessage::kSystem);
+}
+
+void VitalSidePanel::saveChatLog() {
+  File log_file = File::getSpecialLocation(File::userDesktopDirectory).getChildFile("vial_chat_log.txt");
+  String content;
+  content += "=== Vial Chat Log (" + Time::getCurrentTime().toString(true, true, true) + ") ===\n\n";
+
+  for (int i = 0; i < (int)messages_.size(); ++i) {
+    const auto& msg = messages_[i];
+    String role = (msg.type == ChatMessage::kUser) ? "USER" : "SYSTEM";
+    content += "--- [" + String(i) + "] " + role + " ---\n";
+    content += msg.text + "\n\n";
+  }
+
+  log_file.replaceWithText(content);
 }
 
 void VitalSidePanel::layoutMessages() {

@@ -128,6 +128,7 @@ public:
     void addResponseMessage(const String &text);
     void clearChat();
     void focusPromptEditor();
+    void saveChatLog();
 
     // Checkpoint methods
     int getMessageCount() const { return (int)messages_.size(); }

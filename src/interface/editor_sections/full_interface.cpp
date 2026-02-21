@@ -1095,16 +1095,73 @@ void FullInterface::routeAndExecute(const String& message) {
   VitalSidePanel* panel = side_panel_.get();
 
   ClaudeApiClient::instance().routeMessage(message, [this, panel, message](
-      const StringArray& actions, bool success, const String& error) {
+      const StringArray& actions, bool sound_design_required, bool success, const String& error) {
     if (!panel) {
       api_request_in_flight_ = false;
+      is_sound_design_reroute_ = false;
       queued_messages_.clear();
       return;
     }
 
-    if (!success || actions.isEmpty()) {
+    if (!success) {
       // Router failed — fall back to sending the original message directly
       DBG("Router failed (" + error + "), falling back to direct send");
+      is_sound_design_reroute_ = false;
+      StringArray messages;
+      messages.add(message);
+      sendApiRequest(messages);
+      return;
+    }
+
+    if (sound_design_required && !is_sound_design_reroute_) {
+      // Sound design path — translate non-technical description into technical instructions
+      // Replace "Thinking..." with permanent "Designing sound..." message
+      panel->updateStatusMessage("Designing sound...");
+
+      // Get fresh preset JSON for the translation call
+      String preset_json;
+      SynthGuiInterface* gui_interface = findParentComponentOfClass<SynthGuiInterface>();
+      if (gui_interface && gui_interface->getSynth()) {
+        json state = gui_interface->getSynth()->getStateAsJson();
+        stripBase64DataForLLM(state);
+        preset_json = String(state.dump());
+      }
+
+      ClaudeApiClient::instance().sendSoundDesignTranslation(message,
+        [this, panel, message](const String& translation, bool translationSuccess) {
+          if (!panel) {
+            api_request_in_flight_ = false;
+            is_sound_design_reroute_ = false;
+            queued_messages_.clear();
+            return;
+          }
+
+          if (!translationSuccess) {
+            // Fallback: send original message directly
+            DBG("Sound design translation failed, falling back to direct send");
+            is_sound_design_reroute_ = false;
+            StringArray messages;
+            messages.add(message);
+            sendApiRequest(messages);
+            return;
+          }
+
+          // Don't show translation in chat — it's an internal intermediate step
+          // Add a new "Thinking..." below the persistent "Designing sound..." message
+          panel->addMessage("Thinking...", ChatMessage::kSystem);
+
+          // Re-route the translation through the router
+          is_sound_design_reroute_ = true;
+          routeAndExecute(translation);
+        }, preset_json);
+      return;
+    }
+
+    // Reset the reroute flag
+    is_sound_design_reroute_ = false;
+
+    if (actions.isEmpty()) {
+      // No actions and not sound design — fall back to sending the original message
       StringArray messages;
       messages.add(message);
       sendApiRequest(messages);

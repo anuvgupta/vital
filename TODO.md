@@ -11,10 +11,10 @@
 ### Long-Term
 
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
+- Optimize router to also complete preset updates for single actions (see doc in .plans/prompts)
 - Multiple thinking & output rounds (partially complete)
-    - Router layer analyzes each message and decides: single-action (pass through) vs multi-action (split and execute sequentially)
+    - Router layer analyzes each message and decides: single-action (pass through) vs multi-action (split and execute sequentially) vs sound design required (translate then re-route)
     - Each sub-action sees updated preset state from previous steps
-    - Future: Handle non-technical sound design descriptions (TBD -- currently returns sentinel "THIS REQUIRES COMPLEX SOUND DESIGN")
     
 
 
@@ -31,6 +31,7 @@
 - Multi-layer agentic router flow — router uses tool_use to analyze message and decide single-action pass-through vs multi-action split/sequential execution
 - Autosave presets, checkpointing & restore chat at certain point (hover restore button on user messages, archive on clear, orphan cleanup on startup, 50/20 caps)
 - Edit mode for restore button (instant Claude-style, no confirmation dialog) — click to enter edit mode, edit and re-submit or ESC to cancel. Fully implemented with EditModeSnapshot state machine, cancel button, keyboard handler, and synth state rollback.
+- Sound design translation layer — router detects non-technical descriptions, translates via separate Claude call (SOUND_DESIGN_PROMPT.md + cookbook), re-routes through router for execution. Includes infinite loop guard, chat log debug output, and max_tokens fix.
 - Add a command shortcut (Cmd+K / Ctrl+K) to focus the chat prompt editor
 - Chat clearing (clear/reset button in title row resets chat UI and API conversation history)
 - Split mic into VOICE CHAT (always-on, 20s silence timeout, popup warning) and TALK (auto-stops on configurable silence) modes with SEND button

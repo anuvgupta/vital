@@ -22,25 +22,36 @@ namespace {
   const String kModelSonnet = "claude-sonnet-4-5-20241022";
   const String kModelOpus = "claude-opus-4-5-20251101";
   const String kModel = kModelOpus;
-  const int kMaxTokens = 1024;
+  const int kMaxTokens = 4096;
   const int kRouterMaxTokens = 512;
+  const int kSoundDesignMaxTokens = 1024;
   const int kTimeoutMs = 30000;
 
   const String kRouterSystemPrompt =
     "You are a routing assistant for a synthesizer preset modification tool. "
-    "Your job is to split the user's request into 1 or more actions that will be executed sequentially. "
-    "Each action is a separate LLM call with the full preset schema, so fewer actions = less cost and latency.\n\n"
+    "Your job is to analyze the user's request and decide how to handle it.\n\n"
     "Rules:\n"
-    "- Simple requests (up to ~3 changes, a question, or straightforward sound design): return as a single action.\n"
-    "- Complex sound design from scratch (e.g. 'create a dark dubstep bass with wobble modulation and distorted reverb', "
-    "or 'design an evolving pad with FM synthesis, rhythmic modulation, and spacious reverb'): "
-    "return a single action containing ONLY the text 'THIS REQUIRES COMPLEX SOUND DESIGN'. This will be handled separately.\n"
-    "- Most requests should be a single action. The downstream LLM is very capable and can handle "
-    "3-4 changes or parameters in one call.\n"
-    "- Only split into multiple actions when there are 5+ distinct changes that are too complex "
-    "to reliably handle in one prompt. Group 3-4 changes per action.\n"
-    "- Questions or non-modification requests: always a single action.\n"
-    "- Maximum 3 actions. Only use 4-5 in extreme cases. Never exceed 5.";
+    "- Simple requests (up to ~3 technical changes, a question, or straightforward parameter tweaks): "
+    "return as a single action with sound_design_required=false.\n"
+    "- Non-technical or vague sound descriptions (e.g. 'make it sound blippy', 'create an 808 bass', "
+    "'warm analog pad', 'massive supersaw lead', 'something dark and moody', 'jangly pluck', "
+    "'subby bass', 'buzzy lead'): set sound_design_required=true with an empty actions array. "
+    "These need sound design translation before parameter changes can be determined.\n"
+    "- Technical requests with 4+ distinct changes (e.g. numbered lists of parameter adjustments, "
+    "or requests touching oscillators AND filters AND envelopes AND effects): ALWAYS split into "
+    "multiple actions with 2-3 changes each. Set sound_design_required=false. "
+    "The downstream LLM has a limited output budget and CANNOT handle many changes at once.\n"
+    "- Simple technical requests (1-3 changes): single action, sound_design_required=false.\n"
+    "- Questions or non-modification requests: single action, sound_design_required=false.\n"
+    "- Maximum 5 actions.\n\n"
+    "IMPORTANT: When you see a numbered list of technical instructions (e.g. from a sound design "
+    "breakdown), you MUST split them into multiple actions. Group related items (e.g. oscillator "
+    "setup in one action, filter + envelope in another, effects in another). Never send more than "
+    "3 distinct parameter areas in a single action.\n\n"
+    "Use sound_design_required=true when the user describes a SOUND they want rather than "
+    "specific PARAMETERS to change. If they mention specific knobs, filters, oscillators, "
+    "or parameter values, that's technical — use actions. If they describe a vibe, texture, "
+    "genre, or instrument sound, that needs sound design translation.";
 }
 
 ClaudeApiClient::ClaudeApiClient() { }
@@ -66,6 +77,11 @@ bool ClaudeApiClient::initialize() {
     DBG("ClaudeApiClient: Failed to load preset schema");
   else if (system_prompt_.isNotEmpty())
     system_prompt_ += "\n\n" + preset_schema_;
+
+  if (!loadSoundDesignPrompt())
+    DBG("ClaudeApiClient: Failed to load sound design prompt");
+  else
+    loadCookbook();  // Appends cookbook to sound_design_prompt_
 
   internet_access_ = checkInternetAccess();
   if (!internet_access_)
@@ -147,6 +163,60 @@ bool ClaudeApiClient::loadPresetSchema() {
   preset_schema_ = prompt_file.loadFileAsString().trim();
   DBG("ClaudeApiClient: Loaded preset schema (" + String(preset_schema_.length()) + " chars)");
   return preset_schema_.isNotEmpty();
+}
+
+bool ClaudeApiClient::loadSoundDesignPrompt() {
+  File executable = File::getSpecialLocation(File::currentExecutableFile);
+  File prompt_file;
+
+  File resources_dir = executable.getParentDirectory().getParentDirectory().getChildFile("Resources");
+  prompt_file = resources_dir.getChildFile("SOUND_DESIGN_PROMPT.md");
+
+  if (!prompt_file.existsAsFile())
+    prompt_file = executable.getParentDirectory().getChildFile("SOUND_DESIGN_PROMPT.md");
+
+  if (!prompt_file.existsAsFile()) {
+    File app_data = LoadSave::getDataDirectory();
+    prompt_file = app_data.getChildFile("SOUND_DESIGN_PROMPT.md");
+  }
+
+  if (!prompt_file.existsAsFile()) {
+    DBG("ClaudeApiClient: Sound design prompt file not found");
+    return false;
+  }
+
+  sound_design_prompt_ = prompt_file.loadFileAsString().trim();
+  DBG("ClaudeApiClient: Loaded sound design prompt (" + String(sound_design_prompt_.length()) + " chars)");
+  return sound_design_prompt_.isNotEmpty();
+}
+
+bool ClaudeApiClient::loadCookbook() {
+  File executable = File::getSpecialLocation(File::currentExecutableFile);
+  File cookbook_file;
+
+  File resources_dir = executable.getParentDirectory().getParentDirectory().getChildFile("Resources");
+  cookbook_file = resources_dir.getChildFile("SYNTHESIZER_COOKBOOK.md");
+
+  if (!cookbook_file.existsAsFile())
+    cookbook_file = executable.getParentDirectory().getChildFile("SYNTHESIZER_COOKBOOK.md");
+
+  if (!cookbook_file.existsAsFile()) {
+    File app_data = LoadSave::getDataDirectory();
+    cookbook_file = app_data.getChildFile("SYNTHESIZER_COOKBOOK.md");
+  }
+
+  if (!cookbook_file.existsAsFile()) {
+    DBG("ClaudeApiClient: Synthesizer cookbook file not found");
+    return false;
+  }
+
+  String cookbook = cookbook_file.loadFileAsString().trim();
+  DBG("ClaudeApiClient: Loaded synthesizer cookbook (" + String(cookbook.length()) + " chars)");
+
+  if (cookbook.isNotEmpty() && sound_design_prompt_.isNotEmpty())
+    sound_design_prompt_ += "\n\n" + cookbook;
+
+  return cookbook.isNotEmpty();
 }
 
 bool ClaudeApiClient::checkInternetAccess() {
@@ -400,7 +470,7 @@ void ClaudeApiClient::addToHistory(const String& role, const String& content) {
 
 void ClaudeApiClient::routeMessage(const String& message, RouterCallback callback) {
   if (!initialized_ || api_key_.empty()) {
-    callback(StringArray(), false, "API client not initialized.");
+    callback(StringArray(), false, false, "API client not initialized.");
     return;
   }
 
@@ -451,13 +521,21 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
     DynamicObject::Ptr actionsProp = new DynamicObject();
     actionsProp->setProperty("type", "array");
     actionsProp->setProperty("items", var(actionItems.get()));
-    actionsProp->setProperty("description", "Ordered list of actions. Usually 1, sometimes 2-3, max 5.");
+    actionsProp->setProperty("description", "Ordered list of actions. Empty when sound_design_required is true.");
+
+    DynamicObject::Ptr soundDesignProp = new DynamicObject();
+    soundDesignProp->setProperty("type", "boolean");
+    soundDesignProp->setProperty("description",
+      "Set to true when the user describes a sound non-technically (vibe, texture, genre, instrument) "
+      "rather than specific parameters. When true, actions should be empty.");
 
     DynamicObject::Ptr properties = new DynamicObject();
     properties->setProperty("actions", var(actionsProp.get()));
+    properties->setProperty("sound_design_required", var(soundDesignProp.get()));
 
     Array<var> required;
     required.add("actions");
+    required.add("sound_design_required");
 
     DynamicObject::Ptr inputSchema = new DynamicObject();
     inputSchema->setProperty("type", "object");
@@ -466,7 +544,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
 
     DynamicObject::Ptr tool = new DynamicObject();
     tool->setProperty("name", "route_actions");
-    tool->setProperty("description", "Route user request into sequential preset modification actions");
+    tool->setProperty("description", "Route user request: either into sequential actions or flag for sound design translation");
     tool->setProperty("input_schema", var(inputSchema.get()));
 
     Array<var> toolsArray;
@@ -499,7 +577,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
 
   if (!stream) {
     MessageManager::callAsync([callback]() {
-      callback(StringArray(), false, "Failed to connect to Claude API.");
+      callback(StringArray(), false, false, "Failed to connect to Claude API.");
     });
     return;
   }
@@ -510,7 +588,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
   var parsedResponse = JSON::parse(response);
   if (!parsedResponse.isObject()) {
     MessageManager::callAsync([callback]() {
-      callback(StringArray(), false, "Failed to parse router API response.");
+      callback(StringArray(), false, false, "Failed to parse router API response.");
     });
     return;
   }
@@ -520,7 +598,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
     String errorMessage = error.isObject() && error.hasProperty("message")
       ? error["message"].toString() : "Router API error";
     MessageManager::callAsync([callback, errorMessage]() {
-      callback(StringArray(), false, errorMessage);
+      callback(StringArray(), false, false, errorMessage);
     });
     return;
   }
@@ -529,7 +607,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
   var content = parsedResponse["content"];
   if (!content.isArray()) {
     MessageManager::callAsync([callback]() {
-      callback(StringArray(), false, "Unexpected router response format.");
+      callback(StringArray(), false, false, "Unexpected router response format.");
     });
     return;
   }
@@ -538,23 +616,39 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
     var block = content[i];
     if (block.isObject() && block["type"].toString() == "tool_use") {
       var input = block["input"];
-      if (input.isObject() && input.hasProperty("actions")) {
-        var actionsVar = input["actions"];
-        if (actionsVar.isArray()) {
-          StringArray actions;
-          for (int j = 0; j < actionsVar.size(); ++j)
-            actions.add(actionsVar[j].toString());
+      if (input.isObject()) {
+        // Extract sound_design_required flag
+        bool soundDesignRequired = false;
+        if (input.hasProperty("sound_design_required"))
+          soundDesignRequired = (bool)input["sound_design_required"];
 
-          if (actions.isEmpty()) {
-            MessageManager::callAsync([callback]() {
-              callback(StringArray(), false, "Router returned empty actions.");
-            });
-          } else {
-            MessageManager::callAsync([callback, actions]() {
-              callback(actions, true, String());
-            });
-          }
+        if (soundDesignRequired) {
+          // Sound design path — no actions needed
+          MessageManager::callAsync([callback]() {
+            callback(StringArray(), true, true, String());
+          });
           return;
+        }
+
+        // Normal path — extract actions
+        if (input.hasProperty("actions")) {
+          var actionsVar = input["actions"];
+          if (actionsVar.isArray()) {
+            StringArray actions;
+            for (int j = 0; j < actionsVar.size(); ++j)
+              actions.add(actionsVar[j].toString());
+
+            if (actions.isEmpty()) {
+              MessageManager::callAsync([callback]() {
+                callback(StringArray(), false, false, "Router returned empty actions.");
+              });
+            } else {
+              MessageManager::callAsync([callback, actions]() {
+                callback(actions, false, true, String());
+              });
+            }
+            return;
+          }
         }
       }
     }
@@ -562,6 +656,149 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
 
   // No tool_use block found
   MessageManager::callAsync([callback]() {
-    callback(StringArray(), false, "Router did not return expected tool_use response.");
+    callback(StringArray(), false, false, "Router did not return expected tool_use response.");
+  });
+}
+
+void ClaudeApiClient::sendSoundDesignTranslation(const String& message, ResponseCallback callback,
+                                                   const String& preset_json) {
+  if (!initialized_ || api_key_.empty()) {
+    callback("API client not initialized.", false);
+    return;
+  }
+
+  Thread::launch([this, message, callback, preset_json]() {
+    sendSoundDesignTranslationAsync(message, callback, preset_json);
+  });
+}
+
+void ClaudeApiClient::sendSoundDesignTranslationAsync(const String& message, ResponseCallback callback,
+                                                        const String& preset_json) {
+  // NOTE: Do NOT add to conversation history here — the translation is an internal
+  // intermediate step. The original user message will be stored by the re-routed flow.
+
+  // Build the JSON request body
+  DynamicObject::Ptr requestBody = new DynamicObject();
+  requestBody->setProperty("model", kModel);
+  requestBody->setProperty("max_tokens", kSoundDesignMaxTokens);
+
+  if (sound_design_prompt_.isNotEmpty()) {
+    DynamicObject::Ptr cacheControl = new DynamicObject();
+    cacheControl->setProperty("type", "ephemeral");
+    cacheControl->setProperty("ttl", "1h");
+
+    DynamicObject::Ptr systemBlock = new DynamicObject();
+    systemBlock->setProperty("type", "text");
+    systemBlock->setProperty("text", sound_design_prompt_);
+    systemBlock->setProperty("cache_control", var(cacheControl.get()));
+
+    Array<var> systemArray;
+    systemArray.add(var(systemBlock.get()));
+    requestBody->setProperty("system", systemArray);
+  }
+
+  // Build messages array: full history for context, then preset context, then current message
+  // (message is NOT in history — we pass it directly)
+  Array<var> messagesArray;
+
+  for (const auto& msg : conversation_history_) {
+    DynamicObject::Ptr msgObj = new DynamicObject();
+    msgObj->setProperty("role", msg.role);
+    msgObj->setProperty("content", msg.content);
+    messagesArray.add(var(msgObj.get()));
+  }
+
+  // Inject current preset context
+  if (preset_json.isNotEmpty()) {
+    String preset_context = "This is the current preset JSON:\n```json\n" + preset_json + "\n```";
+    DynamicObject::Ptr presetMsg = new DynamicObject();
+    presetMsg->setProperty("role", "user");
+    presetMsg->setProperty("content", preset_context);
+    messagesArray.add(var(presetMsg.get()));
+  }
+
+  // Current turn's user message (not stored in history)
+  {
+    DynamicObject::Ptr msgObj = new DynamicObject();
+    msgObj->setProperty("role", "user");
+    msgObj->setProperty("content", message);
+    messagesArray.add(var(msgObj.get()));
+  }
+
+  requestBody->setProperty("messages", messagesArray);
+
+  String jsonBody = JSON::toString(var(requestBody.get()));
+  DBG("ClaudeApiClient::sendSoundDesignTranslation: Sending request: " + jsonBody);
+
+  String headers = "x-api-key: " + String(api_key_) + "\r\n"
+                   "anthropic-version: 2023-06-01\r\n"
+                   "anthropic-beta: extended-cache-ttl-2025-04-11\r\n"
+                   "content-type: application/json";
+
+  URL url(kApiEndpoint);
+  url = url.withPOSTData(jsonBody);
+
+  std::unique_ptr<InputStream> stream(url.createInputStream(
+    true, nullptr, nullptr, headers, kTimeoutMs, nullptr, nullptr, 0, "POST"
+  ));
+
+  if (!stream) {
+    MessageManager::callAsync([callback]() {
+      callback("Failed to connect to Claude API.", false);
+    });
+    return;
+  }
+
+  String response = stream->readEntireStreamAsString();
+  DBG("ClaudeApiClient::sendSoundDesignTranslation: Response: " + response);
+
+  var parsedResponse = JSON::parse(response);
+  if (!parsedResponse.isObject()) {
+    MessageManager::callAsync([callback]() {
+      callback("Failed to parse API response.", false);
+    });
+    return;
+  }
+
+  if (parsedResponse.hasProperty("error")) {
+    var error = parsedResponse["error"];
+    String errorMessage = "API Error";
+    if (error.isObject() && error.hasProperty("message"))
+      errorMessage = error["message"].toString();
+    MessageManager::callAsync([callback, errorMessage]() {
+      callback(errorMessage, false);
+    });
+    return;
+  }
+
+  if (!parsedResponse.hasProperty("content")) {
+    MessageManager::callAsync([callback]() {
+      callback("Unexpected API response format.", false);
+    });
+    return;
+  }
+
+  var content = parsedResponse["content"];
+  if (!content.isArray() || content.size() == 0) {
+    MessageManager::callAsync([callback]() {
+      callback("Empty response from API.", false);
+    });
+    return;
+  }
+
+  var firstContent = content[0];
+  if (!firstContent.isObject() || !firstContent.hasProperty("text")) {
+    MessageManager::callAsync([callback]() {
+      callback("Unexpected content format in API response.", false);
+    });
+    return;
+  }
+
+  String responseText = firstContent["text"].toString();
+
+  // Do NOT store in history — translation is an internal intermediate step
+
+  MessageManager::callAsync([callback, responseText]() {
+    callback(responseText, true);
   });
 }

@@ -52,3 +52,10 @@
 - Status messages ("Breaking it down...", "Step 1/3...", etc) replace last system message via `VitalSidePanel::updateStatusMessage()`
 - Router system prompt tuned to batch simple independent changes and minimize splitting (most real requests = 1 action)
 - ChatMessage stores both `text` and `blocks` (parsed markdown) — updating text requires re-parsing: `message.blocks = parseMarkdown(text)`
+- Third router path: `sound_design_required` boolean in tool schema detects non-technical descriptions
+- Sound design translation uses separate system prompt (SOUND_DESIGN_PROMPT.md) + cookbook, NOT the main system prompt
+- Translation output is NOT stored in conversation history — it's an internal intermediate step
+- After translation, output is re-routed through routeAndExecute() which splits into sub-actions
+- Infinite loop guard: `is_sound_design_reroute_` flag on FullInterface prevents re-triggering sound design path
+- kMaxTokens must be large enough (4096) for preset generation JSON diffs; truncated JSON causes raw text display in chat
+- Resource files (SOUND_DESIGN_PROMPT.md, SYNTHESIZER_COOKBOOK.md) must be copied by ALL platform build scripts

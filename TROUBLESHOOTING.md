@@ -159,3 +159,18 @@
     - Each sub-action includes full system prompt + preset schema + conversation history, so aggressive splitting causes significant latency and token waste (even though each individual call is cheaper).
     - **Solution**: Update router system prompt (`kRouterSystemPrompt` in `claude_api_client.cpp`) to explicitly instruct batching of simple independent changes and cap at 3-5 actions for realistic workflows. Guidance: "Group simple, independent changes together... Only split when genuinely complex sound design where each step builds meaningfully on previous."
     - File: `src/common/claude_api_client.cpp` (line ~29, `kRouterSystemPrompt` constant)
+
+- **JSON truncation from insufficient max_tokens on preset generation calls**:
+    - When Claude generates comprehensive JSON diffs (e.g., after sound design translation produces many parameter changes), the response can exceed the `kMaxTokens` limit. If truncated mid-JSON, the raw incomplete JSON text is displayed in the chat instead of being parsed and applied as a preset update.
+    - **Solution**: Increased `kMaxTokens` from 1024 to 4096 for preset generation calls. Added a separate `kSoundDesignMaxTokens = 1024` for sound design translation calls (which produce shorter text output, not JSON).
+    - File: `src/common/claude_api_client.cpp`
+
+- **Sound design translation must NOT be stored in conversation history**:
+    - The sound design translation layer converts non-technical descriptions ("blippy jangly lead") into numbered technical instructions, then re-routes them through the router. If the translation is stored in conversation history, it pollutes context with intermediate instructions the user never wrote.
+    - **Solution**: The `sendSoundDesignTranslation()` method uses its own system prompt and does not add its output to `conversation_history_`. The translation is treated as an internal intermediate step — only the original user message and final preset changes appear in history.
+    - Files: `src/common/claude_api_client.h`, `src/common/claude_api_client.cpp`
+
+- **Infinite loop guard needed for sound design re-routing**:
+    - Sound design translations are re-routed through the router (`routeAndExecute()`). If the translation itself triggers `sound_design_required` again, it would loop infinitely.
+    - **Solution**: Added `is_sound_design_reroute_` flag on `FullInterface` that is set `true` before re-routing. Inside `routeAndExecute()`, if `sound_design_required && is_sound_design_reroute_`, the sound design path is skipped and the message is treated as a normal request.
+    - Files: `src/interface/editor_sections/full_interface.h`, `src/interface/editor_sections/full_interface.cpp`

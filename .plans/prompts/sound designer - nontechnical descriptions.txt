@@ -1,0 +1,15 @@
+recently we modified the existing chat to submit each chat message to a new workflow:
+- Multi layer agentic flow
+    - new plan
+        - initial decision call - just a tool call to opus 4.6 without the json schema, which asks llm to do three things:
+            1. Pass through single simple commands --> tool function will pass this to our current patch update/generation mechanism (calling claude with json schema & current preset & convo so far)
+            2. Split up large complex commands into multiple simpler single commands --> tool function will first indicate to UI that we are "Breaking it down..." and then sequentially pass each command to our current patch update/generation mechanism (calling claude with json schema & current preset & convo so far with the latest request including each sequential previous subcommand)
+            3. TBD
+
+lets implement the TBD portion:
+- aside from the above two options from router, lets add a third and equally probable option/result from the router which handles non-technical descriptions of sounds - such as, a mode for "requires sound design"
+- currently we have asked the router to return sentinel "THIS REQUIRES COMPLEX SOUND DESIGN" for this case, lets actually handle it by including a separate field in the tool json for "sound_design_required"
+- to handle these non-technical descriptions, after the router returns the indication that we need sound design, then we should call claude with separate prompt instead of the normal one - we should call claude with the current conversation including latest message, current preset, same as usual. but instead of normal system propt and the json schema description, we should use a new system prompt for turning nontechnical descriptions into breakdowns of technical parameter adjustments (still in natural language) by inferring from common language about sound descriptions like "blippy" "buzzy" "massive" "808 bass" "subby" "jangly" etc. if you need, i can provide more examples of sound design descriptions. we can also include the sound design cookbook in place of the json schema
+- once the sound design call returns, add it to the conversation and call the router as per usual - so essntially , the first and second claude calls are just a translation from nontechnical into the multi-command technical input that is supported by the main logic that we can use for the third and fourth claude calls.
+
+do you have any quetsions? is this clear?
