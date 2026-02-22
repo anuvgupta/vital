@@ -174,3 +174,16 @@
     - Sound design translations are re-routed through the router (`routeAndExecute()`). If the translation itself triggers `sound_design_required` again, it would loop infinitely.
     - **Solution**: Added `is_sound_design_reroute_` flag on `FullInterface` that is set `true` before re-routing. Inside `routeAndExecute()`, if `sound_design_required && is_sound_design_reroute_`, the sound design path is skipped and the message is treated as a normal request.
     - Files: `src/interface/editor_sections/full_interface.h`, `src/interface/editor_sections/full_interface.cpp`
+
+- **Fabricated model IDs break when new features use old constants**:
+    - `kModelSonnet` had a hardcoded constant `claude-sonnet-4-5-20241022` (a date that never existed — actual release was 20250929). This bug was never caught because Sonnet wasn't used in the codebase until we switched the router to Sonnet 4.5 for cost reduction. Then API calls started failing with a 404 "Unknown model" error.
+    - **Root cause**: Constants were created early in development, never validated against Anthropic's API docs, and were never called until a code path was added that references them.
+    - **Solution**: Always verify model IDs against current Anthropic API documentation when creating or updating constants. The fix: `kModelSonnet = "claude-sonnet-4-5-20250929"`, `kModelOpus = "claude-opus-4-5-20251101"`. Use these as the new defaults and never invent dates.
+    - Files: `src/common/claude_api_client.cpp` (constants at top of file)
+
+- **Multi-action one-shotting from parent message in conversation history**:
+    - When multi-action flows split a request into sub-actions (e.g., "blippy jangly synth" → sound design translation → 3 sequential parameter changes), the LLM received the full original message (or translation text) in `conversation_history_` alongside the first sub-action. It read the full scope upfront and completed all steps on the first API call, returning "already done" text for subsequent sub-actions (massive token waste).
+    - **Root cause**: `FullInterface::executeNextAction()` called `addToHistory("user", message)` at line 1180 in `full_interface.cpp` before executing sub-actions. This stored the full original message in history, giving the LLM context it shouldn't have for sequential execution.
+    - **Solution**: (1) Removed line 1180 `addToHistory("user", message)` call. Keep the line 1154 call which stores the original user request ("make it blippy") before sound design reroute — this is needed for follow-up context. (2) Removed `cleanupSubActionHistory()` method entirely from `ClaudeApiClient` and its header declaration. Each sub-action's prompt + response stays in history permanently as the actual record of work done. No post-completion cleanup needed. (3) Removed `pre_multi_action_history_size_` member and all its reset calls from `FullInterface` (it tracked history size before multi-action to enable cleanup — no longer needed).
+    - **Result**: Sound design multi-action history = original message + sub-action 1 + response + sub-action 2 + response. Non-sound-design = sub-action 1 + response + sub-action 2 + response. Each sub-action executes independently without seeing the full plan.
+    - Files: `src/interface/editor_sections/full_interface.cpp/h`, `src/common/claude_api_client.cpp/h`

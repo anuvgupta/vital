@@ -259,24 +259,6 @@ void ClaudeApiClient::truncateHistoryTo(int size) {
     conversation_history_.resize(size);
 }
 
-void ClaudeApiClient::cleanupSubActionHistory(int saved_size) {
-  if (saved_size < 0 || saved_size >= (int)conversation_history_.size())
-    return;
-
-  // Remove sub-action "user" entries and placeholder "assistant" entries,
-  // but keep assistant entries with meaningful content
-  std::vector<ChatMessage> cleaned(conversation_history_.begin(),
-                                    conversation_history_.begin() + saved_size);
-  for (int i = saved_size; i < (int)conversation_history_.size(); ++i) {
-    const auto& msg = conversation_history_[i];
-    if (msg.role == "user")
-      continue;  // skip sub-action prompts
-    if (msg.role == "assistant" && msg.content == "(preset updated)")
-      continue;  // skip placeholder-only responses
-    cleaned.push_back(msg);
-  }
-  conversation_history_ = std::move(cleaned);
-}
 
 void ClaudeApiClient::extractFenceContent(const String& response, String& textOut, String& jsonOut) {
   textOut = String();

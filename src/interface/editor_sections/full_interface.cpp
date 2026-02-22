@@ -1177,10 +1177,7 @@ void FullInterface::routeAndExecute(const String& message) {
       return;
     }
 
-    // Multiple actions — store the original message in history, then execute sequentially
-    ClaudeApiClient::instance().addToHistory("user", message);
-    pre_multi_action_history_size_ = ClaudeApiClient::instance().getHistorySize();
-
+    // Multiple actions — execute sequentially (don't store full message to avoid one-shotting)
     pending_actions_ = actions;
     total_actions_ = actions.size();
     current_action_index_ = 0;
@@ -1197,7 +1194,6 @@ void FullInterface::executeNextAction(bool replaceExisting) {
     pending_actions_.clear();
     total_actions_ = 0;
     current_action_index_ = 0;
-    pre_multi_action_history_size_ = -1;
     api_request_in_flight_ = false;
 
     // Check queued messages
@@ -1262,7 +1258,6 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       pending_actions_.clear();
       total_actions_ = 0;
       current_action_index_ = 0;
-      pre_multi_action_history_size_ = -1;
       api_request_in_flight_ = false;
       queued_messages_.clear();
       return;
@@ -1308,13 +1303,9 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
               String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
               panel->updateStatusMessage(msg);
 
-              // Clean up sub-action history entries, then reset multi-action state
-              if (pre_multi_action_history_size_ >= 0)
-                ClaudeApiClient::instance().cleanupSubActionHistory(pre_multi_action_history_size_);
               pending_actions_.clear();
               total_actions_ = 0;
               current_action_index_ = 0;
-              pre_multi_action_history_size_ = -1;
             } else {
               String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
               // Single action — show as normal response
@@ -1349,7 +1340,6 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
         pending_actions_.clear();
         total_actions_ = 0;
         current_action_index_ = 0;
-        pre_multi_action_history_size_ = -1;
         api_request_in_flight_ = false;
         queued_messages_.clear();
         return;
@@ -1374,13 +1364,9 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       panel->removeStatusMessage("Breaking it down...");
       panel->updateStatusMessage(displayText);
 
-      // Clean up sub-action history entries, then reset multi-action state
-      if (pre_multi_action_history_size_ >= 0)
-        ClaudeApiClient::instance().cleanupSubActionHistory(pre_multi_action_history_size_);
       pending_actions_.clear();
       total_actions_ = 0;
       current_action_index_ = 0;
-      pre_multi_action_history_size_ = -1;
     } else {
       panel->addResponseMessage(response);
     }
@@ -1465,7 +1451,7 @@ bool FullInterface::sidePanelRestoreRequested(int message_index) {
   pending_actions_.clear();
   total_actions_ = 0;
   current_action_index_ = 0;
-  pre_multi_action_history_size_ = -1;
+
   return true;
 }
 
@@ -1503,5 +1489,5 @@ void FullInterface::sidePanelCancelEditRequested(const File& checkpoint, int api
   pending_actions_.clear();
   total_actions_ = 0;
   current_action_index_ = 0;
-  pre_multi_action_history_size_ = -1;
+
 }

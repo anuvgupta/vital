@@ -1,16 +1,27 @@
 # Documenter Agent's Short-Term Memory
 
-## Latest Task: Document Token Cost Research & Analysis (2026-02-21)
+## Latest Task: Fix Multi-Action One-Shotting & Invalid Model ID (2026-02-21)
 
-Research-only session (no code changes). Analyzed API request logs from Feb 21, 2026 to understand cost structure:
-- 3 request tiers: ~90-95k tokens (sound design), ~27-32k (preset mods), ~1-5k (router)
-- Daily cost ~$14.92, dominated by $10.27 uncached input tokens
-- Audited all 3 history write-points (addMessage call sites) in claude_api_client.cpp and full_interface.cpp
-- Identified 5 bugs causing history pollution and cost inflation
-- Created implementation plan at `.plans/harmonic-questing-bird.md`
+Post-testing bug fixes for token cost reduction work:
 
-Key files analyzed: claude_api_client.cpp/h, full_interface.cpp, SYSTEM_PROMPT.md (6.6KB), PRESET_SCHEMA.md (42KB), SOUND_DESIGN_PROMPT.md (2.4KB), SOUND_DESIGN_GUIDE.md (296KB, being replaced)
+### Bug 1: Invalid Sonnet Model ID
+- **Problem**: `kModelSonnet = "claude-sonnet-4-5-20241022"` doesn't exist (fabricated date)
+- **When caught**: After switching router to Sonnet, API returned "Unknown model" 404
+- **Root cause**: Constant created early, never validated, never used until router switch
+- **Fix**: Updated to `claude-sonnet-4-5-20250929` in `src/common/claude_api_client.cpp`
 
-## Previous Task: Reduce Token Costs Implementation (2026-02-21)
+### Bug 2: Multi-Action One-Shotting
+- **Problem**: LLM saw full original message in history with first sub-action, completed everything at once
+- **Symptoms**: Sub-actions 2+ returned "already done" text, wasting tokens
+- **Root cause**: Line 1180 `addToHistory("user", message)` before sub-actions
+- **Fix**: Removed line 1180, removed `cleanupSubActionHistory()` method, removed `pre_multi_action_history_size_` tracking member
+- **Result**: Sub-actions stay in history as execution record; each runs independently
 
-6 incremental improvements implemented (already fully documented in all docs).
+### Files Modified
+- `src/common/claude_api_client.cpp`: Fixed model ID, removed cleanup method
+- `src/common/claude_api_client.h`: Removed cleanup declaration
+- `src/interface/editor_sections/full_interface.cpp`: Removed line 1180 call, removed cleanup calls and member resets
+- `src/interface/editor_sections/full_interface.h`: Removed member declaration
+
+### Key Learning
+Model IDs must always be validated against official API docs. Never invent dates. When adding code paths that use old constants, revalidate them.

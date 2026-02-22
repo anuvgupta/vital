@@ -57,7 +57,7 @@ class ClaudeApiClient {
     // If no fence is found, textOut is empty and jsonOut is empty.
     static void extractFenceContent(const String& response, String& textOut, String& jsonOut);
     void truncateHistoryTo(int size);
-    void cleanupSubActionHistory(int saved_size);
+
     int getHistorySize() const { return (int)conversation_history_.size(); }
 
   private:
