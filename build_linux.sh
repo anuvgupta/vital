@@ -271,7 +271,7 @@ if [ "$BUILD_SUCCESS" = true ] && [ -x "$EXE_PATH" ]; then
     echo_status "Build successful: $EXE_PATH"
 
     # Copy resource files next to the executable
-    RESOURCE_FILES=("SYSTEM_PROMPT.md" "PRESET_SCHEMA.md" "SOUND_DESIGN_PROMPT.md" "SYNTHESIZER_COOKBOOK.md")
+    RESOURCE_FILES=("SYSTEM_PROMPT.md" "PRESET_SCHEMA.md" "SOUND_DESIGN_PROMPT.md" "SOUND_DESIGN_GUIDE.md")
     RESOURCE_SRC_DIR="$SCRIPT_DIR/agents/vital-assistant"
 
     for FILE in "${RESOURCE_FILES[@]}"; do

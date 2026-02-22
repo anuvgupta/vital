@@ -57,6 +57,7 @@ class ClaudeApiClient {
     // If no fence is found, textOut is empty and jsonOut is empty.
     static void extractFenceContent(const String& response, String& textOut, String& jsonOut);
     void truncateHistoryTo(int size);
+    void cleanupSubActionHistory(int saved_size);
     int getHistorySize() const { return (int)conversation_history_.size(); }
 
   private:
@@ -75,6 +76,8 @@ class ClaudeApiClient {
     void sendSoundDesignTranslationAsync(const String& message, ResponseCallback callback,
                                           const String& preset_json);
     void addMessage(const String& role, const String& content);
+    void logRequest(const String& endpoint_label, const String& request_body,
+                    const String& response_body, const var& parsed_response);
 
     static const int kMaxMessages = 20;
 

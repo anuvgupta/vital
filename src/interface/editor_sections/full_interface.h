@@ -242,6 +242,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     StringArray pending_actions_;
     int total_actions_ = 0;
     int current_action_index_ = 0;
+    int pre_multi_action_history_size_ = -1;
     CriticalSection open_gl_critical_section_;
     OpenGLContext open_gl_context_;
     std::unique_ptr<Shaders> shaders_;

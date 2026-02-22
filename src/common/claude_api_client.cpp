@@ -195,14 +195,14 @@ bool ClaudeApiClient::loadCookbook() {
   File cookbook_file;
 
   File resources_dir = executable.getParentDirectory().getParentDirectory().getChildFile("Resources");
-  cookbook_file = resources_dir.getChildFile("SYNTHESIZER_COOKBOOK.md");
+  cookbook_file = resources_dir.getChildFile("SOUND_DESIGN_GUIDE.md");
 
   if (!cookbook_file.existsAsFile())
-    cookbook_file = executable.getParentDirectory().getChildFile("SYNTHESIZER_COOKBOOK.md");
+    cookbook_file = executable.getParentDirectory().getChildFile("SOUND_DESIGN_GUIDE.md");
 
   if (!cookbook_file.existsAsFile()) {
     File app_data = LoadSave::getDataDirectory();
-    cookbook_file = app_data.getChildFile("SYNTHESIZER_COOKBOOK.md");
+    cookbook_file = app_data.getChildFile("SOUND_DESIGN_GUIDE.md");
   }
 
   if (!cookbook_file.existsAsFile()) {
@@ -259,6 +259,25 @@ void ClaudeApiClient::truncateHistoryTo(int size) {
     conversation_history_.resize(size);
 }
 
+void ClaudeApiClient::cleanupSubActionHistory(int saved_size) {
+  if (saved_size < 0 || saved_size >= (int)conversation_history_.size())
+    return;
+
+  // Remove sub-action "user" entries and placeholder "assistant" entries,
+  // but keep assistant entries with meaningful content
+  std::vector<ChatMessage> cleaned(conversation_history_.begin(),
+                                    conversation_history_.begin() + saved_size);
+  for (int i = saved_size; i < (int)conversation_history_.size(); ++i) {
+    const auto& msg = conversation_history_[i];
+    if (msg.role == "user")
+      continue;  // skip sub-action prompts
+    if (msg.role == "assistant" && msg.content == "(preset updated)")
+      continue;  // skip placeholder-only responses
+    cleaned.push_back(msg);
+  }
+  conversation_history_ = std::move(cleaned);
+}
+
 void ClaudeApiClient::extractFenceContent(const String& response, String& textOut, String& jsonOut) {
   textOut = String();
   jsonOut = String();
@@ -275,8 +294,11 @@ void ClaudeApiClient::extractFenceContent(const String& response, String& textOu
 
   contentStart += fenceStart + 1;
   int fenceEnd = response.substring(contentStart).indexOf(String("```"));
-  if (fenceEnd < 0)
+  if (fenceEnd < 0) {
+    // Unclosed fence — treat content after fence as JSON, keep only text before fence
+    jsonOut = response.substring(contentStart).trim();
     return;
+  }
 
   fenceEnd += contentStart;
   jsonOut = response.substring(contentStart, fenceEnd).trim();
@@ -294,6 +316,36 @@ void ClaudeApiClient::addMessage(const String& role, const String& content) {
     conversation_history_.erase(conversation_history_.begin());
 
   conversation_history_.push_back({ role, content });
+}
+
+void ClaudeApiClient::logRequest(const String& endpoint_label, const String& request_body,
+                                  const String& response_body, const var& parsed_response) {
+  File log_dir = LoadSave::getDataDirectory();
+  File log_file = log_dir.getChildFile("api_requests.log");
+
+  String timestamp = Time::getCurrentTime().toISO8601(true);
+
+  String usage_info;
+  if (parsed_response.isObject() && parsed_response.hasProperty("usage")) {
+    var usage = parsed_response["usage"];
+    int input_tokens = usage.getProperty("input_tokens", 0);
+    int output_tokens = usage.getProperty("output_tokens", 0);
+    int cache_read = usage.getProperty("cache_read_input_tokens", 0);
+    int cache_create = usage.getProperty("cache_creation_input_tokens", 0);
+    usage_info = " | input_tokens=" + String(input_tokens)
+               + " output_tokens=" + String(output_tokens)
+               + " cache_read=" + String(cache_read)
+               + " cache_create=" + String(cache_create);
+  }
+
+  String log_entry = "--- " + timestamp + " | " + endpoint_label + " ---\n"
+                   + "REQUEST_CHARS=" + String(request_body.length())
+                   + " RESPONSE_CHARS=" + String(response_body.length())
+                   + usage_info + "\n"
+                   + "REQUEST:\n" + request_body + "\n"
+                   + "RESPONSE:\n" + response_body + "\n\n";
+
+  log_file.appendText(log_entry);
 }
 
 void ClaudeApiClient::sendMessageAsync(const String& message, ResponseCallback callback,
@@ -406,6 +458,8 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
 
   // Parse the response JSON
   var parsedResponse = JSON::parse(response);
+  logRequest("sendMessage", jsonBody, response, parsedResponse);
+
   if (!parsedResponse.isObject()) {
     MessageManager::callAsync([callback]() {
       callback("Failed to parse API response.", false);
@@ -457,7 +511,10 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
   // state is always re-injected fresh at the start of each turn anyway.
   String textOnly, jsonOnly;
   extractFenceContent(responseText, textOnly, jsonOnly);
-  addMessage("assistant", textOnly.isNotEmpty() ? textOnly : responseText);
+  if (jsonOnly.isNotEmpty())
+    addMessage("assistant", textOnly.isNotEmpty() ? textOnly : String("(preset updated)"));
+  else
+    addMessage("assistant", responseText);
 
   MessageManager::callAsync([callback, responseText]() {
     callback(responseText, true);
@@ -480,9 +537,9 @@ void ClaudeApiClient::routeMessage(const String& message, RouterCallback callbac
 }
 
 void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback callback) {
-  // Build request body
+  // Build request body — use Sonnet for routing (cheaper, sufficient for classification)
   DynamicObject::Ptr requestBody = new DynamicObject();
-  requestBody->setProperty("model", kModel);
+  requestBody->setProperty("model", kModelSonnet);
   requestBody->setProperty("max_tokens", kRouterMaxTokens);
 
   // System prompt
@@ -586,6 +643,8 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
   DBG("ClaudeApiClient::routeMessage: Response: " + response);
 
   var parsedResponse = JSON::parse(response);
+  logRequest("routeMessage", jsonBody, response, parsedResponse);
+
   if (!parsedResponse.isObject()) {
     MessageManager::callAsync([callback]() {
       callback(StringArray(), false, false, "Failed to parse router API response.");
@@ -753,6 +812,8 @@ void ClaudeApiClient::sendSoundDesignTranslationAsync(const String& message, Res
   DBG("ClaudeApiClient::sendSoundDesignTranslation: Response: " + response);
 
   var parsedResponse = JSON::parse(response);
+  logRequest("soundDesignTranslation", jsonBody, response, parsedResponse);
+
   if (!parsedResponse.isObject()) {
     MessageManager::callAsync([callback]() {
       callback("Failed to parse API response.", false);
