@@ -1069,19 +1069,18 @@ void FullInterface::stripBase64DataForLLM(json& state) {
 
 void FullInterface::sidePanelMessageSubmitted(const String& message) {
   if (api_request_in_flight_) {
-    // Queue the message — it's already displayed in the chat by VitalSidePanel
     queued_messages_.add(message);
     return;
   }
 
   api_request_in_flight_ = true;
 
-  // Autosave checkpoint for the user message
   VitalSidePanel* panel = side_panel_.get();
   if (panel) {
+    panel->addMessage("Thinking...", ChatMessage::kSystem);
+
     File checkpoint = saveAutosaveCheckpoint();
     if (checkpoint.exists()) {
-      // User message is second-to-last (last is "Thinking...")
       int user_msg_idx = panel->getMessageCount() - 2;
       int api_size = ClaudeApiClient::instance().getHistorySize();
       panel->addCheckpoint(user_msg_idx, api_size, checkpoint);
@@ -1199,11 +1198,11 @@ void FullInterface::executeNextAction(bool replaceExisting) {
 
     // Check queued messages
     if (!queued_messages_.isEmpty()) {
-      StringArray pending;
-      pending.swapWith(queued_messages_);
+      String next = queued_messages_[0];
+      queued_messages_.remove(0);
       api_request_in_flight_ = true;
       panel->addMessage("Thinking...", ChatMessage::kSystem);
-      routeAndExecute(pending[0]);
+      routeAndExecute(next);
     }
     return;
   }
@@ -1324,10 +1323,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
 
             // Check queue after successful response
             if (!queued_messages_.isEmpty()) {
-              StringArray pending;
-              pending.swapWith(queued_messages_);
+              String next = queued_messages_[0];
+              queued_messages_.remove(0);
               panel->addMessage("Thinking...", ChatMessage::kSystem);
-              routeAndExecute(pending[0]);
+              routeAndExecute(next);
             } else {
               api_request_in_flight_ = false;
             }
@@ -1383,10 +1382,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
 
     // Check queue after text-only response too
     if (!queued_messages_.isEmpty()) {
-      StringArray pending;
-      pending.swapWith(queued_messages_);
+      String next = queued_messages_[0];
+      queued_messages_.remove(0);
       panel->addMessage("Thinking...", ChatMessage::kSystem);
-      routeAndExecute(pending[0]);
+      routeAndExecute(next);
     } else {
       api_request_in_flight_ = false;
     }

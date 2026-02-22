@@ -202,6 +202,12 @@
     - To fix cursor staying as I-beam over the icon area, call `prompt_editor_->setMouseCursor()` based on hover state.
     - Files: `src/interface/editor_sections/side_panel.h`, `src/interface/editor_sections/side_panel.cpp`
 
+- **Queued messages during multi-action leaving stranded step messages + queue dropping messages**:
+    - When a user sent messages while multi-action was in progress, `submitMessage()` added a "Thinking..." system message that pushed the active step message out of reach of `updateStatusMessage()` (which only checked `messages_.back()`). Additionally, `clearThinkingMessage()` also only checked `back()`, so it couldn't find "Thinking..." when a queued user message sat after it. Separately, all 3 queue processing points used `pending.swapWith(queued_messages_)` then only processed `pending[0]`, silently dropping `pending[1+]`.
+    - **Solution**: (1) `updateStatusMessage()` and `clearThinkingMessage()` now scan backwards from the end to find their target message types (kSystem/kStep or "Thinking..." respectively), handling interleaved kUser messages. (2) Moved "Thinking..." creation from `submitMessage()` to `sidePanelMessageSubmitted()` so it's only added when the message is actually processed, not when queuing. (3) Fixed all 3 queue dequeue points to use `queued_messages_.remove(0)` (one at a time) instead of `swapWith` (which dropped all but the first).
+    - **Key lesson**: Methods operating on "the last message" need backward scanning when messages can be interleaved by async user input. Queue processing must dequeue one-at-a-time, not swap-and-drop.
+    - Files: `src/interface/editor_sections/side_panel.cpp`, `src/interface/editor_sections/full_interface.cpp`
+
 - **Multi-action one-shotting from parent message in conversation history**:
     - When multi-action flows split a request into sub-actions (e.g., "blippy jangly synth" → sound design translation → 3 sequential parameter changes), the LLM received the full original message (or translation text) in `conversation_history_` alongside the first sub-action. It read the full scope upfront and completed all steps on the first API call, returning "already done" text for subsequent sub-actions (massive token waste).
     - **Root cause**: `FullInterface::executeNextAction()` called `addToHistory("user", message)` at line 1180 in `full_interface.cpp` before executing sub-actions. This stored the full original message in history, giving the LLM context it shouldn't have for sequential execution.

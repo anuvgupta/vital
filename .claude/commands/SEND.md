@@ -1,1 +1,1 @@
-commit it. dont add the claude co-author line
+commit it. dont add the claude/cursor co-author line

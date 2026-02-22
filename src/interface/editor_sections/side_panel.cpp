@@ -843,9 +843,6 @@ void VitalSidePanel::submitMessage() {
   // Commit and exit edit mode if active (cleans up orphaned checkpoint files)
   exitEditMode();
 
-  // Remove existing thinking indicator so user message appears above it
-  clearThinkingMessage();
-
   // Add user message
   addMessage(text, ChatMessage::kUser);
 
@@ -853,10 +850,8 @@ void VitalSidePanel::submitMessage() {
   prompt_editor_->clear();
   prompt_editor_->redoImage();
 
-  // Add thinking indicator (always at the end, after all user messages)
-  addMessage("Thinking...", ChatMessage::kSystem);
-
-  // Notify listeners
+  // Notify listeners (they decide whether to add "Thinking..." based on
+  // whether the message is processed immediately or queued)
   for (Listener* listener : listeners_)
     listener->sidePanelMessageSubmitted(text);
 #endif
@@ -871,13 +866,14 @@ void VitalSidePanel::addMessage(const String& text, ChatMessage::Type type) {
 }
 
 void VitalSidePanel::clearThinkingMessage() {
-  // Remove the last message if it's a "Thinking..." system message
-  if (!messages_.empty()) {
-    auto& last = messages_.back();
-    if (last.type == ChatMessage::kSystem && last.text == "Thinking...") {
-      messages_.pop_back();
+  // Scan backwards for "Thinking..." — it may not be at back() if a queued
+  // user message was appended after it during multi-action processing.
+  for (int i = (int)messages_.size() - 1; i >= 0; --i) {
+    if (messages_[i].type == ChatMessage::kSystem && messages_[i].text == "Thinking...") {
+      messages_.erase(messages_.begin() + i);
       layoutMessages();
       repaintBackground();
+      return;
     }
   }
 }
@@ -895,12 +891,15 @@ void VitalSidePanel::removeStatusMessage(const String& text) {
 }
 
 void VitalSidePanel::updateStatusMessage(const String& text, ChatMessage::Type newType) {
-  if (!messages_.empty()) {
-    auto& last = messages_.back();
-    if (last.type == ChatMessage::kSystem || last.type == ChatMessage::kStep) {
-      last.text = text;
-      last.type = newType;
-      last.blocks = parseMarkdown(text);
+  // Scan backwards to find the last system/step message — this ensures
+  // step messages are still reachable when a user message was interleaved
+  // (e.g. user sent a queued message during multi-action processing).
+  for (int i = (int)messages_.size() - 1; i >= 0; --i) {
+    auto& msg = messages_[i];
+    if (msg.type == ChatMessage::kSystem || msg.type == ChatMessage::kStep) {
+      msg.text = text;
+      msg.type = newType;
+      msg.blocks = parseMarkdown(text);
       layoutMessages();
       scrollToBottom();
       repaintBackground();

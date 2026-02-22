@@ -49,9 +49,9 @@
 ## Bugs
 
 ### Open
-- sending extra / queued messages while multi-action is completing - messes up the chat ordering a bit, sometimes the intermediate step messages get left over before that message
 
 ### Done
+- Queued messages during multi-action leaving stranded step messages — `updateStatusMessage` now scans backwards for last kSystem/kStep (handles interleaved kUser), and `clearThinkingMessage()` called on queue so step lifecycle isn't disrupted
 - Stale API responses arriving after clear conversation — `clearChat()` now bumps generation counter via `sidePanelClearRequested()` listener callback
 - Stale API responses corrupting UI after edit-mode restore — added generation counter to invalidate in-flight async callbacks on restore/cancel
 - Clear button is present when the chat is empty
