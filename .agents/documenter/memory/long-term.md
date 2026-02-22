@@ -58,4 +58,12 @@
 - After translation, output is re-routed through routeAndExecute() which splits into sub-actions
 - Infinite loop guard: `is_sound_design_reroute_` flag on FullInterface prevents re-triggering sound design path
 - kMaxTokens must be large enough (4096) for preset generation JSON diffs; truncated JSON causes raw text display in chat
-- Resource files (SOUND_DESIGN_PROMPT.md, SYNTHESIZER_COOKBOOK.md) must be copied by ALL platform build scripts
+- Resource files (SOUND_DESIGN_PROMPT.md, SOUND_DESIGN_GUIDE.md) must be copied by ALL platform build scripts
+
+### API Cost Analysis Pattern
+- Request logs can be analyzed from `api_requests.log` in user data directory (added via `logRequest()` method)
+- 3 request tiers by token count: sound design (~90-95k), standard preset mods (~27-32k), router (~1-5k)
+- All conversation history writes go through `addMessage()` — only 3 call sites exist in the codebase (2 in claude_api_client.cpp, 1 in full_interface.cpp)
+- Token cost is dominated by uncached input tokens (~70% of total cost); prompt caching helps but conversation history and preset JSON are per-request
+- The 296KB SYNTHESIZER_COOKBOOK was the single largest token contributor per sound design call; was renamed to SOUND_DESIGN_GUIDE.md and emptied, needs a compact replacement
+- Router calls are cheap (~1-5k tokens) and can use Sonnet instead of Opus since they only classify via tool_use with ~50-100 output tokens

@@ -12,6 +12,7 @@
 
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Optimize router to also complete preset updates for single actions (see doc in .plans/prompts)
+- Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
 - Multiple thinking & output rounds (partially complete)
     - Router layer analyzes each message and decides: single-action (pass through) vs multi-action (split and execute sequentially) vs sound design required (translate then re-route)
     - Each sub-action sees updated preset state from previous steps
@@ -28,6 +29,7 @@
     - Future enhancement: wake word detection (e.g. "Hey Vital" via Picovoice Porcupine) as an additional gating layer for either ASK or TALK mode.
 
 ### Done
+- Reduce API token costs — research/analysis of request logs, history write-point audit, and implementation of 6 fixes (JSON leak, sub-action cleanup, reroute fix, router to Sonnet, cookbook rename, request logging)
 - Multi-layer agentic router flow — router uses tool_use to analyze message and decide single-action pass-through vs multi-action split/sequential execution
 - Autosave presets, checkpointing & restore chat at certain point (hover restore button on user messages, archive on clear, orphan cleanup on startup, 50/20 caps)
 - Edit mode for restore button (instant Claude-style, no confirmation dialog) — click to enter edit mode, edit and re-submit or ESC to cancel. Fully implemented with EditModeSnapshot state machine, cancel button, keyboard handler, and synth state rollback.
