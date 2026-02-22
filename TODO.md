@@ -43,12 +43,14 @@
 - Rename mic button to talk button
 - Queue messages when sent while agent is already thinking (request already in progress)
 - Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
+- Re-architected side panel: inline action button (mic/send/stop 3-state), voice chat button inside textarea, removed button row
 
 
 
 ## Bugs
 
 ### Open
+- is conversation silence detection set as 20s for voice chat, 5s for dictation? is it wait 5 seconds (or 20 seconds) min then after that end early on detecting the next silence? or is it wait until the first silence that lasts 5 seconds (or 20 seconds)? i thought we programmed the second one, but maybe the first one was what we programmed. not sure.
 
 ### Done
 - Queued messages during multi-action leaving stranded step messages — `updateStatusMessage` now scans backwards for last kSystem/kStep (handles interleaved kUser), and `clearThinkingMessage()` called on queue so step lifecycle isn't disrupted

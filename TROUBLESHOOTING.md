@@ -202,6 +202,11 @@
     - To fix cursor staying as I-beam over the icon area, call `prompt_editor_->setMouseCursor()` based on hover state.
     - Files: `src/interface/editor_sections/side_panel.h`, `src/interface/editor_sections/side_panel.cpp`
 
+- **Programmatic SVG icon paths render as black boxes when using stroked paths with bounding-box markers**:
+    - Creating icons via JUCE `Path` with `addLineSegment()` / `startNewSubPath()` produces thin stroked lines. When rendered in a small area, the invisible bounding-box rectangles dominate the visual and the icon appears as a solid black box.
+    - **Solution**: Use SVG path data (the `d` attribute from an SVG) parsed via `Drawable::createFromSVG()` or stored as a `Path` via `parseSVGPath()`. SVG paths produce clean filled shapes that scale correctly. Added `sendArrowIcon()` and `stopIcon()` to `paths.h` using this approach.
+    - File: `src/interface/look_and_feel/paths.h`
+
 - **Queued messages during multi-action leaving stranded step messages + queue dropping messages**:
     - When a user sent messages while multi-action was in progress, `submitMessage()` added a "Thinking..." system message that pushed the active step message out of reach of `updateStatusMessage()` (which only checked `messages_.back()`). Additionally, `clearThinkingMessage()` also only checked `back()`, so it couldn't find "Thinking..." when a queued user message sat after it. Separately, all 3 queue processing points used `pending.swapWith(queued_messages_)` then only processed `pending[0]`, silently dropping `pending[1+]`.
     - **Solution**: (1) `updateStatusMessage()` and `clearThinkingMessage()` now scan backwards from the end to find their target message types (kSystem/kStep or "Thinking..." respectively), handling interleaved kUser messages. (2) Moved "Thinking..." creation from `submitMessage()` to `sidePanelMessageSubmitted()` so it's only added when the message is actually processed, not when queuing. (3) Fixed all 3 queue dequeue points to use `queued_messages_.remove(0)` (one at a time) instead of `swapWith` (which dropped all but the first).

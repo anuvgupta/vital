@@ -2,8 +2,9 @@
 
 ## Status: Ready for next task
 
-Last completed: Fix queued message handling during multi-action processing (2026-02-22)
-- updateStatusMessage/clearThinkingMessage scan backwards for target messages past interleaved user messages
-- Moved "Thinking..." creation from submitMessage() to sidePanelMessageSubmitted()
-- Fixed all 3 queue processing points dropping messages (swapWith → remove(0))
-- Files: side_panel.cpp, full_interface.cpp
+Last completed: Re-architect side panel UI buttons into inline textarea controls (2026-02-22)
+- Removed VOICE CHAT + SEND button row, extended textarea to bottom
+- Added 3-state circular action button (mic/send/stop) with purple circle bg
+- Moved VOICE CHAT button inside textarea (bottom-left, smaller inline)
+- Added sendArrowIcon() and stopIcon() SVG paths to paths.h
+- Files: side_panel.h, side_panel.cpp, paths.h

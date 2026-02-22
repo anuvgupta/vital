@@ -203,6 +203,7 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   addButton(action_button_.get());
   action_button_->setUiButton(true);
   action_button_->setText(kSubmitButtonText);
+  action_button_->setVisible(false);
 
   voice_chat_button_ = std::make_unique<OpenGlToggleButton>("VoiceChat");
   addButton(voice_chat_button_.get());
@@ -222,6 +223,10 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
 
   mic_capture_ = std::make_unique<MicrophoneCapture>();
 
+  action_circle_bg_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
+  addOpenGlComponent(action_circle_bg_.get());
+  action_circle_bg_->setActive(true);
+
   voice_chat_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
   addOpenGlComponent(voice_chat_recording_indicator_.get());
   voice_chat_recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
@@ -231,8 +236,22 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   addOpenGlComponent(mic_icon_shape_.get());
   mic_icon_shape_->setShape(Paths::microphoneIcon2());
   mic_icon_shape_->setUseAlpha(true);
-  mic_icon_shape_->setColor(Colours::white.withAlpha(0.5f));
+  mic_icon_shape_->setColor(Colours::black);
   mic_icon_shape_->setActive(true);
+
+  send_icon_shape_ = std::make_unique<PlainShapeComponent>("send_icon");
+  addOpenGlComponent(send_icon_shape_.get());
+  send_icon_shape_->setShape(Paths::sendArrowIcon());
+  send_icon_shape_->setUseAlpha(true);
+  send_icon_shape_->setColor(Colours::black);
+  send_icon_shape_->setActive(false);
+
+  stop_icon_shape_ = std::make_unique<PlainShapeComponent>("stop_icon");
+  addOpenGlComponent(stop_icon_shape_.get());
+  stop_icon_shape_->setShape(Paths::stopIcon());
+  stop_icon_shape_->setUseAlpha(true);
+  stop_icon_shape_->setColor(Colours::black);
+  stop_icon_shape_->setActive(false);
 
   mic_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
   addOpenGlComponent(mic_recording_indicator_.get());
@@ -466,8 +485,7 @@ void VitalSidePanel::resized() {
   int padding = findValue(Skin::kLargePadding);
   int widget_margin = findValue(Skin::kWidgetMargin);
 
-  int button_height = 50;
-  int button_width = getWidth() - 2 * padding;
+  int content_width = getWidth() - 2 * padding;
   int textarea_height = 180;
   int title_height = 30;
 
@@ -480,37 +498,15 @@ void VitalSidePanel::resized() {
   clear_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
   clear_button_->getGlComponent()->text().redrawImage(true);
 
-  // Button row at the bottom: VOICE CHAT | SEND
-  int button_y = getHeight() - padding - button_height;
-  int button_gap = widget_margin;
-  int voice_chat_width = (int)((button_width - button_gap) * 0.6f);
-  int send_width = button_width - voice_chat_width - button_gap;
+  // Hide old large SEND button (functionality moved to inline action circle)
+  action_button_->setBounds(0, 0, 0, 0);
+  action_button_->setVisible(false);
 
-  int voice_chat_x = padding;
-  int send_x = voice_chat_x + voice_chat_width + button_gap;
-
-  voice_chat_button_->setBounds(voice_chat_x, button_y, voice_chat_width, button_height);
-  voice_chat_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
-  voice_chat_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
-  voice_chat_button_->getGlComponent()->text().redrawImage(true);
-  updateVoiceChatButtonColors();
-
-  action_button_->setBounds(send_x, button_y, send_width, button_height);
-  action_button_->getGlComponent()->text().setTextSize(size_ratio_ * 11.0f);
-  action_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
-  action_button_->getGlComponent()->text().redrawImage(true);
-
-  // Voice chat recording indicator (small red dot above VOICE CHAT button)
-  int indicator_size = 8;
-  int vc_ind_x = voice_chat_x + voice_chat_width - indicator_size + 2;
-  int vc_ind_y = button_y - 2;
-  voice_chat_recording_indicator_->setBounds(vc_ind_x, vc_ind_y, indicator_size, indicator_size);
-
-  // Textarea above the button
-  int textarea_y = button_y - (int)(widget_margin * 1.75f) - textarea_height;
+  // Textarea extends to the bottom of the window (minus padding)
+  int textarea_y = getHeight() - padding - textarea_height;
 #if !defined(NO_TEXT_ENTRY)
   if (prompt_editor_) {
-    prompt_editor_->setBounds(padding, textarea_y, button_width, textarea_height);
+    prompt_editor_->setBounds(padding, textarea_y, content_width, textarea_height);
 
     Colour empty_color = findColour(Skin::kBodyText, true);
     empty_color = empty_color.withAlpha(0.5f * empty_color.getFloatAlpha());
@@ -526,26 +522,66 @@ void VitalSidePanel::resized() {
   }
 #endif
 
-  // Mic icon overlay at bottom-right of textarea
+  // Circular action button (mic/send) at bottom-right of textarea
   {
-    int icon_size = (int)(20.0f * size_ratio_);
-    int icon_padding = (int)(6.0f * size_ratio_);
-    int icon_x = padding + button_width - icon_size - icon_padding;
-    int icon_y = textarea_y + textarea_height - icon_size - icon_padding - (int)(4.0f * size_ratio_);
-    mic_icon_bounds_ = Rectangle<int>(icon_x, icon_y, icon_size, icon_size);
-    mic_icon_shape_->setBounds(icon_x, icon_y, icon_size, icon_size);
+    int circle_size = (int)(32.0f * size_ratio_);
+    int circle_padding = (int)(6.0f * size_ratio_);
+    int circle_x = padding + content_width - circle_size - circle_padding;
+    int circle_y = textarea_y + textarea_height - circle_size - circle_padding;
+    action_button_bounds_ = Rectangle<int>(circle_x, circle_y, circle_size, circle_size);
+
+    action_circle_bg_->setBounds(circle_x, circle_y, circle_size, circle_size);
+    Colour purple = findColour(Skin::kUiActionButton, true);
+    action_circle_bg_->setColor(action_button_hovered_ ? purple.brighter(0.15f) : purple);
+
+    int mic_size = (int)(19.0f * size_ratio_);
+    int mic_off = (circle_size - mic_size) / 2;
+    mic_icon_shape_->setBounds(circle_x + mic_off, circle_y + mic_off, mic_size, mic_size);
     mic_icon_shape_->redrawImage(true);
 
+    int send_size = (int)(16.0f * size_ratio_);
+    int send_off = (circle_size - send_size) / 2;
+    send_icon_shape_->setBounds(circle_x + send_off, circle_y + send_off, send_size, send_size);
+    send_icon_shape_->redrawImage(true);
+
+    int stop_size = (int)(13.0f * size_ratio_);
+    int stop_off = (circle_size - stop_size) / 2;
+    stop_icon_shape_->setBounds(circle_x + stop_off, circle_y + stop_off, stop_size, stop_size);
+    stop_icon_shape_->redrawImage(true);
+
     int ind_size = 8;
-    int ind_x = icon_x + icon_size - ind_size + 2;
-    int ind_y = icon_y - 2;
+    int ind_x = circle_x + circle_size - ind_size + 2;
+    int ind_y = circle_y - 2;
     mic_recording_indicator_->setBounds(ind_x, ind_y, ind_size, ind_size);
+  }
+
+  // VOICE CHAT / STOP button inside textarea, to the left of the action circle
+  {
+    int vc_padding = (int)(6.0f * size_ratio_);
+    bool is_stop = (recording_mode_ == kRecordingVoiceChat);
+
+    int vc_height = is_stop ? (int)(24.0f * size_ratio_) : (int)(26.0f * size_ratio_);
+    int vc_width = is_stop ? (int)(50.0f * size_ratio_) : (int)(90.0f * size_ratio_);
+    int vc_y = textarea_y + textarea_height - vc_height - vc_padding;
+    int vc_x = padding + vc_padding;
+
+    voice_chat_button_->setBounds(vc_x, vc_y, vc_width, vc_height);
+    voice_chat_button_->getGlComponent()->background().setRounding(is_stop ? vc_height * 0.3f : vc_height * 0.15f);
+    voice_chat_button_->getGlComponent()->text().setTextSize(size_ratio_ * (is_stop ? 8.0f : 9.5f));
+    voice_chat_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
+    voice_chat_button_->getGlComponent()->text().redrawImage(true);
+    updateVoiceChatButtonColors();
+
+    int indicator_size = 8;
+    int vc_ind_x = vc_x + vc_width - indicator_size + 2;
+    int vc_ind_y = vc_y - 2;
+    voice_chat_recording_indicator_->setBounds(vc_ind_x, vc_ind_y, indicator_size, indicator_size);
   }
 
   // Cancel edit button overlapping top-right of textarea
   if (cancel_edit_button_) {
     int cancel_size = 24;
-    int cancel_x = padding + button_width - cancel_size - 4;
+    int cancel_x = padding + content_width - cancel_size - 4;
     int cancel_y = textarea_y + 4;
     cancel_edit_button_->setBounds(cancel_x, cancel_y, cancel_size, cancel_size);
     cancel_edit_button_->getGlComponent()->text().setTextSize(size_ratio_ * 14.0f);
@@ -557,7 +593,7 @@ void VitalSidePanel::resized() {
   int chat_top = padding + title_height + widget_margin;
   int chat_bottom = textarea_y - (int)(widget_margin * 1.75f);
   int chat_height = chat_bottom - chat_top;
-  int chat_width = button_width - (int)kScrollBarWidth - widget_margin;
+  int chat_width = content_width - (int)kScrollBarWidth - widget_margin;
 
   chat_bounds_ = Rectangle<int>(padding, chat_top, chat_width, chat_height);
 
@@ -566,6 +602,8 @@ void VitalSidePanel::resized() {
                          (int)kScrollBarWidth, chat_height);
   scroll_bar_->setColor(findColour(Skin::kLightenScreen, true));
 
+  updateActionButtonState();
+
   // Layout messages and update scrollbar
   layoutMessages();
 
@@ -573,12 +611,7 @@ void VitalSidePanel::resized() {
 }
 
 void VitalSidePanel::buttonClicked(Button* clicked_button) {
-  if (clicked_button == action_button_.get()) {
-    submitMessage();
-    for (Listener* listener : listeners_)
-      listener->sidePanelButtonClicked();
-  }
-  else if (clicked_button == clear_button_.get()) {
+  if (clicked_button == clear_button_.get()) {
     clearChat();
   }
   else if (clicked_button == cancel_edit_button_.get()) {
@@ -605,6 +638,10 @@ void VitalSidePanel::textEditorReturnKeyPressed(TextEditor& editor) {
 void VitalSidePanel::textEditorEscapeKeyPressed(TextEditor& editor) {
   if (edit_mode_)
     cancelEditMode();
+}
+
+void VitalSidePanel::textEditorTextChanged(TextEditor& editor) {
+  updateActionButtonState();
 }
 
 void VitalSidePanel::scrollBarMoved(ScrollBar* scrollBar, double newRangeStart) {
@@ -707,6 +744,7 @@ void VitalSidePanel::startTalkRecording() {
 
   recording_mode_ = kRecordingTalk;
   mic_recording_indicator_->setActive(true);
+  updateActionButtonState();
   addMessage("Listening...", ChatMessage::kSystem);
 }
 
@@ -781,6 +819,7 @@ void VitalSidePanel::startVoiceChatRecording() {
   voice_chat_button_->setText(kStopButtonLabel);
   voice_chat_button_->getGlComponent()->text().redrawImage(true);
   updateVoiceChatButtonColors();
+  resized();
   voice_chat_recording_indicator_->setActive(true);
   addMessage("Listening until you stop...", ChatMessage::kSystem);
 }
@@ -829,6 +868,7 @@ void VitalSidePanel::stopRecording() {
   recording_mode_ = kRecordingNone;
   mic_recording_indicator_->setActive(false);
   updateVoiceChatButtonColors();
+  resized();
 }
 
 void VitalSidePanel::submitMessage() {
@@ -1047,6 +1087,39 @@ void VitalSidePanel::updateVoiceChatButtonColors() {
     voice_chat_button_->removeColour(Skin::kUiActionButtonPressed);
   }
   voice_chat_button_->getGlComponent()->setColors();
+}
+
+void VitalSidePanel::updateActionButtonState() {
+#if !defined(NO_TEXT_ENTRY)
+  bool has_text = prompt_editor_ && prompt_editor_->getText().trim().isNotEmpty();
+#else
+  bool has_text = false;
+#endif
+
+  bool is_talk_recording = (recording_mode_ == kRecordingTalk);
+
+  ActionButtonMode new_mode;
+  if (is_talk_recording)
+    new_mode = kActionStop;
+  else if (has_text)
+    new_mode = kActionSend;
+  else
+    new_mode = kActionMic;
+
+  if (new_mode != action_button_mode_) {
+    mic_icon_shape_->setActive(new_mode == kActionMic);
+    send_icon_shape_->setActive(new_mode == kActionSend);
+    stop_icon_shape_->setActive(new_mode == kActionStop);
+
+    if (new_mode == kActionMic) mic_icon_shape_->redrawImage(true);
+    if (new_mode == kActionSend) send_icon_shape_->redrawImage(true);
+    if (new_mode == kActionStop) stop_icon_shape_->redrawImage(true);
+
+    action_button_mode_ = new_mode;
+  }
+
+  Colour purple = findColour(Skin::kUiActionButton, true);
+  action_circle_bg_->setColor(action_button_hovered_ ? purple.brighter(0.15f) : purple);
 }
 
 // ============================================================================
@@ -1308,13 +1381,14 @@ void VitalSidePanel::cancelEditMode() {
 void VitalSidePanel::mouseMove(const MouseEvent& e) {
   auto pos = e.getEventRelativeTo(this).getPosition();
 
-  // Track mic icon hover
-  bool over_mic = !mic_icon_bounds_.isEmpty() && mic_icon_bounds_.contains(pos);
-  if (over_mic != mic_icon_hovered_) {
-    mic_icon_hovered_ = over_mic;
-    mic_icon_shape_->setColor(Colours::white.withAlpha(mic_icon_hovered_ ? 0.85f : 0.5f));
+  // Track action button (mic/send circle) hover
+  bool over_action = !action_button_bounds_.isEmpty() && action_button_bounds_.contains(pos);
+  if (over_action != action_button_hovered_) {
+    action_button_hovered_ = over_action;
+    Colour purple = findColour(Skin::kUiActionButton, true);
+    action_circle_bg_->setColor(action_button_hovered_ ? purple.brighter(0.15f) : purple);
     if (prompt_editor_)
-      prompt_editor_->setMouseCursor(over_mic ? MouseCursor::NormalCursor : MouseCursor::IBeamCursor);
+      prompt_editor_->setMouseCursor(over_action ? MouseCursor::PointingHandCursor : MouseCursor::IBeamCursor);
   }
 
   if (!chat_bounds_.contains(pos)) {
@@ -1359,9 +1433,10 @@ void VitalSidePanel::mouseMove(const MouseEvent& e) {
 }
 
 void VitalSidePanel::mouseExit(const MouseEvent& e) {
-  if (mic_icon_hovered_) {
-    mic_icon_hovered_ = false;
-    mic_icon_shape_->setColor(Colours::white.withAlpha(0.5f));
+  if (action_button_hovered_) {
+    action_button_hovered_ = false;
+    Colour purple = findColour(Skin::kUiActionButton, true);
+    action_circle_bg_->setColor(purple);
   }
   if (hovered_message_index_ != -1 || hovering_restore_button_) {
     hovered_message_index_ = -1;
@@ -1374,9 +1449,13 @@ void VitalSidePanel::mouseExit(const MouseEvent& e) {
 void VitalSidePanel::mouseUp(const MouseEvent& e) {
   auto pos = e.getEventRelativeTo(this).getPosition();
 
-  // Mic icon click — toggle talk recording
-  if (!mic_icon_bounds_.isEmpty() && mic_icon_bounds_.contains(pos)) {
-    if (recording_mode_ == kRecordingTalk) {
+  // Action circle click — send, stop recording, or start talk recording
+  if (!action_button_bounds_.isEmpty() && action_button_bounds_.contains(pos)) {
+    if (action_button_mode_ == kActionSend) {
+      submitMessage();
+      for (Listener* listener : listeners_)
+        listener->sidePanelButtonClicked();
+    } else if (action_button_mode_ == kActionStop) {
       stopRecording();
     } else {
       if (recording_mode_ == kRecordingVoiceChat)

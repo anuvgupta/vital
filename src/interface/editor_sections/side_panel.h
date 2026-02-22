@@ -107,6 +107,7 @@ public:
     // TextEditor::Listener
     void textEditorReturnKeyPressed(TextEditor &editor) override;
     void textEditorEscapeKeyPressed(TextEditor &editor) override;
+    void textEditorTextChanged(TextEditor &editor) override;
 
     // ScrollBar::Listener
     void scrollBarMoved(ScrollBar *scrollBar, double newRangeStart) override;
@@ -171,6 +172,7 @@ private:
     void setScrollBarRange();
     void paintChatMessages(Graphics &g);
     void updateVoiceChatButtonColors();
+    void updateActionButtonState();
 
     std::vector<Listener *> listeners_;
     std::unique_ptr<OpenGlTextEditor> prompt_editor_;
@@ -199,10 +201,16 @@ private:
     // Voice recording state
     std::unique_ptr<MicrophoneCapture> mic_capture_;
     std::unique_ptr<OpenGlQuad> voice_chat_recording_indicator_;
+    enum ActionButtonMode { kActionMic, kActionSend, kActionStop };
+
     std::unique_ptr<PlainShapeComponent> mic_icon_shape_;
+    std::unique_ptr<PlainShapeComponent> send_icon_shape_;
+    std::unique_ptr<PlainShapeComponent> stop_icon_shape_;
+    std::unique_ptr<OpenGlQuad> action_circle_bg_;
     std::unique_ptr<OpenGlQuad> mic_recording_indicator_;
-    Rectangle<int> mic_icon_bounds_;
-    bool mic_icon_hovered_ = false;
+    Rectangle<int> action_button_bounds_;
+    bool action_button_hovered_ = false;
+    ActionButtonMode action_button_mode_ = kActionMic;
     RecordingMode recording_mode_ = kRecordingNone;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VitalSidePanel)
