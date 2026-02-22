@@ -1,2 +1,5 @@
 # Line ending changes (CRLF committed from Windows)
 deefbef7857d8d30c436fa9de21a0ce3b6aa0420
+
+# Normalize line endings back to LF
+dc14501d7f52fd3cb0ae9bf9062b59a9b1658230
