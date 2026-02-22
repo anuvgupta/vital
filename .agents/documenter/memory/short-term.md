@@ -1,27 +1,23 @@
 # Documenter Agent's Short-Term Memory
 
-## Latest Task: Fix Multi-Action One-Shotting & Invalid Model ID (2026-02-21)
+## Latest Task: Enhance splitResponseText for All JSON Formats (2026-02-21)
 
-Post-testing bug fixes for token cost reduction work:
+Enhanced response text splitting to handle all 3 JSON response formats from the LLM:
 
-### Bug 1: Invalid Sonnet Model ID
-- **Problem**: `kModelSonnet = "claude-sonnet-4-5-20241022"` doesn't exist (fabricated date)
-- **When caught**: After switching router to Sonnet, API returned "Unknown model" 404
-- **Root cause**: Constant created early, never validated, never used until router switch
-- **Fix**: Updated to `claude-sonnet-4-5-20250929` in `src/common/claude_api_client.cpp`
+### The 3 Response Formats
+1. **Pure JSON, no fences** — `{"settings":{"osc_2_on":1.0}}` — was leaking into history verbatim
+2. **Text + JSON with fences** — `"Here's the change:\n```json\n{...}\n```"` — already handled
+3. **Text + JSON without fences** — `"I'll fix that.\n\n{"settings":{...}}"` — was leaking into history AND displayed raw to user
 
-### Bug 2: Multi-Action One-Shotting
-- **Problem**: LLM saw full original message in history with first sub-action, completed everything at once
-- **Symptoms**: Sub-actions 2+ returned "already done" text, wasting tokens
-- **Root cause**: Line 1180 `addToHistory("user", message)` before sub-actions
-- **Fix**: Removed line 1180, removed `cleanupSubActionHistory()` method, removed `pre_multi_action_history_size_` tracking member
-- **Result**: Sub-actions stay in history as execution record; each runs independently
+### Changes Made
+- **Enhanced function** in `src/common/claude_api_client.cpp`: Added detection for pure JSON (trimmed response starts with `{`) and inline JSON (find `{"settings"` substring after text) after existing fence detection logic
+- **Renamed** from `extractFenceContent()` → `splitResponseText()` since function now does more than fence extraction
+- **Updated 4 call sites**:
+  - `src/common/claude_api_client.h` — declaration + comment
+  - `src/interface/editor_sections/full_interface.cpp` — 1 call site + comment
+  - (2 others implicitly via header include)
 
-### Files Modified
-- `src/common/claude_api_client.cpp`: Fixed model ID, removed cleanup method
-- `src/common/claude_api_client.h`: Removed cleanup declaration
-- `src/interface/editor_sections/full_interface.cpp`: Removed line 1180 call, removed cleanup calls and member resets
-- `src/interface/editor_sections/full_interface.h`: Removed member declaration
-
-### Key Learning
-Model IDs must always be validated against official API docs. Never invent dates. When adding code paths that use old constants, revalidate them.
+### Why This Matters
+- When expanding function scope beyond original name, rename it to match actual behavior
+- `extractFenceContent` was misleading once it handled raw JSON and inline JSON too
+- No changes needed at call sites — downstream consumers already handled textOut/jsonOut split correctly

@@ -53,9 +53,9 @@ class ClaudeApiClient {
 
     void clearConversation();
 
-    // Splits a response into plain text and the content inside the first ``` fence.
-    // If no fence is found, textOut is empty and jsonOut is empty.
-    static void extractFenceContent(const String& response, String& textOut, String& jsonOut);
+    // Splits a response into plain text and JSON portions.
+    // Handles code fences, raw JSON, and inline JSON without fences.
+    static void splitResponseText(const String& response, String& textOut, String& jsonOut);
     void truncateHistoryTo(int size);
 
     int getHistorySize() const { return (int)conversation_history_.size(); }

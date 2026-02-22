@@ -260,36 +260,54 @@ void ClaudeApiClient::truncateHistoryTo(int size) {
 }
 
 
-void ClaudeApiClient::extractFenceContent(const String& response, String& textOut, String& jsonOut) {
+void ClaudeApiClient::splitResponseText(const String& response, String& textOut, String& jsonOut) {
   textOut = String();
   jsonOut = String();
 
+  // --- Case 2: code fences ---
   int fenceStart = response.indexOf(String("```"));
-  if (fenceStart < 0)
-    return;
+  if (fenceStart >= 0) {
+    textOut = response.substring(0, fenceStart).trim();
 
-  textOut = response.substring(0, fenceStart).trim();
+    int contentStart = response.substring(fenceStart).indexOf(String("\n"));
+    if (contentStart < 0)
+      return;
 
-  int contentStart = response.substring(fenceStart).indexOf(String("\n"));
-  if (contentStart < 0)
-    return;
+    contentStart += fenceStart + 1;
+    int fenceEnd = response.substring(contentStart).indexOf(String("```"));
+    if (fenceEnd < 0) {
+      jsonOut = response.substring(contentStart).trim();
+      return;
+    }
 
-  contentStart += fenceStart + 1;
-  int fenceEnd = response.substring(contentStart).indexOf(String("```"));
-  if (fenceEnd < 0) {
-    // Unclosed fence — treat content after fence as JSON, keep only text before fence
-    jsonOut = response.substring(contentStart).trim();
+    fenceEnd += contentStart;
+    jsonOut = response.substring(contentStart, fenceEnd).trim();
+
+    String trailing = response.substring(fenceEnd + 3).trim();
+    if (trailing.isNotEmpty()) {
+      if (textOut.isNotEmpty())
+        textOut += " ";
+      textOut += trailing;
+    }
     return;
   }
 
-  fenceEnd += contentStart;
-  jsonOut = response.substring(contentStart, fenceEnd).trim();
+  // --- No fences found — check for raw/inline JSON ---
+  String trimmed = response.trim();
 
-  String trailing = response.substring(fenceEnd + 3).trim();
-  if (trailing.isNotEmpty()) {
-    if (textOut.isNotEmpty())
-      textOut += " ";
-    textOut += trailing;
+  // Case 1: pure raw JSON (starts with '{')
+  if (trimmed.startsWith("{")) {
+    jsonOut = trimmed;
+    return;
+  }
+
+  // Case 3: text followed by inline JSON without fences
+  int jsonStart = response.indexOf("{\"settings\"");
+  if (jsonStart < 0)
+    jsonStart = response.indexOf("{\n\"settings\"");
+  if (jsonStart > 0) {
+    textOut = response.substring(0, jsonStart).trim();
+    jsonOut = response.substring(jsonStart).trim();
   }
 }
 
@@ -492,7 +510,7 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
   // Store only the text portion in history — strip the JSON fence since the preset
   // state is always re-injected fresh at the start of each turn anyway.
   String textOnly, jsonOnly;
-  extractFenceContent(responseText, textOnly, jsonOnly);
+  splitResponseText(responseText, textOnly, jsonOnly);
   if (jsonOnly.isNotEmpty())
     addMessage("assistant", textOnly.isNotEmpty() ? textOnly : String("(preset updated)"));
   else

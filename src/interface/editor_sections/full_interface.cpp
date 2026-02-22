@@ -1263,10 +1263,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       return;
     }
 
-    // Extract JSON from markdown code fences if present, preserving surrounding text
+    // Split response into text and JSON portions
     String jsonBlock;
     String textMessage;
-    ClaudeApiClient::extractFenceContent(response, textMessage, jsonBlock);
+    ClaudeApiClient::splitResponseText(response, textMessage, jsonBlock);
 
     // Try to parse JSON (from code fence, or the whole response as fallback)
     String jsonToParse = jsonBlock.isNotEmpty() ? jsonBlock : response.trim();
