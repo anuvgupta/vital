@@ -10,7 +10,6 @@
 
 ### Long-Term
 
-- Add caching to sound design prompt
 - Cancel message functionality
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Optimize router to also complete preset updates for single actions (see doc in .plans/prompts)
@@ -56,6 +55,7 @@
 ### Open
 
 ### Done
+- Stale API responses corrupting UI after edit-mode restore — added generation counter to invalidate in-flight async callbacks on restore/cancel
 - Clear button is present when the chat is empty
 - Restore function not working after first restore and cancel — checkpoint files deleted during restore, stale objects restored on cancel; fixed with `delete_files` param, `exitEditMode()` helper, and multiple secondary fixes
 - Conversation history context pollution -- stale preset JSON and assistant JSON fences accumulating in history, wasting tokens

@@ -1094,9 +1094,10 @@ void FullInterface::sidePanelMessageSubmitted(const String& message) {
 void FullInterface::routeAndExecute(const String& message) {
   VitalSidePanel* panel = side_panel_.get();
 
-  ClaudeApiClient::instance().routeMessage(message, [this, panel, message](
+  int gen = api_request_generation_;
+  ClaudeApiClient::instance().routeMessage(message, [this, panel, message, gen](
       const StringArray& actions, bool sound_design_required, bool success, const String& error) {
-    if (!panel) {
+    if (!panel || gen != api_request_generation_) {
       api_request_in_flight_ = false;
       is_sound_design_reroute_ = false;
       queued_messages_.clear();
@@ -1128,8 +1129,8 @@ void FullInterface::routeAndExecute(const String& message) {
       }
 
       ClaudeApiClient::instance().sendSoundDesignTranslation(message,
-        [this, panel, message](const String& translation, bool translationSuccess) {
-          if (!panel) {
+        [this, panel, message, gen](const String& translation, bool translationSuccess) {
+          if (!panel || gen != api_request_generation_) {
             api_request_in_flight_ = false;
             is_sound_design_reroute_ = false;
             queued_messages_.clear();
@@ -1235,9 +1236,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
     preset_json = String(state.dump());
   }
 
-  ClaudeApiClient::instance().sendMessages(messages, [panel, this](const String& response, bool success) {
+  int gen = api_request_generation_;
+  ClaudeApiClient::instance().sendMessages(messages, [panel, this, gen](const String& response, bool success) {
     // This callback is already on the message thread (handled by ClaudeApiClient)
-    if (!panel) {
+    if (!panel || gen != api_request_generation_) {
       api_request_in_flight_ = false;
       queued_messages_.clear();
       return;
@@ -1446,6 +1448,7 @@ bool FullInterface::sidePanelRestoreRequested(int message_index) {
   panel->removeCheckpointsAfter(message_index - 1, false);
 
   // Cancel any in-flight API requests and multi-action state
+  ++api_request_generation_;
   api_request_in_flight_ = false;
   queued_messages_.clear();
   pending_actions_.clear();
@@ -1484,6 +1487,7 @@ void FullInterface::sidePanelCancelEditRequested(const File& checkpoint, int api
   ClaudeApiClient::instance().truncateHistoryTo(api_history_size);
 
   // Cancel any in-flight API requests and multi-action state
+  ++api_request_generation_;
   api_request_in_flight_ = false;
   queued_messages_.clear();
   pending_actions_.clear();

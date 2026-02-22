@@ -68,6 +68,13 @@
 - The 296KB SYNTHESIZER_COOKBOOK was the single largest token contributor per sound design call; was renamed to SOUND_DESIGN_GUIDE.md and emptied, needs a compact replacement
 - Router calls are cheap (~1-5k tokens) and can use Sonnet instead of Opus since they only classify via tool_use with ~50-100 output tokens
 
+### Async Callback Invalidation Pattern
+- Generation counter (`api_request_generation_`) on FullInterface invalidates in-flight async callbacks
+- Pattern: capture counter before lambda, check inside lambda, bump counter at invalidation points
+- Invalidation points: sidePanelRestoreRequested(), sidePanelCancelEditRequested()
+- Applies to: routeAndExecute() router callback, sound design translation callback, sendApiRequest() callback
+- This pattern is reusable anywhere async work can be superseded by user state changes
+
 ### JSON Response Handling Pattern
 - LLM can return preset JSON in 3 formats: pure JSON (no fences), fenced JSON (markdown code block), inline JSON (text + unbraced JSON)
 - `splitResponseText()` in ClaudeApiClient detects all 3: checks if trimmed response starts with `{`, looks for ```json fence, then searches for `{"settings"` substring

@@ -181,6 +181,13 @@
     - **Solution**: Always verify model IDs against current Anthropic API documentation when creating or updating constants. The fix: `kModelSonnet = "claude-sonnet-4-5-20250929"`, `kModelOpus = "claude-opus-4-5-20251101"`. Use these as the new defaults and never invent dates.
     - Files: `src/common/claude_api_client.cpp` (constants at top of file)
 
+- **Stale API responses corrupt UI after edit-mode restore**:
+    - When a user clicks "restore" on a conversation checkpoint while an API request is in-flight, the async callback still fires and appends response messages to the now-truncated chat UI, corrupting the restored state.
+    - **Root cause**: Async callbacks (in `routeAndExecute()`, sound design translation, `sendApiRequest()`) capture references to UI state but have no way to know the conversation was invalidated between request dispatch and response delivery.
+    - **Solution**: Added a generation counter (`api_request_generation_`) to `FullInterface`. Each async callback captures the current generation value at creation time. Invalidation points (`sidePanelRestoreRequested()`, `sidePanelCancelEditRequested()`) bump the counter. When a callback fires, it compares its captured generation against the current value and silently discards the response if they don't match.
+    - **Pattern**: Generation counter for async callback invalidation — capture before lambda, check inside lambda, bump at invalidation points. Useful anywhere async work can be superseded by user actions.
+    - Files: `src/interface/editor_sections/full_interface.h`, `src/interface/editor_sections/full_interface.cpp`
+
 - **Multi-action one-shotting from parent message in conversation history**:
     - When multi-action flows split a request into sub-actions (e.g., "blippy jangly synth" → sound design translation → 3 sequential parameter changes), the LLM received the full original message (or translation text) in `conversation_history_` alongside the first sub-action. It read the full scope upfront and completed all steps on the first API call, returning "already done" text for subsequent sub-actions (massive token waste).
     - **Root cause**: `FullInterface::executeNextAction()` called `addToHistory("user", message)` at line 1180 in `full_interface.cpp` before executing sub-actions. This stored the full original message in history, giving the LLM context it shouldn't have for sequential execution.

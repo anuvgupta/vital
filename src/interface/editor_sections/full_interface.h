@@ -238,6 +238,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     bool needs_download_;
     bool api_request_in_flight_ = false;
     bool is_sound_design_reroute_ = false;
+    int api_request_generation_ = 0;
     StringArray queued_messages_;
     StringArray pending_actions_;
     int total_actions_ = 0;
