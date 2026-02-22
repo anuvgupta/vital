@@ -125,6 +125,7 @@ public:
     void submitMessage();
     void addMessage(const String &text, ChatMessage::Type type);
     void clearThinkingMessage();
+    void removeStatusMessage(const String& text);
     void updateStatusMessage(const String& text, ChatMessage::Type newType = ChatMessage::kSystem);
     void addResponseMessage(const String &text);
     void clearChat();

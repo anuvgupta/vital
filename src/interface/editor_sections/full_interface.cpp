@@ -1250,9 +1250,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       panel->clearThinkingMessage();
 
     if (!success) {
-      if (is_multi_action)
+      if (is_multi_action) {
+        panel->removeStatusMessage("Breaking it down...");
         panel->updateStatusMessage("Error: " + response);
-      else
+      } else
         panel->addResponseMessage(response);
       // On failure, clear multi-action state, queue, and stop
       pending_actions_.clear();
@@ -1298,7 +1299,8 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
                 return;
               }
 
-              // Final step
+              // Final step — remove "Breaking it down..." and replace step with result
+              panel->removeStatusMessage("Breaking it down...");
               String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
               panel->updateStatusMessage(msg);
 
@@ -1332,9 +1334,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
             return;
           }
         }
-        if (is_multi_action)
+        if (is_multi_action) {
+          panel->removeStatusMessage("Breaking it down...");
           panel->updateStatusMessage("Failed to load preset from response.");
-        else
+        } else
           panel->addResponseMessage("Failed to load preset from response.");
         pending_actions_.clear();
         total_actions_ = 0;
@@ -1359,7 +1362,8 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
         return;
       }
 
-      // Final step — show text
+      // Final step — remove "Breaking it down..." and show text
+      panel->removeStatusMessage("Breaking it down...");
       panel->updateStatusMessage(displayText);
 
       // All multi-actions done

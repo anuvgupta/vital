@@ -49,6 +49,7 @@
 
 ## Bugs
 - Clear button is present when the chat is empty
+- Sometimes prints out json data / examples
 
 ### Open
 

@@ -892,6 +892,18 @@ void VitalSidePanel::clearThinkingMessage() {
   }
 }
 
+void VitalSidePanel::removeStatusMessage(const String& text) {
+  // Scan backwards and remove the first matching system message
+  for (int i = (int)messages_.size() - 1; i >= 0; --i) {
+    if (messages_[i].type == ChatMessage::kSystem && messages_[i].text == text) {
+      messages_.erase(messages_.begin() + i);
+      layoutMessages();
+      repaintBackground();
+      return;
+    }
+  }
+}
+
 void VitalSidePanel::updateStatusMessage(const String& text, ChatMessage::Type newType) {
   if (!messages_.empty()) {
     auto& last = messages_.back();
