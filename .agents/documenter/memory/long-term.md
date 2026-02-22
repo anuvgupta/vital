@@ -58,7 +58,10 @@
 - After translation, output is re-routed through routeAndExecute() which splits into sub-actions
 - Infinite loop guard: `is_sound_design_reroute_` flag on FullInterface prevents re-triggering sound design path
 - kMaxTokens must be large enough (4096) for preset generation JSON diffs; truncated JSON causes raw text display in chat
-- Resource files (SOUND_DESIGN_PROMPT.md, SOUND_DESIGN_GUIDE.md) must be copied by ALL platform build scripts
+- Resource files (SOUND_DESIGN_PROMPT.md, SOUND_DESIGN_GUIDE.md, ROUTER_PROMPT.md) must be copied by ALL platform build scripts
+- All prompt files now live in `prompts/system_prompts/` (moved from `agents/vital-assistant/`)
+- Router system prompt is externalized to ROUTER_PROMPT.md and loaded at runtime via `loadRouterPrompt()` (same 3-path search: bundle Resources, exe-adjacent, data dir)
+- Router prompt includes a "VITAL TECHNICAL TERMS" reference listing all parameter categories/names for accurate technical vs non-technical classification
 
 ### API Cost Analysis Pattern
 - Request logs can be analyzed from `api_requests.log` in user data directory (added via `logRequest()` method)
