@@ -19,7 +19,7 @@
 
 namespace {
   const String kApiEndpoint = "https://api.anthropic.com/v1/messages";
-  const String kModelSonnet = "claude-sonnet-4-5-20241022";
+  const String kModelSonnet = "claude-sonnet-4-5-20250929";
   const String kModelOpus = "claude-opus-4-5-20251101";
   const String kModel = kModelOpus;
   const int kMaxTokens = 4096;
