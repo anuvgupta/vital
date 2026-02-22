@@ -27,31 +27,6 @@ namespace {
   const int kSoundDesignMaxTokens = 1024;
   const int kTimeoutMs = 30000;
 
-  const String kRouterSystemPrompt =
-    "You are a routing assistant for a synthesizer preset modification tool. "
-    "Your job is to analyze the user's request and decide how to handle it.\n\n"
-    "Rules:\n"
-    "- Simple requests (up to ~3 technical changes, a question, or straightforward parameter tweaks): "
-    "return as a single action with sound_design_required=false.\n"
-    "- Non-technical or vague sound descriptions (e.g. 'make it sound blippy', 'create an 808 bass', "
-    "'warm analog pad', 'massive supersaw lead', 'something dark and moody', 'jangly pluck', "
-    "'subby bass', 'buzzy lead'): set sound_design_required=true with an empty actions array. "
-    "These need sound design translation before parameter changes can be determined.\n"
-    "- Technical requests with 4+ distinct changes (e.g. numbered lists of parameter adjustments, "
-    "or requests touching oscillators AND filters AND envelopes AND effects): ALWAYS split into "
-    "multiple actions with 2-3 changes each. Set sound_design_required=false. "
-    "The downstream LLM has a limited output budget and CANNOT handle many changes at once.\n"
-    "- Simple technical requests (1-3 changes): single action, sound_design_required=false.\n"
-    "- Questions or non-modification requests: single action, sound_design_required=false.\n"
-    "- Maximum 5 actions.\n\n"
-    "IMPORTANT: When you see a numbered list of technical instructions (e.g. from a sound design "
-    "breakdown), you MUST split them into multiple actions. Group related items (e.g. oscillator "
-    "setup in one action, filter + envelope in another, effects in another). Never send more than "
-    "3 distinct parameter areas in a single action.\n\n"
-    "Use sound_design_required=true when the user describes a SOUND they want rather than "
-    "specific PARAMETERS to change. If they mention specific knobs, filters, oscillators, "
-    "or parameter values, that's technical — use actions. If they describe a vibe, texture, "
-    "genre, or instrument sound, that needs sound design translation.";
 }
 
 ClaudeApiClient::ClaudeApiClient() { }
@@ -77,6 +52,9 @@ bool ClaudeApiClient::initialize() {
     DBG("ClaudeApiClient: Failed to load preset schema");
   else if (system_prompt_.isNotEmpty())
     system_prompt_ += "\n\n" + preset_schema_;
+
+  if (!loadRouterPrompt())
+    DBG("ClaudeApiClient: Failed to load router prompt");
 
   if (!loadSoundDesignPrompt())
     DBG("ClaudeApiClient: Failed to load sound design prompt");
@@ -163,6 +141,31 @@ bool ClaudeApiClient::loadPresetSchema() {
   preset_schema_ = prompt_file.loadFileAsString().trim();
   DBG("ClaudeApiClient: Loaded preset schema (" + String(preset_schema_.length()) + " chars)");
   return preset_schema_.isNotEmpty();
+}
+
+bool ClaudeApiClient::loadRouterPrompt() {
+  File executable = File::getSpecialLocation(File::currentExecutableFile);
+  File prompt_file;
+
+  File resources_dir = executable.getParentDirectory().getParentDirectory().getChildFile("Resources");
+  prompt_file = resources_dir.getChildFile("ROUTER_PROMPT.md");
+
+  if (!prompt_file.existsAsFile())
+    prompt_file = executable.getParentDirectory().getChildFile("ROUTER_PROMPT.md");
+
+  if (!prompt_file.existsAsFile()) {
+    File app_data = LoadSave::getDataDirectory();
+    prompt_file = app_data.getChildFile("ROUTER_PROMPT.md");
+  }
+
+  if (!prompt_file.existsAsFile()) {
+    DBG("ClaudeApiClient: Router prompt file not found");
+    return false;
+  }
+
+  router_prompt_ = prompt_file.loadFileAsString().trim();
+  DBG("ClaudeApiClient: Loaded router prompt (" + String(router_prompt_.length()) + " chars)");
+  return router_prompt_.isNotEmpty();
 }
 
 bool ClaudeApiClient::loadSoundDesignPrompt() {
@@ -546,7 +549,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
   {
     DynamicObject::Ptr systemBlock = new DynamicObject();
     systemBlock->setProperty("type", "text");
-    systemBlock->setProperty("text", kRouterSystemPrompt);
+    systemBlock->setProperty("text", router_prompt_);
     Array<var> systemArray;
     systemArray.add(var(systemBlock.get()));
     requestBody->setProperty("system", systemArray);

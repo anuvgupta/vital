@@ -241,8 +241,8 @@ if [ "$BUILD_SUCCESS" = true ] && [ -d "$APP_PATH" ]; then
     echo_status "Build successful: $APP_PATH"
 
     # Copy resource files into all existing app bundles (Debug and Release)
-    RESOURCE_FILES=("SYSTEM_PROMPT.md" "PRESET_SCHEMA.md" "SOUND_DESIGN_PROMPT.md" "SOUND_DESIGN_GUIDE.md")
-    RESOURCE_SRC_DIR="$SCRIPT_DIR/agents/vital-assistant"
+    RESOURCE_FILES=("SYSTEM_PROMPT.md" "PRESET_SCHEMA.md" "ROUTER_PROMPT.md" "SOUND_DESIGN_PROMPT.md" "SOUND_DESIGN_GUIDE.md")
+    RESOURCE_SRC_DIR="$SCRIPT_DIR/prompts/system_prompts"
 
     # Collect all Vial.app paths (DerivedData + local build dir, both configs)
     APP_BUNDLES=()

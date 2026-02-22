@@ -13,8 +13,6 @@
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Optimize router to also complete preset updates for single actions (see doc in .plans/prompts)
 - Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
-    
-
 
 ### Deprioritized
 - Migrate to wispr flow for voice to text

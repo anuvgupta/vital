@@ -89,6 +89,7 @@ class ClaudeApiClient {
 
     bool loadSystemPrompt();
     bool loadPresetSchema();
+    bool loadRouterPrompt();
     bool loadSoundDesignPrompt();
     bool loadCookbook();
 
@@ -96,6 +97,7 @@ class ClaudeApiClient {
     std::string api_key_;
     String system_prompt_;
     String preset_schema_;
+    String router_prompt_;
     String sound_design_prompt_;
     bool initialized_ = false;
     bool internet_access_ = false;
