@@ -2,9 +2,9 @@
 
 ## Status: Ready for next task
 
-Last completed: Externalize router prompt + add parameter reference (2026-02-21)
-- Moved all prompts from agents/vital-assistant/ to prompts/system_prompts/
-- New file: ROUTER_PROMPT.md with Vital technical terms reference
-- Updated build scripts to copy from new location
-- Files: claude_api_client.h, claude_api_client.cpp, ROUTER_PROMPT.md, build_*.sh/bat
-- Updated: CHANGELOG.md, STEERING.md
+Last completed: Replace SPEAK button with mic icon overlay (2026-02-22)
+- Removed talk_button_ from side panel, added PlainShapeComponent mic icon on textarea
+- Button row simplified: VOICE CHAT | SEND (was VOICE CHAT | TALK | SEND)
+- Voice chat silence timeout reduced 20s -> 15s
+- Key bugs: paintBackground covered by GL, mouse event forwarding, coordinate spaces, alpha blending, cursor
+- Files: side_panel.h, side_panel.cpp, paths.h

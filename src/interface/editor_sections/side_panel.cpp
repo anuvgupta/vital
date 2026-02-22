@@ -38,7 +38,6 @@ static constexpr int kQuoteBorderWidth = 3;
 static constexpr int kQuoteIndent = 10;
 static constexpr float kHeadingScale[] = { 1.5f, 1.3f, 1.15f, 1.0f, 0.9f, 0.85f };
 
-static const String kTalkButtonLabel = "SPEAK";
 static const String kVoiceChatButtonLabel = "VOICE CHAT";
 static const String kStopButtonLabel = "STOP";
 static const String kSubmitButtonText = "SEND";
@@ -197,17 +196,13 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   prompt_editor_->setMultiLine(true, true);
   prompt_editor_->setReturnKeyStartsNewLine(false);  // Enter submits, Shift+Enter for newline
   prompt_editor_->addListener(this);
+  prompt_editor_->addMouseListener(this, false);
 #endif
 
   action_button_ = std::make_unique<OpenGlToggleButton>("Cook");
   addButton(action_button_.get());
   action_button_->setUiButton(true);
   action_button_->setText(kSubmitButtonText);
-
-  talk_button_ = std::make_unique<OpenGlToggleButton>("Talk");
-  addButton(talk_button_.get());
-  talk_button_->setUiButton(true);
-  talk_button_->setText(kTalkButtonLabel);
 
   voice_chat_button_ = std::make_unique<OpenGlToggleButton>("VoiceChat");
   addButton(voice_chat_button_.get());
@@ -227,15 +222,22 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
 
   mic_capture_ = std::make_unique<MicrophoneCapture>();
 
-  talk_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
-  addOpenGlComponent(talk_recording_indicator_.get());
-  talk_recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
-  talk_recording_indicator_->setActive(false);
-
   voice_chat_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
   addOpenGlComponent(voice_chat_recording_indicator_.get());
   voice_chat_recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
   voice_chat_recording_indicator_->setActive(false);
+
+  mic_icon_shape_ = std::make_unique<PlainShapeComponent>("mic_icon");
+  addOpenGlComponent(mic_icon_shape_.get());
+  mic_icon_shape_->setShape(Paths::microphoneIcon2());
+  mic_icon_shape_->setUseAlpha(true);
+  mic_icon_shape_->setColor(Colours::white.withAlpha(0.5f));
+  mic_icon_shape_->setActive(true);
+
+  mic_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
+  addOpenGlComponent(mic_recording_indicator_.get());
+  mic_recording_indicator_->setColor(Colours::red.withAlpha(0.9f));
+  mic_recording_indicator_->setActive(false);
 
   setSkinOverride(Skin::kNone);
 
@@ -478,24 +480,14 @@ void VitalSidePanel::resized() {
   clear_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
   clear_button_->getGlComponent()->text().redrawImage(true);
 
-  // Button row at the bottom: VOICE CHAT | TALK | SEND
-  // VOICE CHAT (big, half width) | TALK (small) | SEND (small)
+  // Button row at the bottom: VOICE CHAT | SEND
   int button_y = getHeight() - padding - button_height;
   int button_gap = widget_margin;
-  int voice_chat_width = (button_width - 2 * button_gap) / 2;
-  int side_width = button_width - voice_chat_width - 2 * button_gap;
-  int talk_width = side_width / 2;
-  int send_width = side_width - talk_width;
+  int voice_chat_width = (int)((button_width - button_gap) * 0.6f);
+  int send_width = button_width - voice_chat_width - button_gap;
 
   int voice_chat_x = padding;
-  int talk_x = voice_chat_x + voice_chat_width + button_gap;
-  int send_x = talk_x + talk_width + button_gap;
-
-  talk_button_->setBounds(talk_x, button_y, talk_width, button_height);
-  talk_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
-  talk_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
-  talk_button_->getGlComponent()->text().redrawImage(true);
-  updateTalkButtonColors();
+  int send_x = voice_chat_x + voice_chat_width + button_gap;
 
   voice_chat_button_->setBounds(voice_chat_x, button_y, voice_chat_width, button_height);
   voice_chat_button_->getGlComponent()->text().setTextSize(size_ratio_ * 12.5f);
@@ -508,14 +500,10 @@ void VitalSidePanel::resized() {
   action_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
   action_button_->getGlComponent()->text().redrawImage(true);
 
-  // Recording indicators (small red dots above TALK/VOICE CHAT buttons)
+  // Voice chat recording indicator (small red dot above VOICE CHAT button)
   int indicator_size = 8;
-  int talk_ind_x = talk_x + talk_width - indicator_size - 6;
-  int talk_ind_y = button_y - indicator_size - 4;
-  talk_recording_indicator_->setBounds(talk_ind_x, talk_ind_y, indicator_size, indicator_size);
-
-  int vc_ind_x = voice_chat_x + voice_chat_width - indicator_size - 6;
-  int vc_ind_y = button_y - indicator_size - 4;
+  int vc_ind_x = voice_chat_x + voice_chat_width - indicator_size + 2;
+  int vc_ind_y = button_y - 2;
   voice_chat_recording_indicator_->setBounds(vc_ind_x, vc_ind_y, indicator_size, indicator_size);
 
   // Textarea above the button
@@ -537,6 +525,22 @@ void VitalSidePanel::resized() {
     prompt_editor_->redoImage();
   }
 #endif
+
+  // Mic icon overlay at bottom-left of textarea
+  {
+    int icon_size = (int)(20.0f * size_ratio_);
+    int icon_padding = (int)(6.0f * size_ratio_);
+    int icon_x = padding + icon_padding;
+    int icon_y = textarea_y + textarea_height - icon_size - icon_padding - (int)(4.0f * size_ratio_);
+    mic_icon_bounds_ = Rectangle<int>(icon_x, icon_y, icon_size, icon_size);
+    mic_icon_shape_->setBounds(icon_x, icon_y, icon_size, icon_size);
+    mic_icon_shape_->redrawImage(true);
+
+    int ind_size = 8;
+    int ind_x = icon_x + icon_size - ind_size + 2;
+    int ind_y = icon_y - 2;
+    mic_recording_indicator_->setBounds(ind_x, ind_y, ind_size, ind_size);
+  }
 
   // Cancel edit button overlapping top-right of textarea
   if (cancel_edit_button_) {
@@ -579,15 +583,6 @@ void VitalSidePanel::buttonClicked(Button* clicked_button) {
   }
   else if (clicked_button == cancel_edit_button_.get()) {
     cancelEditMode();
-  }
-  else if (clicked_button == talk_button_.get()) {
-    if (recording_mode_ == kRecordingTalk) {
-      stopRecording();
-    } else {
-      if (recording_mode_ == kRecordingVoiceChat)
-        stopRecording();
-      startTalkRecording();
-    }
   }
   else if (clicked_button == voice_chat_button_.get()) {
     if (recording_mode_ == kRecordingVoiceChat) {
@@ -711,15 +706,12 @@ void VitalSidePanel::startTalkRecording() {
   }
 
   recording_mode_ = kRecordingTalk;
-  talk_button_->setText(kStopButtonLabel);
-  talk_button_->getGlComponent()->text().redrawImage(true);
-  updateTalkButtonColors();
-  talk_recording_indicator_->setActive(true);
+  mic_recording_indicator_->setActive(true);
   addMessage("Listening...", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::startVoiceChatRecording() {
-  static constexpr float kVoiceChatSilenceTimeout = 20.0f;
+  static constexpr float kVoiceChatSilenceTimeout = 15.0f;
 
   DeepgramClient& dg = DeepgramClient::instance();
   if (!dg.isInitialized()) {
@@ -730,7 +722,7 @@ void VitalSidePanel::startVoiceChatRecording() {
   // Show confirmation popup (cross-platform native dialog)
   AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
     "Voice Chat",
-    "Voice chat will stay active until you press STOP or 20 seconds of silence is detected.");
+    "Voice chat will stay active until you press STOP or 15 seconds of silence is detected.");
 
   bool connected = dg.connect(
     [this](const String& transcript, bool is_final) {
@@ -808,9 +800,7 @@ void VitalSidePanel::stopRecording() {
   DeepgramClient::instance().disconnect();
 
   if (recording_mode_ == kRecordingTalk) {
-    talk_button_->setText(kTalkButtonLabel);
-    talk_button_->getGlComponent()->text().redrawImage(true);
-    talk_recording_indicator_->setActive(false);
+    // Mic icon will update on next repaint
   }
   else if (recording_mode_ == kRecordingVoiceChat) {
     voice_chat_button_->setText(kVoiceChatButtonLabel);
@@ -837,7 +827,7 @@ void VitalSidePanel::stopRecording() {
   }
 
   recording_mode_ = kRecordingNone;
-  updateTalkButtonColors();
+  mic_recording_indicator_->setActive(false);
   updateVoiceChatButtonColors();
 }
 
@@ -1002,19 +992,6 @@ void VitalSidePanel::setScrollBarRange() {
   int visible_height = chat_bounds_.getHeight();
   scroll_bar_->setRangeLimits(0.0, std::max(total_content_height_, visible_height));
   scroll_bar_->setCurrentRange(scroll_position_, visible_height, dontSendNotification);
-}
-
-void VitalSidePanel::updateTalkButtonColors() {
-  if (recording_mode_ == kRecordingTalk) {
-    talk_button_->setColour(Skin::kUiActionButton, findColour(Skin::kUiButton, true));
-    talk_button_->setColour(Skin::kUiActionButtonHover, findColour(Skin::kUiButtonHover, true));
-    talk_button_->setColour(Skin::kUiActionButtonPressed, findColour(Skin::kUiButtonPressed, true));
-  } else {
-    talk_button_->removeColour(Skin::kUiActionButton);
-    talk_button_->removeColour(Skin::kUiActionButtonHover);
-    talk_button_->removeColour(Skin::kUiActionButtonPressed);
-  }
-  talk_button_->getGlComponent()->setColors();
 }
 
 void VitalSidePanel::clearChat() {
@@ -1326,7 +1303,18 @@ void VitalSidePanel::cancelEditMode() {
 // ============================================================================
 
 void VitalSidePanel::mouseMove(const MouseEvent& e) {
-  if (!chat_bounds_.contains(e.getPosition())) {
+  auto pos = e.getEventRelativeTo(this).getPosition();
+
+  // Track mic icon hover
+  bool over_mic = !mic_icon_bounds_.isEmpty() && mic_icon_bounds_.contains(pos);
+  if (over_mic != mic_icon_hovered_) {
+    mic_icon_hovered_ = over_mic;
+    mic_icon_shape_->setColor(Colours::white.withAlpha(mic_icon_hovered_ ? 0.85f : 0.5f));
+    if (prompt_editor_)
+      prompt_editor_->setMouseCursor(over_mic ? MouseCursor::NormalCursor : MouseCursor::IBeamCursor);
+  }
+
+  if (!chat_bounds_.contains(pos)) {
     if (hovered_message_index_ != -1) {
       hovered_message_index_ = -1;
       restore_button_bounds_ = {};
@@ -1336,7 +1324,7 @@ void VitalSidePanel::mouseMove(const MouseEvent& e) {
   }
 
   // If mouse is over the restore button, keep the current hover state
-  bool over_button = !restore_button_bounds_.isEmpty() && restore_button_bounds_.contains(e.getPosition());
+  bool over_button = !restore_button_bounds_.isEmpty() && restore_button_bounds_.contains(pos);
   if (over_button) {
     if (!hovering_restore_button_) {
       hovering_restore_button_ = true;
@@ -1349,7 +1337,7 @@ void VitalSidePanel::mouseMove(const MouseEvent& e) {
     repaintBackground();
   }
 
-  int mouse_y = e.getPosition().getY() - chat_bounds_.getY() + scroll_position_;
+  int mouse_y = pos.getY() - chat_bounds_.getY() + scroll_position_;
   int new_hovered = -1;
 
   for (int i = 0; i < (int)messages_.size(); ++i) {
@@ -1368,6 +1356,10 @@ void VitalSidePanel::mouseMove(const MouseEvent& e) {
 }
 
 void VitalSidePanel::mouseExit(const MouseEvent& e) {
+  if (mic_icon_hovered_) {
+    mic_icon_hovered_ = false;
+    mic_icon_shape_->setColor(Colours::white.withAlpha(0.5f));
+  }
   if (hovered_message_index_ != -1 || hovering_restore_button_) {
     hovered_message_index_ = -1;
     hovering_restore_button_ = false;
@@ -1377,10 +1369,24 @@ void VitalSidePanel::mouseExit(const MouseEvent& e) {
 }
 
 void VitalSidePanel::mouseUp(const MouseEvent& e) {
+  auto pos = e.getEventRelativeTo(this).getPosition();
+
+  // Mic icon click — toggle talk recording
+  if (!mic_icon_bounds_.isEmpty() && mic_icon_bounds_.contains(pos)) {
+    if (recording_mode_ == kRecordingTalk) {
+      stopRecording();
+    } else {
+      if (recording_mode_ == kRecordingVoiceChat)
+        stopRecording();
+      startTalkRecording();
+    }
+    return;
+  }
+
   if (hovered_message_index_ < 0 || restore_button_bounds_.isEmpty())
     return;
 
-  if (!restore_button_bounds_.contains(e.getPosition()))
+  if (!restore_button_bounds_.contains(pos))
     return;
 
   enterEditMode(hovered_message_index_);

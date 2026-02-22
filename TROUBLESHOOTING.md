@@ -188,6 +188,13 @@
     - **Pattern**: Generation counter for async callback invalidation — capture before lambda, check inside lambda, bump at invalidation points. Useful anywhere async work can be superseded by user actions.
     - Files: `src/interface/editor_sections/full_interface.h`, `src/interface/editor_sections/full_interface.cpp`
 
+- **Mic icon invisible when drawn in paintBackground() — covered by OpenGL text editor**:
+    - Drawing a microphone icon in `paintBackground()` was invisible because `OpenGlTextEditor` renders in the GL pass on top of the background texture.
+    - **Solution**: Use `PlainShapeComponent` (an `OpenGlImageComponent` subclass) which renders in the GL pass alongside other OpenGL components. Set `setUseAlpha(true)` to enable non-premultiplied alpha blending so the color uniform's alpha channel works for hover effects.
+    - For mouse interaction on overlaid icons inside a text editor: use `prompt_editor_->addMouseListener(this, false)` to forward events, and `e.getEventRelativeTo(this).getPosition()` to convert coordinates to the parent component's space.
+    - To fix cursor staying as I-beam over the icon area, call `prompt_editor_->setMouseCursor()` based on hover state.
+    - Files: `src/interface/editor_sections/side_panel.h`, `src/interface/editor_sections/side_panel.cpp`
+
 - **Multi-action one-shotting from parent message in conversation history**:
     - When multi-action flows split a request into sub-actions (e.g., "blippy jangly synth" → sound design translation → 3 sequential parameter changes), the LLM received the full original message (or translation text) in `conversation_history_` alongside the first sub-action. It read the full scope upfront and completed all steps on the first API call, returning "already done" text for subsequent sub-actions (massive token waste).
     - **Root cause**: `FullInterface::executeNextAction()` called `addToHistory("user", message)` at line 1180 in `full_interface.cpp` before executing sub-actions. This stored the full original message in history, giving the LLM context it shouldn't have for sequential execution.

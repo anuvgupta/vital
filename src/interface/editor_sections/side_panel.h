@@ -19,6 +19,7 @@
 #include "JuceHeader.h"
 #include "synth_section.h"
 #include "open_gl_multi_quad.h"
+#include "open_gl_image_component.h"
 #include "claude_api_client.h"
 #include "deepgram_client.h"
 #include "microphone_capture.h"
@@ -168,13 +169,11 @@ private:
     void scrollToBottom();
     void setScrollBarRange();
     void paintChatMessages(Graphics &g);
-    void updateTalkButtonColors();
     void updateVoiceChatButtonColors();
 
     std::vector<Listener *> listeners_;
     std::unique_ptr<OpenGlTextEditor> prompt_editor_;
     std::unique_ptr<OpenGlToggleButton> action_button_;
-    std::unique_ptr<OpenGlToggleButton> talk_button_;
     std::unique_ptr<OpenGlToggleButton> voice_chat_button_;
     std::unique_ptr<OpenGlToggleButton> clear_button_;
 
@@ -198,8 +197,11 @@ private:
 
     // Voice recording state
     std::unique_ptr<MicrophoneCapture> mic_capture_;
-    std::unique_ptr<OpenGlQuad> talk_recording_indicator_;
     std::unique_ptr<OpenGlQuad> voice_chat_recording_indicator_;
+    std::unique_ptr<PlainShapeComponent> mic_icon_shape_;
+    std::unique_ptr<OpenGlQuad> mic_recording_indicator_;
+    Rectangle<int> mic_icon_bounds_;
+    bool mic_icon_hovered_ = false;
     RecordingMode recording_mode_ = kRecordingNone;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VitalSidePanel)

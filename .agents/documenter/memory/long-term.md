@@ -78,6 +78,14 @@
 - Applies to: routeAndExecute() router callback, sound design translation callback, sendApiRequest() callback
 - This pattern is reusable anywhere async work can be superseded by user state changes
 
+### OpenGL Overlay Pattern (icons on top of OpenGL components)
+- Standard JUCE paint()/paintBackground() content is covered by OpenGL components (OpenGlTextEditor, etc.)
+- To overlay icons on OpenGL components, use PlainShapeComponent (OpenGlImageComponent subclass) which renders in the GL pass
+- For mouse interaction: forward events from the parent OpenGL component via addMouseListener(this, false)
+- Always convert coordinates with e.getEventRelativeTo(this) when handling forwarded mouse events
+- setUseAlpha(true) required on PlainShapeComponent for alpha blending (hover effects via color uniform alpha)
+- Cursor management: call setMouseCursor() on the underlying component to change cursor in overlay regions
+
 ### JSON Response Handling Pattern
 - LLM can return preset JSON in 3 formats: pure JSON (no fences), fenced JSON (markdown code block), inline JSON (text + unbraced JSON)
 - `splitResponseText()` in ClaudeApiClient detects all 3: checks if trimmed response starts with `{`, looks for ```json fence, then searches for `{"settings"` substring

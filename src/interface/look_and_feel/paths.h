@@ -911,6 +911,69 @@ class Paths {
       return path;
     }
 
+    static Path microphoneIcon() {
+      // Microphone icon in 0..1 space
+      // Capsule (rounded rect body)
+      Path path;
+      float capW = 0.30f;
+      float capH = 0.42f;
+      float capX = 0.5f - capW * 0.5f;
+      float capY = 0.12f;
+      float capR = capW * 0.5f;
+      path.addRoundedRectangle(capX, capY, capW, capH, capR);
+
+      // Pickup arc (U-shape around capsule)
+      float arcStroke = 0.06f;
+      float arcW = 0.48f;
+      float arcH = 0.52f;
+      float arcX = 0.5f - arcW * 0.5f;
+      float arcY = 0.14f;
+      Path arcOutline;
+      arcOutline.addArc(arcX, arcY, arcW, arcH, 0.0f, vital::kPi, true);
+      PathStrokeType arcStrokeType(arcStroke, PathStrokeType::curved, PathStrokeType::butt);
+      Path arcPath;
+      arcStrokeType.createStrokedPath(arcPath, arcOutline);
+      path.addPath(arcPath);
+
+      // Vertical stem
+      float stemW = 0.07f;
+      float stemTop = 0.62f;
+      float stemBot = 0.78f;
+      path.addRectangle(0.5f - stemW * 0.5f, stemTop, stemW, stemBot - stemTop);
+
+      // Horizontal base
+      float baseW = 0.28f;
+      float baseH = 0.06f;
+      path.addRectangle(0.5f - baseW * 0.5f, stemBot - baseH * 0.5f, baseW, baseH);
+
+      // Bounding points
+      path.addLineSegment(Line<float>(0.0f, 0.0f, 0.0f, 0.0f), 0.2f);
+      path.addLineSegment(Line<float>(1.0f, 1.0f, 1.0f, 1.0f), 0.2f);
+      return path;
+    }
+
+    static Path microphoneIcon2() {
+      static const char svg[] =
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"0 0 90 90\">"
+        "<path d=\"M 45 70.968 c -16.013 0 -29.042 -13.028 -29.042 -29.042 c 0 -1.712 1.388 -3.099 "
+        "3.099 -3.099 c 1.712 0 3.099 1.388 3.099 3.099 C 22.157 54.522 32.404 64.77 45 64.77 "
+        "c 12.595 0 22.843 -10.248 22.843 -22.843 c 0 -1.712 1.387 -3.099 3.099 -3.099 "
+        "s 3.099 1.388 3.099 3.099 C 74.042 57.94 61.013 70.968 45 70.968 z\" fill=\"#ffffff\"/>"
+        "<path d=\"M 45 60.738 c -10.285 0 -18.7 -8.415 -18.7 -18.7 V 18.7 C 26.3 8.415 34.715 0 45 0 "
+        "c 10.285 0 18.7 8.415 18.7 18.7 v 23.337 C 63.7 52.322 55.285 60.738 45 60.738 z\" fill=\"#ffffff\"/>"
+        "<path d=\"M 45 89.213 c -1.712 0 -3.099 -1.387 -3.099 -3.099 V 68.655 c 0 -1.712 1.388 -3.099 "
+        "3.099 -3.099 c 1.712 0 3.099 1.387 3.099 3.099 v 17.459 C 48.099 87.826 46.712 89.213 45 89.213 z\" fill=\"#ffffff\"/>"
+        "<path d=\"M 55.451 90 H 34.549 c -1.712 0 -3.099 -1.387 -3.099 -3.099 s 1.388 -3.099 3.099 -3.099 "
+        "h 20.901 c 1.712 0 3.099 1.387 3.099 3.099 S 57.163 90 55.451 90 z\" fill=\"#ffffff\"/>"
+        "</svg>";
+      Path path = fromSvgData(svg, sizeof(svg) - 1);
+      // Squeeze horizontally to make the mic body thinner
+      static constexpr float kMicBodyWidthScale = 0.9f;
+      path.applyTransform(AffineTransform::scale(kMicBodyWidthScale, 1.0f)
+                            .translated(90.0f * (1.0f - kMicBodyWidthScale) * 0.5f, 0.0f));
+      return path;
+    }
+
     static Path wideBand() {
       static constexpr float kTop = 2.0f / 5.0f;
       static constexpr float kBottom = 4.0f / 5.0f;

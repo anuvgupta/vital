@@ -35,7 +35,7 @@
 - Sound design translation layer — router detects non-technical descriptions, translates via separate Claude call (SOUND_DESIGN_PROMPT.md + cookbook), re-routes through router for execution. Includes infinite loop guard, chat log debug output, and max_tokens fix.
 - Add a command shortcut (Cmd+K / Ctrl+K) to focus the chat prompt editor
 - Chat clearing (clear/reset button in title row resets chat UI and API conversation history)
-- Split mic into VOICE CHAT (always-on, 20s silence timeout, popup warning) and TALK (auto-stops on configurable silence) modes with SEND button
+- Split mic into VOICE CHAT (always-on, 15s silence timeout, popup warning) and talk mic icon overlay (auto-stops on configurable silence) modes with SEND button
 - Move away from Opus because its too expensive
 - Support for mixed messages (containing markdown fences for code ie three backticks, alongside natural language descriptions)
 - Markdown support in responses
@@ -51,6 +51,8 @@
 ## Bugs
 
 ### Open
+- if i hit clear convo button while message is still returning, it still comes. we fixed this for when we click restore on message, but not for when we click clear convo?
+- sending extra / queued messages while multi-action is completing - messes up the chat ordering a bit, sometimes the intermediate step messages get left over before that message
 
 ### Done
 - Stale API responses corrupting UI after edit-mode restore — added generation counter to invalidate in-flight async callbacks on restore/cancel
