@@ -978,6 +978,12 @@ void VitalSidePanel::layoutMessages() {
   // Calculate total content height
   total_content_height_ = y_position;
 
+  // Hide clear button when chat is empty (only the initial system message)
+  bool has_user_messages = std::any_of(messages_.begin(), messages_.end(),
+      [](const ChatMessage& m) { return m.type == ChatMessage::kUser; });
+  if (clear_button_)
+    clear_button_->setVisible(has_user_messages);
+
   setScrollBarRange();
 }
 

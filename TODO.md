@@ -11,6 +11,7 @@
 ### Long-Term
 
 - Add caching to sound design prompt
+- Cancel message functionality
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Optimize router to also complete preset updates for single actions (see doc in .plans/prompts)
 - Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
@@ -51,12 +52,11 @@
 
 
 ## Bugs
-- Clear button is present when the chat is empty
-- Sometimes prints out json data / examples - fixed?
 
 ### Open
 
 ### Done
+- Clear button is present when the chat is empty
 - Restore function not working after first restore and cancel — checkpoint files deleted during restore, stale objects restored on cancel; fixed with `delete_files` param, `exitEditMode()` helper, and multiple secondary fixes
 - Conversation history context pollution -- stale preset JSON and assistant JSON fences accumulating in history, wasting tokens
 - Windows Voice Chat crash — null TLS socket due to Apple-only TLS define; fixed by integrating mbedTLS as Windows TLS backend + calling ix::initNetSystem()
@@ -66,5 +66,5 @@
 - Fix font sizes appearing different on different platforms
 - Placeholder text in textarea doesn't wrap when window is shrunk (resized to be smaller) even though actual text in textarea does
 - Integrate with deepgram for voice to text
-
+- Sometimes prints out json data / examples - fixed?
 
