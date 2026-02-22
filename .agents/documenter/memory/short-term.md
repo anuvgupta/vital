@@ -2,9 +2,8 @@
 
 ## Status: Ready for next task
 
-Last completed: Replace SPEAK button with mic icon overlay (2026-02-22)
-- Removed talk_button_ from side panel, added PlainShapeComponent mic icon on textarea
-- Button row simplified: VOICE CHAT | SEND (was VOICE CHAT | TALK | SEND)
-- Voice chat silence timeout reduced 20s -> 15s
-- Key bugs: paintBackground covered by GL, mouse event forwarding, coordinate spaces, alpha blending, cursor
-- Files: side_panel.h, side_panel.cpp, paths.h
+Last completed: Fix stale API responses on clear conversation (2026-02-22)
+- clearChat() was missing generation counter bump — in-flight responses arrived in cleared chat
+- Added sidePanelClearRequested() to VitalSidePanel::Listener, implemented in FullInterface
+- Same 6-line invalidation block as restore/cancel-edit
+- Files: side_panel.h, side_panel.cpp, full_interface.h, full_interface.cpp

@@ -122,6 +122,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     int sidePanelGetApiHistorySize() override;
     File sidePanelSaveCheckpoint() override;
     void sidePanelCancelEditRequested(const File& checkpoint, int api_history_size) override;
+    void sidePanelClearRequested() override;
 
     static String getCompletionPhrase();
     static void mergeJson(json& target, const json& patch);

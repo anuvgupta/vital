@@ -188,6 +188,13 @@
     - **Pattern**: Generation counter for async callback invalidation — capture before lambda, check inside lambda, bump at invalidation points. Useful anywhere async work can be superseded by user actions.
     - Files: `src/interface/editor_sections/full_interface.h`, `src/interface/editor_sections/full_interface.cpp`
 
+- **Stale API responses arrive after "clear conversation"**:
+    - Pressing the clear conversation button while an API response was streaming/in-flight would still deliver the response to the now-cleared chat UI. The same generation counter pattern already used for restore/cancel-edit was not applied to the clear flow.
+    - **Root cause**: `VitalSidePanel::clearChat()` cleared the UI messages and called `ClaudeApiClient::clearConversation()`, but never notified `FullInterface` to bump `api_request_generation_`. The restore and cancel-edit flows already did this correctly via their respective listener callbacks.
+    - **Solution**: Added `sidePanelClearRequested()` to the `VitalSidePanel::Listener` interface, called from `clearChat()` before clearing API history. `FullInterface` implements it with the same 6-line invalidation block (bump generation counter, reset in-flight flag, clear queues) used by restore and cancel-edit.
+    - **Key lesson**: The generation counter pattern (`api_request_generation_`) is the canonical way to invalidate in-flight async API callbacks. **Any new flow that resets chat state must also bump this counter.** Current invalidation points: `sidePanelRestoreRequested()`, `sidePanelCancelEditRequested()`, `sidePanelClearRequested()`.
+    - Files: `src/interface/editor_sections/side_panel.h`, `src/interface/editor_sections/side_panel.cpp`, `src/interface/editor_sections/full_interface.h`, `src/interface/editor_sections/full_interface.cpp`
+
 - **Mic icon invisible when drawn in paintBackground() — covered by OpenGL text editor**:
     - Drawing a microphone icon in `paintBackground()` was invisible because `OpenGlTextEditor` renders in the GL pass on top of the background texture.
     - **Solution**: Use `PlainShapeComponent` (an `OpenGlImageComponent` subclass) which renders in the GL pass alongside other OpenGL components. Set `setUseAlpha(true)` to enable non-premultiplied alpha blending so the color uniform's alpha channel works for hover effects.

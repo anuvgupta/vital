@@ -1495,3 +1495,12 @@ void FullInterface::sidePanelCancelEditRequested(const File& checkpoint, int api
   current_action_index_ = 0;
 
 }
+
+void FullInterface::sidePanelClearRequested() {
+  ++api_request_generation_;
+  api_request_in_flight_ = false;
+  queued_messages_.clear();
+  pending_actions_.clear();
+  total_actions_ = 0;
+  current_action_index_ = 0;
+}

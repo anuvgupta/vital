@@ -526,11 +526,11 @@ void VitalSidePanel::resized() {
   }
 #endif
 
-  // Mic icon overlay at bottom-left of textarea
+  // Mic icon overlay at bottom-right of textarea
   {
     int icon_size = (int)(20.0f * size_ratio_);
     int icon_padding = (int)(6.0f * size_ratio_);
-    int icon_x = padding + icon_padding;
+    int icon_x = padding + button_width - icon_size - icon_padding;
     int icon_y = textarea_y + textarea_height - icon_size - icon_padding - (int)(4.0f * size_ratio_);
     mic_icon_bounds_ = Rectangle<int>(icon_x, icon_y, icon_size, icon_size);
     mic_icon_shape_->setBounds(icon_x, icon_y, icon_size, icon_size);
@@ -1020,6 +1020,10 @@ void VitalSidePanel::clearChat() {
     prompt_editor_->redoImage();
   }
 #endif
+
+  // Cancel any in-flight API requests
+  for (Listener* l : listeners_)
+    l->sidePanelClearRequested();
 
   // Clear API conversation history
   ClaudeApiClient::instance().clearConversation();

@@ -5,14 +5,12 @@
 
 ### Open
 
-- ...
-
+- Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
 
 ### Long-Term
 
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Optimize router to also complete preset updates for single actions (see doc in .plans/prompts)
-- Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
 
 ### Deprioritized
 - Migrate to wispr flow for voice to text
@@ -51,10 +49,10 @@
 ## Bugs
 
 ### Open
-- if i hit clear convo button while message is still returning, it still comes. we fixed this for when we click restore on message, but not for when we click clear convo?
 - sending extra / queued messages while multi-action is completing - messes up the chat ordering a bit, sometimes the intermediate step messages get left over before that message
 
 ### Done
+- Stale API responses arriving after clear conversation — `clearChat()` now bumps generation counter via `sidePanelClearRequested()` listener callback
 - Stale API responses corrupting UI after edit-mode restore — added generation counter to invalidate in-flight async callbacks on restore/cancel
 - Clear button is present when the chat is empty
 - Restore function not working after first restore and cancel — checkpoint files deleted during restore, stale objects restored on cancel; fixed with `delete_files` param, `exitEditMode()` helper, and multiple secondary fixes

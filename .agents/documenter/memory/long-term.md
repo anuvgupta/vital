@@ -74,9 +74,10 @@
 ### Async Callback Invalidation Pattern
 - Generation counter (`api_request_generation_`) on FullInterface invalidates in-flight async callbacks
 - Pattern: capture counter before lambda, check inside lambda, bump counter at invalidation points
-- Invalidation points: sidePanelRestoreRequested(), sidePanelCancelEditRequested()
+- Invalidation points: sidePanelRestoreRequested(), sidePanelCancelEditRequested(), sidePanelClearRequested()
 - Applies to: routeAndExecute() router callback, sound design translation callback, sendApiRequest() callback
 - This pattern is reusable anywhere async work can be superseded by user state changes
+- **Any new flow that resets chat state must also bump this counter** — this was missed for clearChat() initially
 
 ### OpenGL Overlay Pattern (icons on top of OpenGL components)
 - Standard JUCE paint()/paintBackground() content is covered by OpenGL components (OpenGlTextEditor, etc.)

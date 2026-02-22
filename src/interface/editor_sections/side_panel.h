@@ -93,6 +93,7 @@ public:
         virtual int sidePanelGetApiHistorySize() { return 0; }
         virtual File sidePanelSaveCheckpoint() { return File(); }
         virtual void sidePanelCancelEditRequested(const File& checkpoint, int api_history_size) {}
+        virtual void sidePanelClearRequested() {}
     };
 
     VitalSidePanel();
