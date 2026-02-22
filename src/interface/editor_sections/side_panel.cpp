@@ -519,7 +519,7 @@ void VitalSidePanel::resized() {
   voice_chat_recording_indicator_->setBounds(vc_ind_x, vc_ind_y, indicator_size, indicator_size);
 
   // Textarea above the button
-  int textarea_y = button_y - widget_margin - textarea_height;
+  int textarea_y = button_y - (int)(widget_margin * 1.75f) - textarea_height;
 #if !defined(NO_TEXT_ENTRY)
   if (prompt_editor_) {
     prompt_editor_->setBounds(padding, textarea_y, button_width, textarea_height);
@@ -551,7 +551,7 @@ void VitalSidePanel::resized() {
 
   // Chat area between title and textarea
   int chat_top = padding + title_height + widget_margin;
-  int chat_bottom = textarea_y - widget_margin;
+  int chat_bottom = textarea_y - (int)(widget_margin * 1.75f);
   int chat_height = chat_bottom - chat_top;
   int chat_width = button_width - (int)kScrollBarWidth - widget_margin;
 

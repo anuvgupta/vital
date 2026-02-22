@@ -10,7 +10,6 @@
 
 ### Long-Term
 
-- Cancel message functionality
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
 - Optimize router to also complete preset updates for single actions (see doc in .plans/prompts)
 - Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
@@ -27,6 +26,7 @@
     - Future enhancement: wake word detection (e.g. "Hey Vital" via Picovoice Porcupine) as an additional gating layer for either ASK or TALK mode.
 
 ### Done
+- Cancel message functionality
 - Multiple thinking & output rounds (partially complete)
     - Router layer analyzes each message and decides: single-action (pass through) vs multi-action (split and execute sequentially) vs sound design required (translate then re-route)
     - Each sub-action sees updated preset state from previous steps
