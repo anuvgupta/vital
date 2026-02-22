@@ -1,0 +1,42 @@
+# Normalize all text files to LF in the repository
+* text=auto eol=lf
+
+# Ensure these stay as LF even on Windows checkouts
+*.cpp text eol=lf
+*.h text eol=lf
+*.hpp text eol=lf
+*.c text eol=lf
+*.mm text eol=lf
+*.py text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.xml text eol=lf
+*.cmake text eol=lf
+*.sh text eol=lf
+
+# Windows batch files need CRLF
+*.bat text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.wav binary
+*.mp3 binary
+*.ogg binary
+*.dll binary
+*.lib binary
+*.a binary
+*.dylib binary
+*.so binary
+*.exe binary
+*.vital binary
+*.vitalskin binary
