@@ -24,5 +24,6 @@ its too intense
 
 no i meant the pitch drop is too intense
 
+
 ok can you turn off all the osillators and tell me if any of the filters are on?
 

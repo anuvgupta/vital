@@ -67,3 +67,10 @@
 - Token cost is dominated by uncached input tokens (~70% of total cost); prompt caching helps but conversation history and preset JSON are per-request
 - The 296KB SYNTHESIZER_COOKBOOK was the single largest token contributor per sound design call; was renamed to SOUND_DESIGN_GUIDE.md and emptied, needs a compact replacement
 - Router calls are cheap (~1-5k tokens) and can use Sonnet instead of Opus since they only classify via tool_use with ~50-100 output tokens
+
+### JSON Response Handling Pattern
+- LLM can return preset JSON in 3 formats: pure JSON (no fences), fenced JSON (markdown code block), inline JSON (text + unbraced JSON)
+- `splitResponseText()` in ClaudeApiClient detects all 3: checks if trimmed response starts with `{`, looks for ```json fence, then searches for `{"settings"` substring
+- Only the text portion (before/after JSON) should be stored in conversation history; the JSON is applied via mergeJson() and discarded
+- Failing to strip JSON from history on all 3 formats causes conversation pollution (raw JSON in subsequent prompts), token waste, and confuses multi-action flows
+- Renaming functions when scope expands beyond original name prevents future bugs where developers assume old behavior based on name
