@@ -229,8 +229,15 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   cancel_edit_button_ = std::make_unique<OpenGlToggleButton>("CancelEdit");
   addButton(cancel_edit_button_.get());
   cancel_edit_button_->setUiButton(true);
-  cancel_edit_button_->setText(String(CharPointer_UTF8("\xc3\x97")));
+  cancel_edit_button_->setText("");
   cancel_edit_button_->setVisible(false);
+
+  cancel_edit_x_icon_ = std::make_unique<PlainShapeComponent>("cancel_edit_x_icon");
+  addOpenGlComponent(cancel_edit_x_icon_.get());
+  cancel_edit_x_icon_->setShape(Paths::cancelEditXIcon());
+  cancel_edit_x_icon_->setUseAlpha(true);
+  cancel_edit_x_icon_->setColor(Colour(0xFF222222));  // #222 for reliable rendering on all systems
+  cancel_edit_x_icon_->setActive(false);
 
   mic_capture_ = std::make_unique<MicrophoneCapture>();
 
@@ -509,7 +516,7 @@ void VitalSidePanel::resized() {
   clear_circle_bg_->setBounds(clear_circle_x, clear_circle_y, clear_circle_size, clear_circle_size);
   clear_circle_bg_->setColor(Colours::white.withAlpha(0.13f));
 
-  int clear_icon_size = (int)(11.5f * size_ratio_);
+  int clear_icon_size = (int)(13.5f * size_ratio_);
   int clear_icon_off = (clear_circle_size - clear_icon_size) / 2;
   clear_x_icon_->setBounds(clear_circle_x + clear_icon_off, clear_circle_y + clear_icon_off,
                             clear_icon_size, clear_icon_size);
@@ -602,6 +609,14 @@ void VitalSidePanel::resized() {
     cancel_edit_button_->getGlComponent()->text().setTextSize(size_ratio_ * 14.0f);
     cancel_edit_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
     cancel_edit_button_->getGlComponent()->text().redrawImage(true);
+
+    int cancel_icon_size = (int)(12.0f * size_ratio_);
+    int cancel_icon_off = (cancel_size - cancel_icon_size) / 2;
+    if (cancel_edit_x_icon_) {
+      cancel_edit_x_icon_->setBounds(cancel_x + cancel_icon_off, cancel_y + cancel_icon_off,
+                                     cancel_icon_size, cancel_icon_size);
+      cancel_edit_x_icon_->redrawImage(true);
+    }
   }
 
   // Chat area between title and textarea
@@ -1342,6 +1357,8 @@ void VitalSidePanel::exitEditMode() {
   edit_snapshot_.reset();
   if (cancel_edit_button_)
     cancel_edit_button_->setVisible(false);
+  if (cancel_edit_x_icon_)
+    cancel_edit_x_icon_->setActive(false);
 }
 
 void VitalSidePanel::enterEditMode(int message_index) {
@@ -1395,6 +1412,10 @@ void VitalSidePanel::enterEditMode(int message_index) {
   // Show cancel button
   if (cancel_edit_button_)
     cancel_edit_button_->setVisible(true);
+  if (cancel_edit_x_icon_) {
+    cancel_edit_x_icon_->setActive(true);
+    cancel_edit_x_icon_->redrawImage(true);
+  }
 
   // Clear hover state since messages changed
   hovered_message_index_ = -1;
@@ -1426,6 +1447,8 @@ void VitalSidePanel::cancelEditMode() {
   // Hide cancel button and exit edit mode
   if (cancel_edit_button_)
     cancel_edit_button_->setVisible(false);
+  if (cancel_edit_x_icon_)
+    cancel_edit_x_icon_->setActive(false);
 
   edit_mode_ = false;
   edit_snapshot_.reset();

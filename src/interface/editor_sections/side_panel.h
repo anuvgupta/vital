@@ -206,6 +206,7 @@ private:
     bool edit_mode_ = false;
     std::unique_ptr<EditModeSnapshot> edit_snapshot_;
     std::unique_ptr<OpenGlToggleButton> cancel_edit_button_;
+    std::unique_ptr<PlainShapeComponent> cancel_edit_x_icon_;
 
     // Voice recording state
     std::unique_ptr<MicrophoneCapture> mic_capture_;
