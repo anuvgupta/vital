@@ -357,8 +357,8 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
       restore_button_bounds_ = Rectangle<int>((int)box_x, (int)box_y,
                                                (int)box_size, (int)box_size);
 
-      // Rounded rectangle background — darken on hover over button
-      Colour bg_colour = findColour(Skin::kWidgetPrimary1, true).darker(hovering_restore_button_ ? 0.35f : 0.2f);
+      // Rounded rectangle background — lighter on hover over button
+      Colour bg_colour = findColour(Skin::kWidgetPrimary1, true).darker(hovering_restore_button_ ? 0.2f : 0.35f);
       g.setColour(bg_colour);
       g.fillRoundedRectangle(box_x, box_y, box_size, box_size, size_ratio_ * 5.0f);
 
