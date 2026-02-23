@@ -986,7 +986,7 @@ class Paths {
         "</svg>";
       Path path = fromSvgData(svg, sizeof(svg) - 1);
       // Squeeze horizontally to make the mic body thinner
-      static constexpr float kMicBodyWidthScale = 0.9f;
+      static constexpr float kMicBodyWidthScale = 0.98f;
       path.applyTransform(AffineTransform::scale(kMicBodyWidthScale, 1.0f)
                             .translated(90.0f * (1.0f - kMicBodyWidthScale) * 0.5f, 0.0f));
       return path;
