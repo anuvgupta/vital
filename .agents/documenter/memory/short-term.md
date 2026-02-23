@@ -2,11 +2,9 @@
 
 ## Status: Ready for next task
 
-Last completed: Replace intro message with logo + tagline intro screen (2026-02-22)
-- Removed "Ready to create!" system messages from initializeApiClient() and clearChat()
-- Added speechWaveformIcon() to paths.h (inline SVG, white fill)
-- paintChatMessages() renders intro screen when messages_.empty(): icon (120px, 0.45 alpha) + tagline (0.55 alpha)
-- Added 8px top padding in layoutMessages() for first message breathing room
-- Updated textarea placeholder text
-- No bugs encountered
-- Files: paths.h, side_panel.cpp
+Last completed: Fix intro screen bugs (clear button, restore button, repaint) (2026-02-22)
+- clearChat() lost side effects when addMessage("Ready to create!") was removed
+- Added layoutMessages() + repaintBackground() to clearChat()
+- Added restore_button_bounds_ = {} in intro early-return of paintChatMessages()
+- Key lesson: trace all side effects when removing a function call
+- File: side_panel.cpp

@@ -55,6 +55,7 @@
 ### Open
 
 ### Done
+- Clear button, restore button, and repaint bugs after intro screen refactor — missing side effects from removed `addMessage()` call in `clearChat()`
 - Silence detection values clarified and reworked — replaced amplitude-based silence detection with Deepgram-activity-based inactivity timeout (TALK: 3s grace + 1.5s timeout; VOICE CHAT: 5s grace + 15s timeout)
 - Double "Thinking..." message in voice recording modes — voice callbacks were redundantly adding "Thinking..." alongside sidePanelMessageSubmitted(); removed from 3 callback sites
 - Queued messages during multi-action leaving stranded step messages — `updateStatusMessage` now scans backwards for last kSystem/kStep (handles interleaved kUser), and `clearThinkingMessage()` called on queue so step lifecycle isn't disrupted

@@ -363,6 +363,7 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
     g.setColour(text_color.withAlpha(0.55f));
     g.setFont(tagline_font);
     g.drawText("Talk to your synthesizer", text_bounds, Justification::horizontallyCentred);
+    restore_button_bounds_ = {};
     return;
   }
 
@@ -1152,6 +1153,8 @@ void VitalSidePanel::clearChat() {
   // Clear API conversation history
   ClaudeApiClient::instance().clearConversation();
 
+  layoutMessages();
+  repaintBackground();
 }
 
 void VitalSidePanel::focusPromptEditor() {

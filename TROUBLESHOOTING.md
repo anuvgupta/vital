@@ -238,6 +238,14 @@
     - **Key lesson**: `MessageManager::callAsync` queues copies — stopping/disconnecting the source doesn't cancel already-enqueued lambdas. Always guard with state checks.
     - Files: `src/interface/editor_sections/side_panel.cpp`
 
+- **Side effects lost when removing a function call that had them (intro screen bugs)**:
+    - Replacing `addMessage("Ready to create!", kSystem)` in `clearChat()` and `initializeApiClient()` with a centered logo intro screen removed implicit calls to `layoutMessages()`, `scrollToBottom()`, `repaintBackground()`, and `saveChatLog()` that `addMessage` triggered internally.
+    - **Bug 1 (clear button not working):** After `clearChat()` emptied messages, no `repaintBackground()` was triggered, so the UI never refreshed to show the intro screen. Fix: add `layoutMessages()` + `repaintBackground()` at end of `clearChat()`.
+    - **Bug 2 (lingering restore button):** The intro early-return in `paintChatMessages()` skipped the `restore_button_bounds_ = {}` reset that was inside the message-rendering loop. Since `paintBackground()` draws the restore button outside `paintChatMessages()`, it persisted on the intro screen. Fix: add `restore_button_bounds_ = {};` inside the `if (is_intro)` block.
+    - **Bug 3 (clear button staying visible):** `layoutMessages()` sets `clear_button_active_` based on message count, but wasn't called after clearing. Same root cause as Bug 1.
+    - **Key lesson:** When removing a function call that had side effects, trace ALL effects of the removed call and ensure each is still triggered where needed.
+    - File: `src/interface/editor_sections/side_panel.cpp`
+
 - **Multi-action one-shotting from parent message in conversation history**:
     - When multi-action flows split a request into sub-actions (e.g., "blippy jangly synth" → sound design translation → 3 sequential parameter changes), the LLM received the full original message (or translation text) in `conversation_history_` alongside the first sub-action. It read the full scope upfront and completed all steps on the first API call, returning "already done" text for subsequent sub-actions (massive token waste).
     - **Root cause**: `FullInterface::executeNextAction()` called `addToHistory("user", message)` at line 1180 in `full_interface.cpp` before executing sub-actions. This stored the full original message in history, giving the LLM context it shouldn't have for sequential execution.
