@@ -773,7 +773,7 @@ void VitalSidePanel::startVoiceChatRecording() {
 
   AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
     "Voice Chat",
-    "Voice chat will stay active until you press STOP or 15 seconds of silence is detected.");
+    "Voice chat will stay active until you press STOP or 12 seconds of silence is detected.");
 
   bool connected = dg.connect(
     [this](const String& transcript, bool is_final) {
@@ -846,7 +846,7 @@ void VitalSidePanel::timerCallback() {
     return;
 
   double inactive_ms = now - last_deepgram_activity_ms_;
-  double timeout_ms = (recording_mode_ == kRecordingTalk) ? 1500.0 : 15000.0;
+  double timeout_ms = (recording_mode_ == kRecordingTalk) ? 1000.0 : 12000.0;
 
   if (inactive_ms >= timeout_ms) {
     DBG("VitalSidePanel: Deepgram inactivity timeout (" + String(inactive_ms / 1000.0, 1)
@@ -981,6 +981,8 @@ void VitalSidePanel::updateStatusMessage(const String& text, ChatMessage::Type n
 }
 
 void VitalSidePanel::addResponseMessage(const String& text) {
+  if (recording_mode_ == kRecordingVoiceChat)
+    last_deepgram_activity_ms_ = Time::getMillisecondCounterHiRes();
   clearThinkingMessage();
   addMessage(text, ChatMessage::kSystem);
 }
