@@ -350,8 +350,8 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
     }
 
     if (msg_idx == hovered_message_index_ && has_checkpoint) {
-      float icon_size = size_ratio_ * 10.0f;
-      float box_padding = size_ratio_ * 7.0f;
+      float icon_size = size_ratio_ * 12.0f;
+      float box_padding = size_ratio_ * 6.0f;
       float box_size = icon_size + box_padding * 2.0f;
       float box_x = (float)msg_bounds.getRight() - box_size;
       float box_y = (float)msg_bounds.getY() - box_size * 0.5f;
@@ -1410,6 +1410,7 @@ void VitalSidePanel::enterEditMode(int message_index) {
 #if !defined(NO_TEXT_ENTRY)
   if (prompt_editor_) {
     prompt_editor_->setText(message_text, false);
+    prompt_editor_->moveCaretToEnd();
     prompt_editor_->redoImage();
     prompt_editor_->grabKeyboardFocus();
   }
