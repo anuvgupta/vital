@@ -304,6 +304,26 @@ void VitalSidePanel::paintBackground(Graphics& g) {
 
   // Draw chat messages
   paintChatMessages(g);
+
+  // Draw restore button outside the clip region so it isn't clipped
+  if (!restore_button_bounds_.isEmpty()) {
+    auto rb = restore_button_bounds_.toFloat();
+    float icon_size = size_ratio_ * 12.0f;
+    float box_padding = size_ratio_ * 6.0f;
+    float box_size = icon_size + box_padding * 2.0f;
+
+    Colour bg_colour = findColour(Skin::kWidgetPrimary1, true).darker(hovering_restore_button_ ? 0.2f : 0.35f);
+    g.setColour(bg_colour);
+    g.fillRoundedRectangle(rb, size_ratio_ * 5.0f);
+
+    Path icon = Paths::restoreIcon();
+    float draw_size = icon_size * 1.25f;
+    float draw_offset = (box_size - draw_size) * 0.5f;
+    Rectangle<float> icon_bounds(rb.getX() + draw_offset, rb.getY() + draw_offset,
+                                  draw_size, draw_size);
+    g.setColour(findColour(Skin::kBodyText, true).withAlpha(0.85f));
+    g.fillPath(icon, icon.getTransformToScaleToFit(icon_bounds, true));
+  }
 }
 
 void VitalSidePanel::paintChatMessages(Graphics& g) {
@@ -353,24 +373,11 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
       float icon_size = size_ratio_ * 12.0f;
       float box_padding = size_ratio_ * 6.0f;
       float box_size = icon_size + box_padding * 2.0f;
-      float box_x = (float)msg_bounds.getRight() - box_size;
-      float box_y = (float)msg_bounds.getY() - box_size * 0.5f;
+      float box_x = (float)msg_bounds.getRight() - box_size * (3.0f / 4.0f);
+      float box_y = (float)msg_bounds.getY() - box_size * (1.0f / 4.0f);
 
       restore_button_bounds_ = Rectangle<int>((int)box_x, (int)box_y,
                                                (int)box_size, (int)box_size);
-
-      // Rounded rectangle background — lighter on hover over button
-      Colour bg_colour = findColour(Skin::kWidgetPrimary1, true).darker(hovering_restore_button_ ? 0.2f : 0.35f);
-      g.setColour(bg_colour);
-      g.fillRoundedRectangle(box_x, box_y, box_size, box_size, size_ratio_ * 5.0f);
-
-      // Draw restore icon centered in the box
-      Path icon = Paths::restoreIcon();
-      float icon_x = box_x + (box_size - icon_size) * 0.5f;
-      float icon_y = box_y + (box_size - icon_size) * 0.5f;
-      Rectangle<float> icon_bounds(icon_x, icon_y, icon_size, icon_size);
-      g.setColour(text_color.withAlpha(0.85f));
-      g.fillPath(icon, icon.getTransformToScaleToFit(icon_bounds, true));
     }
 
     int pad = (message.type == ChatMessage::kUser) ? ChatMessage::kPadding : ChatMessage::kSystemPadding;
