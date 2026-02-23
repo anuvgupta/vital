@@ -176,6 +176,7 @@ private:
     void setScrollBarRange();
     void paintChatMessages(Graphics &g);
     void updateVoiceChatButtonColors();
+    void updateCancelEditButtonColors();
     void updateActionButtonState();
 
     std::vector<Listener *> listeners_;

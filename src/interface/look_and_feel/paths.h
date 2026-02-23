@@ -1025,7 +1025,7 @@ class Paths {
         "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">"
         "<path d=\"M18.7 5.3a1.2 1.2 0 0 0-1.7 0L12 10.3 7 5.3a1.2 1.2 0 0 0-1.7 1.7"
         "L10.3 12 5.3 17a1.2 1.2 0 0 0 1.7 1.7L12 13.7l5 5a1.2 1.2 0 0 0 1.7-1.7"
-        "L13.7 12l5-5a1.2 1.2 0 0 0 0-1.7z\" fill=\"#222222\"/>"
+        "L13.7 12l5-5a1.2 1.2 0 0 0 0-1.7z\" fill=\"#ffffff\"/>"
         "</svg>";
       Path path = fromSvgData(svg, sizeof(svg) - 1);
       path.addLineSegment(Line<float>(0.0f, 0.0f, 0.0f, 0.0f), 0.01f);

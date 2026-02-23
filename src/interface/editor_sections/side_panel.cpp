@@ -236,7 +236,7 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   addOpenGlComponent(cancel_edit_x_icon_.get());
   cancel_edit_x_icon_->setShape(Paths::cancelEditXIcon());
   cancel_edit_x_icon_->setUseAlpha(true);
-  cancel_edit_x_icon_->setColor(Colour(0xFF222222));  // #222 for reliable rendering on all systems
+  cancel_edit_x_icon_->setColor(Colours::white);
   cancel_edit_x_icon_->setActive(false);
 
   mic_capture_ = std::make_unique<MicrophoneCapture>();
@@ -609,6 +609,7 @@ void VitalSidePanel::resized() {
     cancel_edit_button_->getGlComponent()->text().setTextSize(size_ratio_ * 14.0f);
     cancel_edit_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
     cancel_edit_button_->getGlComponent()->text().redrawImage(true);
+    updateCancelEditButtonColors();
 
     int cancel_icon_size = (int)(12.0f * size_ratio_);
     int cancel_icon_off = (cancel_size - cancel_icon_size) / 2;
@@ -1145,6 +1146,17 @@ void VitalSidePanel::updateVoiceChatButtonColors() {
   voice_chat_button_->getGlComponent()->setColors();
 }
 
+void VitalSidePanel::updateCancelEditButtonColors() {
+  Colour dimmed = Colours::white.withAlpha(0.13f);
+  Colour dimmed_hover = Colours::white.withAlpha(0.22f);
+  Colour dimmed_pressed = Colours::white.withAlpha(0.28f);
+  cancel_edit_button_->setColour(Skin::kUiActionButton, dimmed);
+  cancel_edit_button_->setColour(Skin::kUiActionButtonHover, dimmed_hover);
+  cancel_edit_button_->setColour(Skin::kUiActionButtonPressed, dimmed_pressed);
+  cancel_edit_button_->setColour(Skin::kUiButtonText, Colours::white);
+  cancel_edit_button_->getGlComponent()->setColors();
+}
+
 void VitalSidePanel::updateActionButtonState() {
 #if !defined(NO_TEXT_ENTRY)
   bool has_text = prompt_editor_ && prompt_editor_->getText().trim().isNotEmpty();
@@ -1410,8 +1422,10 @@ void VitalSidePanel::enterEditMode(int message_index) {
 #endif
 
   // Show cancel button
-  if (cancel_edit_button_)
+  if (cancel_edit_button_) {
     cancel_edit_button_->setVisible(true);
+    updateCancelEditButtonColors();
+  }
   if (cancel_edit_x_icon_) {
     cancel_edit_x_icon_->setActive(true);
     cancel_edit_x_icon_->redrawImage(true);
