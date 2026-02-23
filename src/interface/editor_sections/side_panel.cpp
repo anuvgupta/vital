@@ -835,11 +835,9 @@ void VitalSidePanel::startVoiceChatRecording() {
   }
 
   recording_mode_ = kRecordingVoiceChat;
-  voice_chat_button_->setText(kStopButtonLabel);
-  voice_chat_button_->getGlComponent()->text().redrawImage(true);
-  updateVoiceChatButtonColors();
-  resized();
-  voice_chat_recording_indicator_->setActive(true);
+  voice_chat_button_->setVisible(false);
+  mic_recording_indicator_->setActive(true);
+  updateActionButtonState();
   recording_start_ms_ = last_deepgram_activity_ms_ = Time::getMillisecondCounterHiRes();
   startTimer(250);  // Poll every 250ms. Grace/timeout values in timerCallback().
   addMessage("Listening until you stop...", ChatMessage::kSystem);
@@ -890,9 +888,7 @@ void VitalSidePanel::stopRecording() {
     // Mic icon will update on next repaint
   }
   else if (recording_mode_ == kRecordingVoiceChat) {
-    voice_chat_button_->setText(kVoiceChatButtonLabel);
-    voice_chat_button_->getGlComponent()->text().redrawImage(true);
-    voice_chat_recording_indicator_->setActive(false);
+    voice_chat_button_->setVisible(true);
   }
 
 #if !defined(NO_TEXT_ENTRY)
@@ -1160,10 +1156,10 @@ void VitalSidePanel::updateActionButtonState() {
   bool has_text = false;
 #endif
 
-  bool is_talk_recording = (recording_mode_ == kRecordingTalk);
+  bool is_recording = (recording_mode_ == kRecordingTalk || recording_mode_ == kRecordingVoiceChat);
 
   ActionButtonMode new_mode;
-  if (is_talk_recording)
+  if (is_recording)
     new_mode = kActionStop;
   else if (has_text)
     new_mode = kActionSend;

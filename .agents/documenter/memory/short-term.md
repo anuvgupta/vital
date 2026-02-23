@@ -2,12 +2,14 @@
 
 ## Status: Ready for next task
 
-Last completed: Replace amplitude silence detection with Deepgram-activity inactivity timeout (2026-02-22)
-- Replaced MicrophoneCapture amplitude-based silence detection with Timer-based Deepgram activity polling (250ms interval)
-- TALK: 3s grace + 1.5s inactivity timeout + immediate stop on is_final
-- VOICE CHAT: 5s grace + 15s inactivity timeout
-- Fixed double "Thinking..." bug (voice callbacks + sidePanelMessageSubmitted both adding it)
-- Fixed race condition: added recording_mode_ guard in TALK is_final callback
-- Removed resetSilenceDetection() from MicrophoneCapture, removed talk_received_final_ flag
-- Added Timer inheritance, timerCallback(), recording_start_ms_, last_deepgram_activity_ms_ to VitalSidePanel
-- Files: side_panel.h, side_panel.cpp, microphone_capture.h, microphone_capture.cpp
+Last completed: Refactor voice chat button behavior (2026-02-22)
+- Voice chat button now disappears on click (instead of changing to "STOP")
+- Main action button switches to stop mode with recording indicator
+- When stop clicked: recording stops, text sent, voice chat button reappears
+- 3 edits in side_panel.cpp:
+  1. updateActionButtonState(): changed is_talk_recording to is_recording (covers both kRecordingTalk and kRecordingVoiceChat)
+  2. startVoiceChatRecording(): voice_chat_button_->setVisible(false), activate action indicator
+  3. stopRecording() voice chat branch: voice_chat_button_->setVisible(true)
+- No bugs encountered
+- Key insight: action button click handler already routed kActionStop to stopRecording() handling both modes
+- Files: side_panel.cpp

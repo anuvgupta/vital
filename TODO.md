@@ -22,6 +22,7 @@
     - Future enhancement: wake word detection (e.g. "Hey Vital" via Picovoice Porcupine) as an additional gating layer for either ASK or TALK mode.
 
 ### Done
+- Voice chat button refactoring — disappears on click, action button shows stop with indicator
 - Cancel message functionality
 - Multiple thinking & output rounds (partially complete)
     - Router layer analyzes each message and decides: single-action (pass through) vs multi-action (split and execute sequentially) vs sound design required (translate then re-route)
