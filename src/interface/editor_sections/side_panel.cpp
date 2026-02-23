@@ -760,7 +760,7 @@ void VitalSidePanel::startTalkRecording() {
   mic_recording_indicator_->setActive(true);
   updateActionButtonState();
   recording_start_ms_ = last_deepgram_activity_ms_ = Time::getMillisecondCounterHiRes();
-  startTimer(250);
+  startTimer(250);  // Poll every 250ms. Grace/timeout values in timerCallback().
   addMessage("Listening...", ChatMessage::kSystem);
 }
 
@@ -773,7 +773,7 @@ void VitalSidePanel::startVoiceChatRecording() {
 
   AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
     "Voice Chat",
-    "Voice chat will stay active until you press STOP or 12 seconds of silence is detected.");
+    "Voice chat will stay active until you press STOP or 10 seconds of silence is detected.");
 
   bool connected = dg.connect(
     [this](const String& transcript, bool is_final) {
@@ -829,7 +829,7 @@ void VitalSidePanel::startVoiceChatRecording() {
   resized();
   voice_chat_recording_indicator_->setActive(true);
   recording_start_ms_ = last_deepgram_activity_ms_ = Time::getMillisecondCounterHiRes();
-  startTimer(250);
+  startTimer(250);  // Poll every 250ms. Grace/timeout values in timerCallback().
   addMessage("Listening until you stop...", ChatMessage::kSystem);
 }
 
@@ -840,13 +840,17 @@ void VitalSidePanel::timerCallback() {
   }
 
   double now = Time::getMillisecondCounterHiRes();
+  // Grace period: no inactivity check until elapsed. Tuned for natural usage.
+  // See STEERING.md and TROUBLESHOOTING.md for rationale.
   double grace_ms = (recording_mode_ == kRecordingTalk) ? 3000.0 : 5000.0;
 
   if ((now - recording_start_ms_) < grace_ms)
     return;
 
   double inactive_ms = now - last_deepgram_activity_ms_;
-  double timeout_ms = (recording_mode_ == kRecordingTalk) ? 1000.0 : 12000.0;
+  // Inactivity timeout: stop recording after silence. TALK 2s, VOICE CHAT 10s.
+  // Tested and tuned for natural customer usage patterns.
+  double timeout_ms = (recording_mode_ == kRecordingTalk) ? 2000.0 : 10000.0;
 
   if (inactive_ms >= timeout_ms) {
     DBG("VitalSidePanel: Deepgram inactivity timeout (" + String(inactive_ms / 1000.0, 1)

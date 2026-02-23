@@ -77,6 +77,10 @@
     - Even with `NSMicrophoneUsageDescription` in Info.plist, if the hardened runtime is enabled (default for signed apps), mic access is silently denied -- no permission dialog, no error, just silent audio buffers of zeros.
     - **Solution**: Add `com.apple.security.device.audio-input` to the entitlements file. In Projucer, set `hardenedRuntimeOptions="com.apple.security.device.audio-input"` in `vital.jucer`. Also call `[AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio]` explicitly before opening audio devices.
 
+- **Voice recording inactivity timeouts (grace + timeout)**:
+    - TALK: 3s grace, 2s inactivity timeout. VOICE CHAT: 5s grace, 10s inactivity timeout. Polling: 250ms. VOICE CHAT also refreshes the timer when the AI response arrives.
+    - These values are **tested and tuned for natural customer usage patterns**. See `side_panel.cpp` `timerCallback()` for the constants and STEERING.md for full description. Change with care.
+
 - **Deepgram endpointing may not trigger on manual stop**:
     - If the user stops recording quickly, Deepgram's voice activity detection / endpointing may never fire, leaving only interim (non-final) transcripts. The `is_final` field in the response will be false.
     - **Solution**: On manual stop, grab whatever text is currently displayed in the prompt editor (from interim transcripts) and submit it directly, rather than waiting for a final transcript from Deepgram.
