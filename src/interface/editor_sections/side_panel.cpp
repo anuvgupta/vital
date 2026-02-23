@@ -317,7 +317,7 @@ void VitalSidePanel::paintBackground(Graphics& g) {
     g.fillRoundedRectangle(rb, size_ratio_ * 5.0f);
 
     Path icon = Paths::restoreIcon();
-    float draw_size = icon_size * 1.25f;
+    float draw_size = icon_size * 0.95f;
     float draw_offset = (box_size - draw_size) * 0.5f;
     Rectangle<float> icon_bounds(rb.getX() + draw_offset, rb.getY() + draw_offset,
                                   draw_size, draw_size);
