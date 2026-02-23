@@ -209,6 +209,7 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   addButton(voice_chat_button_.get());
   voice_chat_button_->setUiButton(true);
   voice_chat_button_->setText(kVoiceChatButtonLabel);
+  voice_chat_button_->setMouseCursor(MouseCursor::PointingHandCursor);
 
   clear_button_ = std::make_unique<OpenGlToggleButton>("Clear");
   addButton(clear_button_.get());
@@ -231,6 +232,7 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   cancel_edit_button_->setUiButton(true);
   cancel_edit_button_->setText("");
   cancel_edit_button_->setVisible(false);
+  cancel_edit_button_->setMouseCursor(MouseCursor::PointingHandCursor);
 
   cancel_edit_x_icon_ = std::make_unique<PlainShapeComponent>("cancel_edit_x_icon");
   addOpenGlComponent(cancel_edit_x_icon_.get());
@@ -1502,12 +1504,14 @@ void VitalSidePanel::mouseMove(const MouseEvent& e) {
   if (over_button) {
     if (!hovering_restore_button_) {
       hovering_restore_button_ = true;
+      setMouseCursor(MouseCursor::PointingHandCursor);
       repaintBackground();
     }
     return;
   }
   if (hovering_restore_button_) {
     hovering_restore_button_ = false;
+    setMouseCursor(MouseCursor::NormalCursor);
     repaintBackground();
   }
 
