@@ -644,9 +644,9 @@ void VitalSidePanel::resized() {
 
   // Cancel edit button overlapping top-right of textarea
   if (cancel_edit_button_) {
-    int cancel_size = 24;
-    int cancel_x = padding + content_width - cancel_size - 4;
-    int cancel_y = textarea_y + 4;
+    int cancel_size = (int)(24.0f * size_ratio_);
+    int cancel_x = padding + content_width - cancel_size - (int)(4.0f * size_ratio_);
+    int cancel_y = textarea_y + (int)(4.0f * size_ratio_);
     cancel_edit_button_->setBounds(cancel_x, cancel_y, cancel_size, cancel_size);
     cancel_edit_button_->getGlComponent()->text().setTextSize(size_ratio_ * 14.0f);
     cancel_edit_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);

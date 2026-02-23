@@ -55,6 +55,7 @@
 ### Open
 
 ### Done
+- Cancel-edit button (X icon) cross-platform scaling bug — hardcoded pixel size caused mismatched icon/background on macOS vs Windows; fixed by scaling with `size_ratio_`
 - Clear button, restore button, and repaint bugs after intro screen refactor — missing side effects from removed `addMessage()` call in `clearChat()`
 - Silence detection values clarified and reworked — replaced amplitude-based silence detection with Deepgram-activity-based inactivity timeout (TALK: 3s grace + 1.5s timeout; VOICE CHAT: 5s grace + 15s timeout)
 - Double "Thinking..." message in voice recording modes — voice callbacks were redundantly adding "Thinking..." alongside sidePanelMessageSubmitted(); removed from 3 callback sites
