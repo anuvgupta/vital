@@ -333,12 +333,44 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
   Graphics::ScopedSaveState save_state(g);
   g.reduceClipRegion(chat_bounds_);
 
+  Colour text_color = findColour(Skin::kBodyText, true);
+
+  // Intro screen: centered logo + tagline
+  bool is_intro = messages_.empty();
+  if (is_intro) {
+    Path icon = Paths::speechWaveformIcon();
+    float icon_width = 120.0f * size_ratio_;
+    float icon_height = icon_width * (347.0f / 445.0f);  // maintain SVG aspect ratio
+
+    float tagline_font_size = size_ratio_ * 16.0f;
+    Font tagline_font = Fonts::instance()->proportional_regular().withPointHeight(tagline_font_size);
+    float text_height = tagline_font_size * 1.4f;
+
+    float gap = 16.0f * size_ratio_;
+    float total_height = icon_height + gap + text_height;
+    float top_y = chat_bounds_.getCentreY() - total_height * 0.5f;
+
+    // Draw icon centered
+    float icon_x = chat_bounds_.getCentreX() - icon_width * 0.5f;
+    Rectangle<float> icon_bounds(icon_x, top_y, icon_width, icon_height);
+    g.setColour(text_color.withAlpha(0.45f));
+    g.fillPath(icon, icon.getTransformToScaleToFit(icon_bounds, true));
+
+    // Draw tagline centered below icon
+    float text_y = top_y + icon_height + gap;
+    Rectangle<float> text_bounds((float)chat_bounds_.getX(), text_y,
+                                  (float)chat_bounds_.getWidth(), text_height);
+    g.setColour(text_color.withAlpha(0.55f));
+    g.setFont(tagline_font);
+    g.drawText("Talk to your synthesizer", text_bounds, Justification::horizontallyCentred);
+    return;
+  }
+
   float font_size = size_ratio_ * ChatMessage::kBaseFontSize;
   Font font = Fonts::instance()->proportional_regular().withPointHeight(font_size);
   g.setFont(font);
 
   Colour bubble_color = findColour(Skin::kWidgetPrimary1, true).darker(0.4f);
-  Colour text_color = findColour(Skin::kBodyText, true);
   Colour system_text_color = text_color.withAlpha(0.98f);
   Colour step_text_color = text_color.withAlpha(0.45f);
   Colour code_bg_color = Colours::black.withAlpha(0.3f);
@@ -543,7 +575,7 @@ void VitalSidePanel::resized() {
 
     Colour empty_color = findColour(Skin::kBodyText, true);
     empty_color = empty_color.withAlpha(0.5f * empty_color.getFloatAlpha());
-    prompt_editor_->setTextToShowWhenEmpty("Describe your sound, or tell me what to do next", empty_color);
+    prompt_editor_->setTextToShowWhenEmpty("Tell me what you want to hear, or what to do next", empty_color);
     prompt_editor_->setColour(CaretComponent::caretColourId, findColour(Skin::kTextEditorCaret, true));
     prompt_editor_->setColour(TextEditor::textColourId, findColour(Skin::kBodyText, true));
     prompt_editor_->setColour(TextEditor::highlightedTextColourId, findColour(Skin::kBodyText, true));
@@ -707,9 +739,7 @@ void VitalSidePanel::initializeApiClient() {
   archiveLooseCheckpointsOnStartup();
 
   ClaudeApiClient& api_client = ClaudeApiClient::instance();
-  if (api_client.initialize())
-    addMessage("Ready to create!", ChatMessage::kSystem);
-  else
+  if (!api_client.initialize())
     addMessage("API key not configured. Use the menu to set your API key path.", ChatMessage::kSystem);
 }
 
@@ -1033,7 +1063,8 @@ void VitalSidePanel::layoutMessages() {
     return;
 
   float scaled_font_size = size_ratio_ * ChatMessage::kBaseFontSize;
-  int y_position = 0;
+  int top_padding = (int)(8.0f * size_ratio_);
+  int y_position = top_padding;
 
   for (int i = 0; i < (int)messages_.size(); ++i) {
     auto& message = messages_[i];
@@ -1121,8 +1152,6 @@ void VitalSidePanel::clearChat() {
   // Clear API conversation history
   ClaudeApiClient::instance().clearConversation();
 
-  // Show ready message
-  addMessage("Ready to create!", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::focusPromptEditor() {

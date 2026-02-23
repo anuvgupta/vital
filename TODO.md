@@ -6,6 +6,7 @@
 ### Open
 
 - Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
+    - Add examples of synth patches and corresponding descriptions by looking online at vital preset examples, adding and ai description of the sound (from multimodal) and the preset params in nat lang both --> find a way to automate this
 
 ### Long-Term
 
@@ -45,6 +46,7 @@
 - Queue messages when sent while agent is already thinking (request already in progress)
 - Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
 - Re-architected side panel: inline action button (mic/send/stop 3-state), voice chat button inside textarea, removed button row
+- Replaced "Ready to create!" intro message with centered logo + tagline intro screen (speech waveform icon + "Talk to your synthesizer")
 
 
 

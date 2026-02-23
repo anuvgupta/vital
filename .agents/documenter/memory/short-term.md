@@ -2,14 +2,11 @@
 
 ## Status: Ready for next task
 
-Last completed: Refactor voice chat button behavior (2026-02-22)
-- Voice chat button now disappears on click (instead of changing to "STOP")
-- Main action button switches to stop mode with recording indicator
-- When stop clicked: recording stops, text sent, voice chat button reappears
-- 3 edits in side_panel.cpp:
-  1. updateActionButtonState(): changed is_talk_recording to is_recording (covers both kRecordingTalk and kRecordingVoiceChat)
-  2. startVoiceChatRecording(): voice_chat_button_->setVisible(false), activate action indicator
-  3. stopRecording() voice chat branch: voice_chat_button_->setVisible(true)
+Last completed: Replace intro message with logo + tagline intro screen (2026-02-22)
+- Removed "Ready to create!" system messages from initializeApiClient() and clearChat()
+- Added speechWaveformIcon() to paths.h (inline SVG, white fill)
+- paintChatMessages() renders intro screen when messages_.empty(): icon (120px, 0.45 alpha) + tagline (0.55 alpha)
+- Added 8px top padding in layoutMessages() for first message breathing room
+- Updated textarea placeholder text
 - No bugs encountered
-- Key insight: action button click handler already routed kActionStop to stopRecording() handling both modes
-- Files: side_panel.cpp
+- Files: paths.h, side_panel.cpp
