@@ -308,13 +308,12 @@ void VitalSidePanel::paintBackground(Graphics& g) {
   // Draw restore button outside the clip region so it isn't clipped
   if (!restore_button_bounds_.isEmpty()) {
     auto rb = restore_button_bounds_.toFloat();
-    float icon_size = size_ratio_ * 12.0f;
-    float box_padding = size_ratio_ * 6.0f;
-    float box_size = icon_size + box_padding * 2.0f;
+    float icon_size = size_ratio_ * 10.8f;
+    float box_size = rb.getWidth();
 
     Colour bg_colour = findColour(Skin::kWidgetPrimary1, true).darker(hovering_restore_button_ ? 0.2f : 0.35f);
     g.setColour(bg_colour);
-    g.fillRoundedRectangle(rb, size_ratio_ * 5.0f);
+    g.fillRoundedRectangle(rb, size_ratio_ * 4.5f);
 
     Path icon = Paths::restoreIcon();
     float draw_size = icon_size * 0.95f;
@@ -347,7 +346,8 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
     float text_height = tagline_font_size * 1.4f;
 
     float gap = 16.0f * size_ratio_;
-    float total_height = icon_height + gap + text_height;
+    float spacer = text_height;
+    float total_height = icon_height + gap + text_height + spacer;
     float top_y = chat_bounds_.getCentreY() - total_height * 0.5f;
 
     // Draw icon centered
@@ -403,8 +403,8 @@ void VitalSidePanel::paintChatMessages(Graphics& g) {
     }
 
     if (msg_idx == hovered_message_index_ && has_checkpoint) {
-      float icon_size = size_ratio_ * 12.0f;
-      float box_padding = size_ratio_ * 6.0f;
+      float icon_size = size_ratio_ * 10.8f;
+      float box_padding = size_ratio_ * 5.4f;
       float box_size = icon_size + box_padding * 2.0f;
       float box_x = (float)msg_bounds.getRight() - box_size * (3.0f / 4.0f);
       float box_y = (float)msg_bounds.getY() - box_size * (1.0f / 4.0f);
@@ -558,7 +558,7 @@ void VitalSidePanel::resized() {
   clear_circle_bg_->setBounds(clear_circle_x, clear_circle_y, clear_circle_size, clear_circle_size);
   clear_circle_bg_->setColor(Colours::white.withAlpha(0.13f));
 
-  int clear_icon_size = (int)(13.5f * size_ratio_);
+  int clear_icon_size = (int)(12.15f * size_ratio_);
   int clear_icon_off = (clear_circle_size - clear_icon_size) / 2;
   clear_x_icon_->setBounds(clear_circle_x + clear_icon_off, clear_circle_y + clear_icon_off,
                             clear_icon_size, clear_icon_size);
@@ -644,16 +644,16 @@ void VitalSidePanel::resized() {
 
   // Cancel edit button overlapping top-right of textarea
   if (cancel_edit_button_) {
-    int cancel_size = (int)(24.0f * size_ratio_);
-    int cancel_x = padding + content_width - cancel_size - (int)(4.0f * size_ratio_);
-    int cancel_y = textarea_y + (int)(4.0f * size_ratio_);
+    int cancel_size = 24;
+    int cancel_x = padding + content_width - cancel_size - 4;
+    int cancel_y = textarea_y + 4;
     cancel_edit_button_->setBounds(cancel_x, cancel_y, cancel_size, cancel_size);
     cancel_edit_button_->getGlComponent()->text().setTextSize(size_ratio_ * 14.0f);
     cancel_edit_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
     cancel_edit_button_->getGlComponent()->text().redrawImage(true);
     updateCancelEditButtonColors();
 
-    int cancel_icon_size = (int)(12.0f * size_ratio_);
+    int cancel_icon_size = cancel_size / 2;
     int cancel_icon_off = (cancel_size - cancel_icon_size) / 2;
     if (cancel_edit_x_icon_) {
       cancel_edit_x_icon_->setBounds(cancel_x + cancel_icon_off, cancel_y + cancel_icon_off,
