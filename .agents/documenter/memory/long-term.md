@@ -32,6 +32,9 @@
 - Platform defines go in per-exporter extraDefs in vital.jucer, NOT project-level defines
 - ix::initNetSystem() required on Windows (WSAStartup); called in DeepgramClient::initialize()
 - Never include IXNetSystem.h in unity build files; use forward declarations to avoid Windows header min/max macro pollution
+- Silence detection uses Deepgram-activity-based inactivity timeout (NOT amplitude). VitalSidePanel inherits juce::Timer, polls 250ms. Tracks recording_start_ms_ (grace period) and last_deepgram_activity_ms_ (inactivity check). MicrophoneCapture amplitude silence callback is passed nullptr.
+- Deepgram's ML-based VAD is far superior to raw amplitude thresholding — background noise, mic gain, and fans defeat amplitude detection
+- MessageManager::callAsync captures callback copies — disconnecting Deepgram doesn't cancel queued lambdas. Always guard async callbacks with state checks (e.g. recording_mode_ != kRecordingTalk)
 
 ### Checkpoint/Autosave Pattern
 - Checkpoints are saved as full .vital preset files to disk, indexed by message position in the chat

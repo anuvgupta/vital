@@ -74,7 +74,8 @@ struct EditModeSnapshot {
 
 class VitalSidePanel : public SynthSection,
                        public TextEditor::Listener,
-                       public ScrollBar::Listener
+                       public ScrollBar::Listener,
+                       public Timer
 {
 public:
     enum RecordingMode {
@@ -161,6 +162,9 @@ public:
     bool isRecording() const { return recording_mode_ != kRecordingNone; }
     RecordingMode recordingMode() const { return recording_mode_; }
 
+    // Timer (Deepgram inactivity timeout)
+    void timerCallback() override;
+
 private:
     // Commits and exits edit mode: deletes orphaned checkpoint files that were
     // preserved during the tentative restore, then resets edit state. Called from
@@ -179,6 +183,11 @@ private:
     std::unique_ptr<OpenGlToggleButton> action_button_;
     std::unique_ptr<OpenGlToggleButton> voice_chat_button_;
     std::unique_ptr<OpenGlToggleButton> clear_button_;
+    std::unique_ptr<OpenGlQuad> clear_circle_bg_;
+    std::unique_ptr<PlainShapeComponent> clear_x_icon_;
+    Rectangle<int> clear_button_bounds_;
+    bool clear_button_active_ = false;
+    bool clear_button_hovered_ = false;
 
     // Chat state
     std::unique_ptr<OpenGlScrollBar> scroll_bar_;
@@ -212,6 +221,8 @@ private:
     bool action_button_hovered_ = false;
     ActionButtonMode action_button_mode_ = kActionMic;
     RecordingMode recording_mode_ = kRecordingNone;
+    double recording_start_ms_ = 0.0;
+    double last_deepgram_activity_ms_ = 0.0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VitalSidePanel)
 };

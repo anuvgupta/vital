@@ -25,7 +25,7 @@ class MicrophoneCapture : private AudioIODeviceCallback {
   public:
     static constexpr int kTargetSampleRate = 16000;
     static constexpr float kSilenceThreshold = 0.06f;
-    static constexpr float kDefaultSilenceTimeoutSeconds = 5.0f;
+    static constexpr float kDefaultSilenceTimeoutSeconds = 2.0f;
 
     using AudioDataCallback = std::function<void(const void* data, int num_bytes)>;
     using SilenceCallback = std::function<void()>;

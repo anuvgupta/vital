@@ -212,8 +212,19 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
 
   clear_button_ = std::make_unique<OpenGlToggleButton>("Clear");
   addButton(clear_button_.get());
-  clear_button_->setUiButton(true);
-  clear_button_->setText(String(CharPointer_UTF8("\xc3\x97")));
+  clear_button_->setVisible(false);
+  clear_button_->setBounds(0, 0, 0, 0);
+
+  clear_circle_bg_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
+  addOpenGlComponent(clear_circle_bg_.get());
+  clear_circle_bg_->setActive(false);
+
+  clear_x_icon_ = std::make_unique<PlainShapeComponent>("clear_x_icon");
+  addOpenGlComponent(clear_x_icon_.get());
+  clear_x_icon_->setShape(Paths::clearXIcon());
+  clear_x_icon_->setUseAlpha(true);
+  clear_x_icon_->setColor(Colours::white);
+  clear_x_icon_->setActive(false);
 
   cancel_edit_button_ = std::make_unique<OpenGlToggleButton>("CancelEdit");
   addButton(cancel_edit_button_.get());
@@ -236,7 +247,7 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   addOpenGlComponent(mic_icon_shape_.get());
   mic_icon_shape_->setShape(Paths::microphoneIcon2());
   mic_icon_shape_->setUseAlpha(true);
-  mic_icon_shape_->setColor(Colour(0xFF222222));
+  mic_icon_shape_->setColor(Colours::white.withAlpha(0.7f));
   mic_icon_shape_->setActive(true);
 
   send_icon_shape_ = std::make_unique<PlainShapeComponent>("send_icon");
@@ -489,14 +500,20 @@ void VitalSidePanel::resized() {
   int textarea_height = 180;
   int title_height = 30;
 
-  // Clear button in the title row (top right)
-  int clear_size = title_height;
-  int clear_x = getWidth() - padding - clear_size;
-  int clear_y = padding;
-  clear_button_->setBounds(clear_x, clear_y, clear_size, clear_size);
-  clear_button_->getGlComponent()->text().setTextSize(size_ratio_ * 16.0f);
-  clear_button_->getGlComponent()->text().setFontType(PlainTextComponent::kTitle);
-  clear_button_->getGlComponent()->text().redrawImage(true);
+  // Clear button circle in the title row (top right)
+  int clear_area = title_height;
+  int clear_circle_size = (int)(22.0f * size_ratio_);
+  int clear_circle_x = getWidth() - padding - clear_area + (clear_area - clear_circle_size) / 2;
+  int clear_circle_y = padding + (clear_area - clear_circle_size) / 2;
+  clear_button_bounds_ = Rectangle<int>(clear_circle_x, clear_circle_y, clear_circle_size, clear_circle_size);
+  clear_circle_bg_->setBounds(clear_circle_x, clear_circle_y, clear_circle_size, clear_circle_size);
+  clear_circle_bg_->setColor(Colours::white.withAlpha(0.13f));
+
+  int clear_icon_size = (int)(11.5f * size_ratio_);
+  int clear_icon_off = (clear_circle_size - clear_icon_size) / 2;
+  clear_x_icon_->setBounds(clear_circle_x + clear_icon_off, clear_circle_y + clear_icon_off,
+                            clear_icon_size, clear_icon_size);
+  clear_x_icon_->redrawImage(true);
 
   // Hide old large SEND button (functionality moved to inline action circle)
   action_button_->setBounds(0, 0, 0, 0);
@@ -510,7 +527,7 @@ void VitalSidePanel::resized() {
 
     Colour empty_color = findColour(Skin::kBodyText, true);
     empty_color = empty_color.withAlpha(0.5f * empty_color.getFloatAlpha());
-    prompt_editor_->setTextToShowWhenEmpty("Describe your synth patch. What do you want to hear?", empty_color);
+    prompt_editor_->setTextToShowWhenEmpty("Describe your sound, turn knobs, ask questions...", empty_color);
     prompt_editor_->setColour(CaretComponent::caretColourId, findColour(Skin::kTextEditorCaret, true));
     prompt_editor_->setColour(TextEditor::textColourId, findColour(Skin::kBodyText, true));
     prompt_editor_->setColour(TextEditor::highlightedTextColourId, findColour(Skin::kBodyText, true));
@@ -531,8 +548,6 @@ void VitalSidePanel::resized() {
     action_button_bounds_ = Rectangle<int>(circle_x, circle_y, circle_size, circle_size);
 
     action_circle_bg_->setBounds(circle_x, circle_y, circle_size, circle_size);
-    Colour purple = findColour(Skin::kUiActionButton, true);
-    action_circle_bg_->setColor(action_button_hovered_ ? purple.brighter(0.15f) : purple);
 
     int mic_size = (int)(16.245f * size_ratio_);
     int mic_off = (circle_size - mic_size) / 2;
@@ -611,10 +626,7 @@ void VitalSidePanel::resized() {
 }
 
 void VitalSidePanel::buttonClicked(Button* clicked_button) {
-  if (clicked_button == clear_button_.get()) {
-    clearChat();
-  }
-  else if (clicked_button == cancel_edit_button_.get()) {
+  if (clicked_button == cancel_edit_button_.get()) {
     cancelEditMode();
   }
   else if (clicked_button == voice_chat_button_.get()) {
@@ -693,19 +705,26 @@ void VitalSidePanel::startTalkRecording() {
   bool connected = dg.connect(
     [this](const String& transcript, bool is_final) {
       if (is_final && transcript.trim().isNotEmpty()) {
+        if (recording_mode_ != kRecordingTalk)
+          return;
 #if !defined(NO_TEXT_ENTRY)
         if (prompt_editor_) {
           prompt_editor_->clear();
           prompt_editor_->redoImage();
+        clearThinkingMessage();
+        clearThinkingMessage();
+        clearThinkingMessage();
+        addMessage("Thinking...", ChatMessage::kSystem);
         }
 #endif
-        clearThinkingMessage();
         addMessage(transcript.trim(), ChatMessage::kUser);
-        addMessage("Thinking...", ChatMessage::kSystem);
 
         for (Listener* listener : listeners_)
           listener->sidePanelMessageSubmitted(transcript.trim());
+
+        stopRecording();
       } else if (!is_final) {
+        last_deepgram_activity_ms_ = Time::getMillisecondCounterHiRes();
 #if !defined(NO_TEXT_ENTRY)
         if (prompt_editor_) {
           prompt_editor_->setText(transcript, false);
@@ -725,14 +744,9 @@ void VitalSidePanel::startTalkRecording() {
     return;
   }
 
-  // Silence callback stops recording in TALK mode
   bool capturing = mic_capture_->startCapture(
     [](const void* data, int num_bytes) {
       DeepgramClient::instance().sendAudioData(data, num_bytes);
-    },
-    [this]() {
-      DBG("VitalSidePanel: Silence timeout - stopping TALK recording");
-      stopRecording();
     }
   );
 
@@ -745,19 +759,18 @@ void VitalSidePanel::startTalkRecording() {
   recording_mode_ = kRecordingTalk;
   mic_recording_indicator_->setActive(true);
   updateActionButtonState();
+  recording_start_ms_ = last_deepgram_activity_ms_ = Time::getMillisecondCounterHiRes();
+  startTimer(250);
   addMessage("Listening...", ChatMessage::kSystem);
 }
 
 void VitalSidePanel::startVoiceChatRecording() {
-  static constexpr float kVoiceChatSilenceTimeout = 15.0f;
-
   DeepgramClient& dg = DeepgramClient::instance();
   if (!dg.isInitialized()) {
     addMessage("Deepgram API key not configured. Use the menu to set it.", ChatMessage::kSystem);
     return;
   }
 
-  // Show confirmation popup (cross-platform native dialog)
   AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
     "Voice Chat",
     "Voice chat will stay active until you press STOP or 15 seconds of silence is detected.");
@@ -765,19 +778,19 @@ void VitalSidePanel::startVoiceChatRecording() {
   bool connected = dg.connect(
     [this](const String& transcript, bool is_final) {
       if (is_final && transcript.trim().isNotEmpty()) {
+        last_deepgram_activity_ms_ = Time::getMillisecondCounterHiRes();
 #if !defined(NO_TEXT_ENTRY)
         if (prompt_editor_) {
           prompt_editor_->clear();
           prompt_editor_->redoImage();
         }
 #endif
-        clearThinkingMessage();
         addMessage(transcript.trim(), ChatMessage::kUser);
-        addMessage("Thinking...", ChatMessage::kSystem);
 
         for (Listener* listener : listeners_)
           listener->sidePanelMessageSubmitted(transcript.trim());
       } else if (!is_final) {
+        last_deepgram_activity_ms_ = Time::getMillisecondCounterHiRes();
 #if !defined(NO_TEXT_ENTRY)
         if (prompt_editor_) {
           prompt_editor_->setText(transcript, false);
@@ -797,16 +810,10 @@ void VitalSidePanel::startVoiceChatRecording() {
     return;
   }
 
-  // 12-second hardcoded silence timeout for VOICE CHAT mode
   bool capturing = mic_capture_->startCapture(
     [](const void* data, int num_bytes) {
       DeepgramClient::instance().sendAudioData(data, num_bytes);
-    },
-    [this]() {
-      DBG("VitalSidePanel: Silence timeout - stopping VOICE CHAT recording");
-      stopRecording();
-    },
-    kVoiceChatSilenceTimeout
+    }
   );
 
   if (!capturing) {
@@ -821,13 +828,38 @@ void VitalSidePanel::startVoiceChatRecording() {
   updateVoiceChatButtonColors();
   resized();
   voice_chat_recording_indicator_->setActive(true);
+  recording_start_ms_ = last_deepgram_activity_ms_ = Time::getMillisecondCounterHiRes();
+  startTimer(250);
   addMessage("Listening until you stop...", ChatMessage::kSystem);
+}
+
+void VitalSidePanel::timerCallback() {
+  if (recording_mode_ == kRecordingNone) {
+    stopTimer();
+    return;
+  }
+
+  double now = Time::getMillisecondCounterHiRes();
+  double grace_ms = (recording_mode_ == kRecordingTalk) ? 3000.0 : 5000.0;
+
+  if ((now - recording_start_ms_) < grace_ms)
+    return;
+
+  double inactive_ms = now - last_deepgram_activity_ms_;
+  double timeout_ms = (recording_mode_ == kRecordingTalk) ? 1500.0 : 15000.0;
+
+  if (inactive_ms >= timeout_ms) {
+    DBG("VitalSidePanel: Deepgram inactivity timeout (" + String(inactive_ms / 1000.0, 1)
+        + "s) - stopping " + String(recording_mode_ == kRecordingTalk ? "TALK" : "VOICE CHAT"));
+    stopRecording();
+  }
 }
 
 void VitalSidePanel::stopRecording() {
   if (recording_mode_ == kRecordingNone)
     return;
 
+  stopTimer();
   mic_capture_->stopCapture();
 
   String pending_text;
@@ -855,12 +887,9 @@ void VitalSidePanel::stopRecording() {
 #endif
 
   if (pending_text.isNotEmpty()) {
-    // Commit and exit edit mode if active (cleans up orphaned checkpoint files)
     exitEditMode();
 
-    clearThinkingMessage();
     addMessage(pending_text, ChatMessage::kUser);
-    addMessage("Thinking...", ChatMessage::kSystem);
     for (Listener* listener : listeners_)
       listener->sidePanelMessageSubmitted(pending_text);
   }
@@ -1010,8 +1039,10 @@ void VitalSidePanel::layoutMessages() {
   // Hide clear button when chat is empty (only the initial system message)
   bool has_user_messages = std::any_of(messages_.begin(), messages_.end(),
       [](const ChatMessage& m) { return m.type == ChatMessage::kUser; });
-  if (clear_button_)
-    clear_button_->setVisible(has_user_messages);
+  clear_button_active_ = has_user_messages;
+  clear_circle_bg_->setActive(has_user_messages);
+  clear_x_icon_->setActive(has_user_messages);
+  if (has_user_messages) clear_x_icon_->redrawImage(true);
 
   setScrollBarRange();
 }
@@ -1082,10 +1113,14 @@ void VitalSidePanel::updateVoiceChatButtonColors() {
     voice_chat_button_->setColour(Skin::kUiActionButtonHover, findColour(Skin::kUiButtonHover, true));
     voice_chat_button_->setColour(Skin::kUiActionButtonPressed, findColour(Skin::kUiButtonPressed, true));
   } else {
-    voice_chat_button_->removeColour(Skin::kUiActionButton);
-    voice_chat_button_->removeColour(Skin::kUiActionButtonHover);
-    voice_chat_button_->removeColour(Skin::kUiActionButtonPressed);
+    Colour dimmed = Colours::white.withAlpha(0.13f);
+    Colour dimmed_hover = Colours::white.withAlpha(0.22f);
+    Colour dimmed_pressed = Colours::white.withAlpha(0.28f);
+    voice_chat_button_->setColour(Skin::kUiActionButton, dimmed);
+    voice_chat_button_->setColour(Skin::kUiActionButtonHover, dimmed_hover);
+    voice_chat_button_->setColour(Skin::kUiActionButtonPressed, dimmed_pressed);
   }
+  voice_chat_button_->setColour(Skin::kUiButtonText, Colours::white);
   voice_chat_button_->getGlComponent()->setColors();
 }
 
@@ -1111,15 +1146,35 @@ void VitalSidePanel::updateActionButtonState() {
     send_icon_shape_->setActive(new_mode == kActionSend);
     stop_icon_shape_->setActive(new_mode == kActionStop);
 
-    if (new_mode == kActionMic) mic_icon_shape_->redrawImage(true);
-    if (new_mode == kActionSend) send_icon_shape_->redrawImage(true);
-    if (new_mode == kActionStop) stop_icon_shape_->redrawImage(true);
+    if (new_mode == kActionMic) {
+      mic_icon_shape_->setColor(Colours::white.withAlpha(0.7f));
+      mic_icon_shape_->redrawImage(true);
+    }
+    if (new_mode == kActionSend) {
+      send_icon_shape_->setColor(Colour(0xFF222222));
+      send_icon_shape_->redrawImage(true);
+    }
+    if (new_mode == kActionStop) {
+      stop_icon_shape_->setColor(Colour(0xFF222222));
+      stop_icon_shape_->redrawImage(true);
+    }
 
     action_button_mode_ = new_mode;
   }
 
-  Colour purple = findColour(Skin::kUiActionButton, true);
-  action_circle_bg_->setColor(action_button_hovered_ ? purple.brighter(0.15f) : purple);
+  switch (action_button_mode_) {
+    case kActionMic:
+      action_circle_bg_->setColor(Colours::white.withAlpha(action_button_hovered_ ? 0.22f : 0.13f));
+      break;
+    case kActionSend: {
+      Colour purple = findColour(Skin::kUiActionButton, true);
+      action_circle_bg_->setColor(action_button_hovered_ ? purple.brighter(0.15f) : purple);
+      break;
+    }
+    case kActionStop:
+      action_circle_bg_->setColor(action_button_hovered_ ? Colours::white.darker(0.1f) : Colours::white);
+      break;
+  }
 }
 
 // ============================================================================
@@ -1381,12 +1436,19 @@ void VitalSidePanel::cancelEditMode() {
 void VitalSidePanel::mouseMove(const MouseEvent& e) {
   auto pos = e.getEventRelativeTo(this).getPosition();
 
+  // Track clear button circle hover
+  bool over_clear = clear_button_active_ && clear_button_bounds_.contains(pos);
+  if (over_clear != clear_button_hovered_) {
+    clear_button_hovered_ = over_clear;
+    clear_circle_bg_->setColor(over_clear ? Colours::white.withAlpha(0.2f) : Colours::white.withAlpha(0.13f));
+    setMouseCursor(over_clear ? MouseCursor::PointingHandCursor : MouseCursor::NormalCursor);
+  }
+
   // Track action button (mic/send circle) hover
   bool over_action = !action_button_bounds_.isEmpty() && action_button_bounds_.contains(pos);
   if (over_action != action_button_hovered_) {
     action_button_hovered_ = over_action;
-    Colour purple = findColour(Skin::kUiActionButton, true);
-    action_circle_bg_->setColor(action_button_hovered_ ? purple.brighter(0.15f) : purple);
+    updateActionButtonState();
     if (prompt_editor_)
       prompt_editor_->setMouseCursor(over_action ? MouseCursor::PointingHandCursor : MouseCursor::IBeamCursor);
   }
@@ -1433,10 +1495,13 @@ void VitalSidePanel::mouseMove(const MouseEvent& e) {
 }
 
 void VitalSidePanel::mouseExit(const MouseEvent& e) {
+  if (clear_button_hovered_) {
+    clear_button_hovered_ = false;
+    clear_circle_bg_->setColor(Colours::white.withAlpha(0.13f));
+  }
   if (action_button_hovered_) {
     action_button_hovered_ = false;
-    Colour purple = findColour(Skin::kUiActionButton, true);
-    action_circle_bg_->setColor(purple);
+    updateActionButtonState();
   }
   if (hovered_message_index_ != -1 || hovering_restore_button_) {
     hovered_message_index_ = -1;
@@ -1448,6 +1513,12 @@ void VitalSidePanel::mouseExit(const MouseEvent& e) {
 
 void VitalSidePanel::mouseUp(const MouseEvent& e) {
   auto pos = e.getEventRelativeTo(this).getPosition();
+
+  // Clear chat circle click
+  if (clear_button_active_ && clear_button_bounds_.contains(pos)) {
+    clearChat();
+    return;
+  }
 
   // Action circle click — send, stop recording, or start talk recording
   if (!action_button_bounds_.isEmpty() && action_button_bounds_.contains(pos)) {

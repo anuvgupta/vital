@@ -1007,6 +1007,19 @@ class Paths {
       return path;
     }
 
+    static Path clearXIcon() {
+      static const char svg[] =
+        "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">"
+        "<path d=\"M18.7 5.3a1.5 1.5 0 0 0-2.12 0L12 9.88 7.42 5.3a1.5 1.5 0 0 0-2.12 2.12"
+        "L9.88 12 5.3 16.58a1.5 1.5 0 0 0 2.12 2.12L12 14.12l4.58 4.58a1.5 1.5 0 0 0 2.12-2.12"
+        "L14.12 12l4.58-4.58a1.5 1.5 0 0 0 0-2.12z\" fill=\"#ffffff\"/>"
+        "</svg>";
+      Path path = fromSvgData(svg, sizeof(svg) - 1);
+      path.addLineSegment(Line<float>(0.0f, 0.0f, 0.0f, 0.0f), 0.01f);
+      path.addLineSegment(Line<float>(24.0f, 24.0f, 24.0f, 24.0f), 0.01f);
+      return path;
+    }
+
     static Path wideBand() {
       static constexpr float kTop = 2.0f / 5.0f;
       static constexpr float kBottom = 4.0f / 5.0f;

@@ -50,9 +50,10 @@
 ## Bugs
 
 ### Open
-- is conversation silence detection set as 20s for voice chat, 5s for dictation? is it wait 5 seconds (or 20 seconds) min then after that end early on detecting the next silence? or is it wait until the first silence that lasts 5 seconds (or 20 seconds)? i thought we programmed the second one, but maybe the first one was what we programmed. not sure.
 
 ### Done
+- Silence detection values clarified and reworked — replaced amplitude-based silence detection with Deepgram-activity-based inactivity timeout (TALK: 3s grace + 1.5s timeout; VOICE CHAT: 5s grace + 15s timeout)
+- Double "Thinking..." message in voice recording modes — voice callbacks were redundantly adding "Thinking..." alongside sidePanelMessageSubmitted(); removed from 3 callback sites
 - Queued messages during multi-action leaving stranded step messages — `updateStatusMessage` now scans backwards for last kSystem/kStep (handles interleaved kUser), and `clearThinkingMessage()` called on queue so step lifecycle isn't disrupted
 - Stale API responses arriving after clear conversation — `clearChat()` now bumps generation counter via `sidePanelClearRequested()` listener callback
 - Stale API responses corrupting UI after edit-mode restore — added generation counter to invalidate in-flight async callbacks on restore/cancel

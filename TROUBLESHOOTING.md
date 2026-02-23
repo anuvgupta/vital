@@ -213,6 +213,27 @@
     - **Key lesson**: Methods operating on "the last message" need backward scanning when messages can be interleaved by async user input. Queue processing must dequeue one-at-a-time, not swap-and-drop.
     - Files: `src/interface/editor_sections/side_panel.cpp`, `src/interface/editor_sections/full_interface.cpp`
 
+- **OpenGlButtonComponent::renderTextButton() always renders background quad — cannot hide with style or alpha**:
+    - `kJustText` button style check is unreachable in `renderTextButton()` when button text is inactive (non-toggled state) — background quad draws unconditionally before the style branch.
+    - `setAlpha(0.0f)` on JUCE Component has NO effect on OpenGL rendering. Vital's GL pipeline bypasses the standard JUCE alpha entirely.
+    - `OpenGlQuad` has `setActive()` but no `isActive()` getter — track state with your own boolean if needed.
+    - **Solution**: Set bounds to `(0,0,0,0)` + `setVisible(false)` to truly hide an OpenGL button. Handle clicks via `mouseUp()` hit testing on the parent component. For custom-rendered replacements, use `OpenGlQuad` (background) + `PlainShapeComponent` (icon) with manual hover/click logic.
+    - Files: `src/interface/editor_sections/side_panel.cpp`, `src/interface/look_and_feel/paths.h`
+
+- **Double "Thinking..." messages in voice recording modes**:
+    - Both the Deepgram `is_final` callback (TALK/VOICE CHAT) AND `FullInterface::sidePanelMessageSubmitted()` were adding "Thinking..." messages. Result: two "Thinking..." indicators stacked in the chat UI.
+    - **Root cause**: When voice input was first implemented, "Thinking..." was added explicitly in the recording callbacks. Later, "Thinking..." creation was centralized in `sidePanelMessageSubmitted()` (documented in TROUBLESHOOTING), but the voice callbacks were never updated to remove their redundant copies.
+    - **Solution**: Removed `clearThinkingMessage()` + `addMessage("Thinking...", ...)` from three places: TALK `is_final` callback, VOICE CHAT `is_final` callback, and `stopRecording()` pending-text path. `sidePanelMessageSubmitted()` is the single canonical place that adds "Thinking...".
+    - **Key lesson**: When centralizing behavior (like "Thinking..." creation), audit ALL code paths that trigger it — including async callbacks in voice recording flows.
+    - Files: `src/interface/editor_sections/side_panel.cpp`
+
+- **Race condition between Deepgram async callback and timer-based recording stop**:
+    - In TALK mode, both the Deepgram `is_final` callback (via `MessageManager::callAsync`) and the inactivity timer could fire and call `stopRecording()` / submit the same message, causing duplicate submissions.
+    - **Root cause**: `MessageManager::callAsync` captures callback copies — disconnecting Deepgram doesn't prevent already-queued callbacks from running. The timer and callback had no mutual exclusion.
+    - **Solution**: (1) TALK `is_final` callback now calls `stopRecording()` directly (timer is just a safety net). (2) Added `recording_mode_ != kRecordingTalk` guard in the callback to skip execution if recording already stopped.
+    - **Key lesson**: `MessageManager::callAsync` queues copies — stopping/disconnecting the source doesn't cancel already-enqueued lambdas. Always guard with state checks.
+    - Files: `src/interface/editor_sections/side_panel.cpp`
+
 - **Multi-action one-shotting from parent message in conversation history**:
     - When multi-action flows split a request into sub-actions (e.g., "blippy jangly synth" → sound design translation → 3 sequential parameter changes), the LLM received the full original message (or translation text) in `conversation_history_` alongside the first sub-action. It read the full scope upfront and completed all steps on the first API call, returning "already done" text for subsequent sub-actions (massive token waste).
     - **Root cause**: `FullInterface::executeNextAction()` called `addToHistory("user", message)` at line 1180 in `full_interface.cpp` before executing sub-actions. This stored the full original message in history, giving the LLM context it shouldn't have for sequential execution.
