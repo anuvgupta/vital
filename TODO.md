@@ -10,9 +10,9 @@
 ### Long-Term
 
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
-- Optimize router to also complete preset updates for single actions (see doc in .plans/prompts)
 
 ### Deprioritized
+- Optimize router to also complete preset updates for single actions (see doc in .plans/prompts)
 - Migrate to wispr flow for voice to text
 - Mic calibration for silence vs talking (establish ambient noise level baseline) - do this when app starts (optional)
 - VOICE CHAT mode: intelligent local VAD gating to avoid sending silence to Deepgram

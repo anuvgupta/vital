@@ -727,10 +727,6 @@ void VitalSidePanel::startTalkRecording() {
         if (prompt_editor_) {
           prompt_editor_->clear();
           prompt_editor_->redoImage();
-        clearThinkingMessage();
-        clearThinkingMessage();
-        clearThinkingMessage();
-        addMessage("Thinking...", ChatMessage::kSystem);
         }
 #endif
         addMessage(transcript.trim(), ChatMessage::kUser);

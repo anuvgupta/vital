@@ -228,7 +228,7 @@
     - Both the Deepgram `is_final` callback (TALK/VOICE CHAT) AND `FullInterface::sidePanelMessageSubmitted()` were adding "Thinking..." messages. Result: two "Thinking..." indicators stacked in the chat UI.
     - **Root cause**: When voice input was first implemented, "Thinking..." was added explicitly in the recording callbacks. Later, "Thinking..." creation was centralized in `sidePanelMessageSubmitted()` (documented in TROUBLESHOOTING), but the voice callbacks were never updated to remove their redundant copies.
     - **Solution**: Removed `clearThinkingMessage()` + `addMessage("Thinking...", ...)` from three places: TALK `is_final` callback, VOICE CHAT `is_final` callback, and `stopRecording()` pending-text path. `sidePanelMessageSubmitted()` is the single canonical place that adds "Thinking...".
-    - **Key lesson**: When centralizing behavior (like "Thinking..." creation), audit ALL code paths that trigger it — including async callbacks in voice recording flows.
+    - **Key lesson**: When centralizing behavior (like "Thinking..." creation), audit ALL code paths that trigger it — including async callbacks in voice recording flows. This bug recurred because the TALK `is_final` callback still had 3x `clearThinkingMessage()` + 1x `addMessage("Thinking...", kSystem)` that were missed in the first fix. Always grep for ALL call sites.
     - Files: `src/interface/editor_sections/side_panel.cpp`
 
 - **Race condition between Deepgram async callback and timer-based recording stop**:
