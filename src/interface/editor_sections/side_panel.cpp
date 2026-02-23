@@ -236,21 +236,21 @@ VitalSidePanel::VitalSidePanel() : SynthSection("side_panel") {
   addOpenGlComponent(mic_icon_shape_.get());
   mic_icon_shape_->setShape(Paths::microphoneIcon2());
   mic_icon_shape_->setUseAlpha(true);
-  mic_icon_shape_->setColor(Colours::black);
+  mic_icon_shape_->setColor(Colour(0xFF222222));
   mic_icon_shape_->setActive(true);
 
   send_icon_shape_ = std::make_unique<PlainShapeComponent>("send_icon");
   addOpenGlComponent(send_icon_shape_.get());
   send_icon_shape_->setShape(Paths::sendArrowIcon());
   send_icon_shape_->setUseAlpha(true);
-  send_icon_shape_->setColor(Colours::black);
+  send_icon_shape_->setColor(Colour(0xFF222222));
   send_icon_shape_->setActive(false);
 
   stop_icon_shape_ = std::make_unique<PlainShapeComponent>("stop_icon");
   addOpenGlComponent(stop_icon_shape_.get());
   stop_icon_shape_->setShape(Paths::stopIcon());
   stop_icon_shape_->setUseAlpha(true);
-  stop_icon_shape_->setColor(Colours::black);
+  stop_icon_shape_->setColor(Colour(0xFF222222));
   stop_icon_shape_->setActive(false);
 
   mic_recording_indicator_ = std::make_unique<OpenGlQuad>(Shaders::kCircleFragment);
@@ -534,17 +534,17 @@ void VitalSidePanel::resized() {
     Colour purple = findColour(Skin::kUiActionButton, true);
     action_circle_bg_->setColor(action_button_hovered_ ? purple.brighter(0.15f) : purple);
 
-    int mic_size = (int)(19.0f * size_ratio_);
+    int mic_size = (int)(16.245f * size_ratio_);
     int mic_off = (circle_size - mic_size) / 2;
     mic_icon_shape_->setBounds(circle_x + mic_off, circle_y + mic_off, mic_size, mic_size);
     mic_icon_shape_->redrawImage(true);
 
-    int send_size = (int)(16.0f * size_ratio_);
+    int send_size = (int)(13.92f * size_ratio_);
     int send_off = (circle_size - send_size) / 2;
     send_icon_shape_->setBounds(circle_x + send_off, circle_y + send_off, send_size, send_size);
     send_icon_shape_->redrawImage(true);
 
-    int stop_size = (int)(13.0f * size_ratio_);
+    int stop_size = (int)(12.48f * size_ratio_);
     int stop_off = (circle_size - stop_size) / 2;
     stop_icon_shape_->setBounds(circle_x + stop_off, circle_y + stop_off, stop_size, stop_size);
     stop_icon_shape_->redrawImage(true);
