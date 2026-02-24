@@ -1239,9 +1239,9 @@ void FullInterface::executeNextAction() {
   String action = pending_actions_[current_action_index_];
   int stepNum = current_action_index_ + 1;
   String truncated = action;
-  if (action.length() > 50) {
-    int cutoff = action.substring(0, 50).lastIndexOfChar(' ');
-    truncated = action.substring(0, cutoff > 0 ? cutoff : 50) + "...";
+  if (action.length() > 60) {
+    int cutoff = action.substring(0, 60).lastIndexOfChar(' ');
+    truncated = action.substring(0, cutoff > 0 ? cutoff : 60) + " ...";
   }
   String stepMsg = "Working on step " + String(stepNum) + " of " + String(total_actions_) + ": " + truncated;
   panel->updateStatusMessage(stepMsg, ChatMessage::kStep);
