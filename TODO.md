@@ -2,10 +2,10 @@
 
 
 ## Features
-- create new file for api requests on every new chat (rename th eold one if needed incrementally)
-- hide responses from sub-actions during sound design mult-actions but not for user direct multi-actions
 
 ### Open
+
+- create new file for api requests on every new chat (rename th eold one if needed incrementally)
 
 - Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
     - Add examples of synth patches and corresponding descriptions by looking online at vital preset examples, adding and ai description of the sound (from multimodal) and the preset params in nat lang both --> find a way to automate this
@@ -50,11 +50,11 @@
 - Re-architected side panel: inline action button (mic/send/stop 3-state), voice chat button inside textarea, removed button row
 - Replaced "Ready to create!" intro message with centered logo + tagline intro screen (speech waveform icon + "Talk to your synthesizer")
 - Preset save option from chatbot — router infers save intent, returns save_required + preset_name, saves to Sound Designer folder, shows confirmation in chat
+- hide responses from sub-actions during sound design mult-actions but not for user direct multi-actions
 
 
 
 ## Bugs
-- "(preset updated)" showing up in chat window
 
 ### Open
 
@@ -78,4 +78,5 @@
 - Integrate with deepgram for voice to text
 - Sometimes prints out json data / examples - fixed?
 - Conversation history not restoring on cancel-edit — `truncateHistoryTo()` is shrink-only; saved int size was useless after truncation. Fixed by storing full history snapshot in EditModeSnapshot
+- "(preset updated)" showing up in chat window — changed placeholder to "Done.", plus restructured API calls to use XML-tagged sections separating history from current request
 

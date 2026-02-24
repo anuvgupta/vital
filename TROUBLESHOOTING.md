@@ -258,6 +258,12 @@
     - **Solution**: Added `HistoryEntry` struct and `getHistorySnapshot()` / `restoreHistory()` methods to `ClaudeApiClient`. `EditModeSnapshot` now stores `vector<HistoryEntry>` (full copy of conversation history). On cancel, `restoreHistory()` replaces the entire history vector. Updated `VitalSidePanel::Listener` interface accordingly.
     - Files: `src/common/claude_api_client.h/cpp`, `src/interface/editor_sections/side_panel.h/cpp`
 
+- **LLM parroting placeholder text and re-executing old requests from conversation history**:
+    - The placeholder `"(preset updated)"` stored in assistant history when the LLM returned pure JSON was being echoed back as text in subsequent turns, appearing in the chat UI.
+    - Separately, the router was re-routing old commands (e.g., "turn on osc 3" from 5 turns ago) because both the router and main API sent conversation history as flat alternating user/assistant messages. The LLM couldn't distinguish old context from the current request.
+    - **Solution**: (1) Changed placeholder from `"(preset updated)"` to `"Done."` — short, natural, unlikely to be parroted. (2) Restructured both `routeMessageAsync()` and `sendMessagesAsync()` to send a single user message with XML-tagged sections: `<conversation_history>` (prior turns as context only), `<current_preset>` (main API only), `<current_request>` (the actual message to act on). Updated `ROUTER_PROMPT.md` and `SYSTEM_PROMPT.md` to describe the new format.
+    - Files: `src/common/claude_api_client.cpp`, `prompts/system_prompts/ROUTER_PROMPT.md`, `prompts/system_prompts/SYSTEM_PROMPT.md`
+
 - **Multi-action one-shotting from parent message in conversation history**:
     - When multi-action flows split a request into sub-actions (e.g., "blippy jangly synth" → sound design translation → 3 sequential parameter changes), the LLM received the full original message (or translation text) in `conversation_history_` alongside the first sub-action. It read the full scope upfront and completed all steps on the first API call, returning "already done" text for subsequent sub-actions (massive token waste).
     - **Root cause**: `FullInterface::executeNextAction()` called `addToHistory("user", message)` at line 1180 in `full_interface.cpp` before executing sub-actions. This stored the full original message in history, giving the LLM context it shouldn't have for sequential execution.

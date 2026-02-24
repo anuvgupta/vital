@@ -402,40 +402,40 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
     requestBody->setProperty("system", systemArray);
   }
 
-  // Build messages array: prior turns from history, then preset context (ephemeral), then current turn
+  // Build single user message: history context + preset state + current request
   int new_message_count = messages.size();
   int history_size = (int)conversation_history_.size();
   int prior_count = history_size - new_message_count;
 
+  String userMessage;
+
+  // Conversation history as context block
+  if (prior_count > 0) {
+    userMessage += "<conversation_history>\n";
+    for (int i = 0; i < prior_count; ++i) {
+      const auto& msg = conversation_history_[i];
+      userMessage += msg.role + ": " + msg.content + "\n";
+    }
+    userMessage += "</conversation_history>\n\n";
+  }
+
+  // Current preset state
+  if (preset_json.isNotEmpty())
+    userMessage += "<current_preset>\n" + preset_json + "\n</current_preset>\n\n";
+
+  // Current request
+  userMessage += "<current_request>\n";
+  for (int i = prior_count; i < history_size; ++i)
+    userMessage += conversation_history_[i].content + "\n";
+  userMessage += "</current_request>";
+
   Array<var> messagesArray;
-
-  // All prior-turn messages (no stale preset snapshots)
-  for (int i = 0; i < prior_count; ++i) {
-    const auto& msg = conversation_history_[i];
+  {
     DynamicObject::Ptr msgObj = new DynamicObject();
-    msgObj->setProperty("role", msg.role);
-    msgObj->setProperty("content", msg.content);
+    msgObj->setProperty("role", "user");
+    msgObj->setProperty("content", userMessage);
     messagesArray.add(var(msgObj.get()));
   }
-
-  // Inject current preset context just before this turn's user message(s) — not stored in history
-  if (preset_json.isNotEmpty()) {
-    String preset_context = "This is the current preset JSON:\n```json\n" + preset_json + "\n```";
-    DynamicObject::Ptr presetMsg = new DynamicObject();
-    presetMsg->setProperty("role", "user");
-    presetMsg->setProperty("content", preset_context);
-    messagesArray.add(var(presetMsg.get()));
-  }
-
-  // Current turn's user message(s)
-  for (int i = prior_count; i < history_size; ++i) {
-    const auto& msg = conversation_history_[i];
-    DynamicObject::Ptr msgObj = new DynamicObject();
-    msgObj->setProperty("role", msg.role);
-    msgObj->setProperty("content", msg.content);
-    messagesArray.add(var(msgObj.get()));
-  }
-
   requestBody->setProperty("messages", messagesArray);
 
   String jsonBody = JSON::toString(var(requestBody.get()));
@@ -529,13 +529,10 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
   // preset state is always re-injected fresh at the start of each turn anyway.
   String textOnly, jsonOnly;
   splitResponseText(responseText, textOnly, jsonOnly);
-  if (jsonOnly.isNotEmpty()) {
-    if (textOnly.isNotEmpty())
-      addMessage("assistant", textOnly);
-    // else: pure preset update — don't add to history
-  } else {
+  if (jsonOnly.isNotEmpty())
+    addMessage("assistant", textOnly.isNotEmpty() ? textOnly : String("Done."));
+  else
     addMessage("assistant", responseText);
-  }
 
   MessageManager::callAsync([callback, responseText]() {
     callback(responseText, true);
@@ -573,20 +570,21 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
     requestBody->setProperty("system", systemArray);
   }
 
-  // Messages: conversation history (read-only, for context) + current user message
-  Array<var> messagesArray;
-  for (const auto& msg : conversation_history_) {
-    DynamicObject::Ptr msgObj = new DynamicObject();
-    msgObj->setProperty("role", msg.role);
-    msgObj->setProperty("content", msg.content);
-    messagesArray.add(var(msgObj.get()));
+  // Build single user message with history context + current request
+  String userMessage;
+  if (!conversation_history_.empty()) {
+    userMessage += "<conversation_history>\n";
+    for (const auto& msg : conversation_history_)
+      userMessage += msg.role + ": " + msg.content + "\n";
+    userMessage += "</conversation_history>\n\n";
   }
+  userMessage += "<current_request>\n" + message + "\n</current_request>";
 
-  // Current user message
+  Array<var> messagesArray;
   {
     DynamicObject::Ptr msgObj = new DynamicObject();
     msgObj->setProperty("role", "user");
-    msgObj->setProperty("content", message);
+    msgObj->setProperty("content", userMessage);
     messagesArray.add(var(msgObj.get()));
   }
   requestBody->setProperty("messages", messagesArray);
