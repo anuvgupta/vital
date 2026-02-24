@@ -2,13 +2,11 @@
 
 ## Status: Ready for next task
 
-Last completed: API request log rotation (2026-02-23)
+Last completed: Preset name conflict resolution (2026-02-24)
 
-### Recent Task: API request log rotation
-- Implemented per-conversation log rotation to replace unbounded single log file
-- Active log: `{data_dir}/logs/api_requests_current.log`
-- Rotated archives: `logs/api_requests_1.log`, `logs/api_requests_2.log`, ... (higher = older)
-- rotateRequestLog() method added to ClaudeApiClient (checks for current, finds max numbered, renames)
-- Called on: program start (initialize), chat clear (side_panel.cpp clearChat)
-- Files modified: claude_api_client.h/cpp, side_panel.cpp
+### Recent Task: Preset name conflict resolution
+- `savePresetToSoundDesigner()` now checks for existing files and appends " (2)", " (3)", etc.
+- Return type changed from void to String so call sites can display the actual saved name
+- 3 call sites updated in full_interface.cpp (save-only, post-multi-action, single-action)
+- Files modified: full_interface.h, full_interface.cpp
 - No bugs encountered

@@ -10,6 +10,8 @@
 - Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
     - Add examples of synth patches and corresponding descriptions by looking online at vital preset examples, adding and ai description of the sound (from multimodal) and the preset params in nat lang both --> find a way to automate this
 
+- Add Sonnet fallback when Opus returns `overloaded_error` — currently all `sendMessage` calls use Opus which frequently hits capacity limits; fall back to Sonnet on overloaded, or let user choose model
+
 ### Long-Term
 
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
@@ -79,5 +81,6 @@
 - Integrate with deepgram for voice to text
 - Sometimes prints out json data / examples - fixed?
 - Conversation history not restoring on cancel-edit — `truncateHistoryTo()` is shrink-only; saved int size was useless after truncation. Fixed by storing full history snapshot in EditModeSnapshot
+- Preset save silently overwriting existing files — `savePresetToSoundDesigner()` now appends " (2)", " (3)", etc. for name conflicts; returns actual saved name
 - "(preset updated)" showing up in chat window — changed placeholder to "Done.", plus restructured API calls to use XML-tagged sections separating history from current request
 

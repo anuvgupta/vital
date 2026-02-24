@@ -51,7 +51,8 @@
 - Router tool schema includes `save_required` (bool) and `preset_name` (string) alongside actions
 - Save flow: save-only (no actions) saves immediately; post-action saves after all actions complete via pending_save_required_/pending_preset_name_ on FullInterface
 - Presets saved to `{LoadSave::getUserPresetDirectory()}/Sound Designer/{name}.vital`
-- Confirmation shown in chat: "Saved preset as {name}"
+- Conflict resolution: if file exists, appends " (2)", " (3)", etc.; `savePresetToSoundDesigner()` returns actual saved name (String, not void)
+- Confirmation shown in chat: "Saved preset as {actual_name}"
 
 ### Multi-Layer Router Pattern
 - User message → router call (Claude tool_use, lightweight, no preset schema) → action list
