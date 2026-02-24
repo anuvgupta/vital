@@ -1170,8 +1170,8 @@ void FullInterface::routeAndExecute(const String& message) {
 
     if (actions.isEmpty() && pending_save_required_) {
       // Save-only request — no actions to execute, just save immediately
-      savePresetToSoundDesigner(pending_preset_name_);
-      panel->addResponseMessage("Saved preset as " + pending_preset_name_);
+      String savedName = savePresetToSoundDesigner(pending_preset_name_);
+      panel->addResponseMessage("Saved preset as " + savedName);
       pending_save_required_ = false;
       pending_preset_name_ = String();
       api_request_in_flight_ = false;
@@ -1351,8 +1351,8 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
 
             // Save preset if requested by router
             if (pending_save_required_ && pending_preset_name_.isNotEmpty()) {
-              savePresetToSoundDesigner(pending_preset_name_);
-              panel->addMessage("Saved preset as " + pending_preset_name_, ChatMessage::kSystem);
+              String savedName = savePresetToSoundDesigner(pending_preset_name_);
+              panel->addMessage("Saved preset as " + savedName, ChatMessage::kSystem);
               pending_save_required_ = false;
               pending_preset_name_ = String();
             }
@@ -1427,8 +1427,8 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
 
     // Save preset if requested by router
     if (pending_save_required_ && pending_preset_name_.isNotEmpty()) {
-      savePresetToSoundDesigner(pending_preset_name_);
-      panel->addMessage("Saved preset as " + pending_preset_name_, ChatMessage::kSystem);
+      String savedName = savePresetToSoundDesigner(pending_preset_name_);
+      panel->addMessage("Saved preset as " + savedName, ChatMessage::kSystem);
       pending_save_required_ = false;
       pending_preset_name_ = String();
     }
@@ -1453,10 +1453,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
   }, preset_json);
 }
 
-void FullInterface::savePresetToSoundDesigner(const String& presetName) {
+String FullInterface::savePresetToSoundDesigner(const String& presetName) {
   SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
   if (!gui || !gui->getSynth())
-    return;
+    return presetName;
 
   File presetDir = LoadSave::getUserPresetDirectory().getChildFile("Sound Designer");
   if (!presetDir.exists())
@@ -1467,7 +1467,16 @@ void FullInterface::savePresetToSoundDesigner(const String& presetName) {
     safeName = "Untitled";
 
   File presetFile = presetDir.getChildFile(safeName + ".vital");
+  if (presetFile.exists()) {
+    int counter = 2;
+    while (presetDir.getChildFile(safeName + " (" + String(counter) + ").vital").exists())
+      counter++;
+    safeName = safeName + " (" + String(counter) + ")";
+    presetFile = presetDir.getChildFile(safeName + ".vital");
+  }
+
   gui->getSynth()->saveToFile(presetFile);
+  return safeName;
 }
 
 File FullInterface::saveAutosaveCheckpoint() {

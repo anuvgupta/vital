@@ -181,7 +181,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
 
     void stripBase64DataForLLM(json& state);
     File saveAutosaveCheckpoint();
-    void savePresetToSoundDesigner(const String& presetName);
+    String savePresetToSoundDesigner(const String& presetName);
 
   private:
     bool wavetableEditorsInitialized() {
