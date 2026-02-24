@@ -65,6 +65,8 @@ bool ClaudeApiClient::initialize() {
   if (!internet_access_)
     DBG("ClaudeApiClient: No internet access detected");
 
+  rotateRequestLog();
+
   initialized_ = true;
   DBG("ClaudeApiClient: Initialized successfully (internet: " + String(internet_access_ ? "yes" : "no") + ")");
   return true;
@@ -336,10 +338,35 @@ void ClaudeApiClient::addMessage(const String& role, const String& content) {
   conversation_history_.push_back({ role, content });
 }
 
+void ClaudeApiClient::rotateRequestLog() {
+  File logs_dir = LoadSave::getDataDirectory().getChildFile("logs");
+  if (!logs_dir.isDirectory())
+    return;
+
+  File current_log = logs_dir.getChildFile("api_requests_current.log");
+  if (!current_log.existsAsFile() || current_log.getSize() == 0)
+    return;
+
+  int highest = 0;
+  for (const auto& f : logs_dir.findChildFiles(File::findFiles, false, "api_requests_*.log")) {
+    String name = f.getFileNameWithoutExtension(); // e.g. "api_requests_3"
+    if (name == "api_requests_current")
+      continue;
+    String suffix = name.fromLastOccurrenceOf("api_requests_", false, false);
+    int n = suffix.getIntValue();
+    if (n > highest)
+      highest = n;
+  }
+
+  File dest = logs_dir.getChildFile("api_requests_" + String(highest + 1) + ".log");
+  current_log.moveFileTo(dest);
+}
+
 void ClaudeApiClient::logRequest(const String& endpoint_label, const String& request_body,
                                   const String& response_body, const var& parsed_response) {
-  File log_dir = LoadSave::getDataDirectory();
-  File log_file = log_dir.getChildFile("api_requests.log");
+  File logs_dir = LoadSave::getDataDirectory().getChildFile("logs");
+  logs_dir.createDirectory();
+  File log_file = logs_dir.getChildFile("api_requests_current.log");
 
   String timestamp = Time::getCurrentTime().toISO8601(true);
 

@@ -1150,6 +1150,9 @@ void VitalSidePanel::clearChat() {
   for (Listener* l : listeners_)
     l->sidePanelClearRequested();
 
+  // Rotate API request log for the new conversation
+  ClaudeApiClient::instance().rotateRequestLog();
+
   // Clear API conversation history
   ClaudeApiClient::instance().clearConversation();
 

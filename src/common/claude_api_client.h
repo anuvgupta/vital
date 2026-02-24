@@ -52,6 +52,7 @@ class ClaudeApiClient {
     void addToHistory(const String& role, const String& content);
 
     void clearConversation();
+    void rotateRequestLog();
 
     // Splits a response into plain text and JSON portions.
     // Handles code fences, raw JSON, and inline JSON without fences.

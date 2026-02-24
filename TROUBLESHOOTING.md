@@ -264,6 +264,14 @@
     - **Solution**: (1) Changed placeholder from `"(preset updated)"` to `"Done."` — short, natural, unlikely to be parroted. (2) Restructured both `routeMessageAsync()` and `sendMessagesAsync()` to send a single user message with XML-tagged sections: `<conversation_history>` (prior turns as context only), `<current_preset>` (main API only), `<current_request>` (the actual message to act on). Updated `ROUTER_PROMPT.md` and `SYSTEM_PROMPT.md` to describe the new format.
     - Files: `src/common/claude_api_client.cpp`, `prompts/system_prompts/ROUTER_PROMPT.md`, `prompts/system_prompts/SYSTEM_PROMPT.md`
 
+- **API request log rotation** keeps per-conversation logs organized:
+    - Active log file: `{data_dir}/logs/api_requests_current.log` (appended to throughout session)
+    - On rotation (program start or chat clear): current log renamed to highest numbered file (`api_requests_N.log`), new current file created
+    - Files numbered sequentially: `api_requests_1.log`, `api_requests_2.log`, etc. (higher number = older/earlier conversations)
+    - `rotateRequestLog()` checks for existing `api_requests_current.log`, finds max numbered file, renames current to next number
+    - Root cause of need: Single unbounded `api_requests.log` grew indefinitely; rotation provides cleanup and conversation-level organization for cost analysis
+    - File: `src/common/claude_api_client.cpp` (rotateRequestLog method, called in initialize and side_panel.cpp clearChat)
+
 - **Multi-action one-shotting from parent message in conversation history**:
     - When multi-action flows split a request into sub-actions (e.g., "blippy jangly synth" → sound design translation → 3 sequential parameter changes), the LLM received the full original message (or translation text) in `conversation_history_` alongside the first sub-action. It read the full scope upfront and completed all steps on the first API call, returning "already done" text for subsequent sub-actions (massive token waste).
     - **Root cause**: `FullInterface::executeNextAction()` called `addToHistory("user", message)` at line 1180 in `full_interface.cpp` before executing sub-actions. This stored the full original message in history, giving the LLM context it shouldn't have for sequential execution.

@@ -2,12 +2,13 @@
 
 ## Status: Ready for next task
 
-Last completed: Unified step progress messages for multi-action flows (2026-02-23)
+Last completed: API request log rotation (2026-02-23)
 
-### Recent Task: Unified step progress messages
-- Both sound design and user-initiated multi-actions now show "Working on step X of Y: [truncated]..."
-- All intermediate sub-action responses hidden for both flows
-- executeNextAction() simplified — removed replaceExisting parameter
-- Word-boundary truncation at ~50 chars for step descriptions
-- Files: full_interface.cpp, full_interface.h
+### Recent Task: API request log rotation
+- Implemented per-conversation log rotation to replace unbounded single log file
+- Active log: `{data_dir}/logs/api_requests_current.log`
+- Rotated archives: `logs/api_requests_1.log`, `logs/api_requests_2.log`, ... (higher = older)
+- rotateRequestLog() method added to ClaudeApiClient (checks for current, finds max numbered, renames)
+- Called on: program start (initialize), chat clear (side_panel.cpp clearChat)
+- Files modified: claude_api_client.h/cpp, side_panel.cpp
 - No bugs encountered
