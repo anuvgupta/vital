@@ -79,7 +79,7 @@ class ClaudeApiClient {
     void logRequest(const String& endpoint_label, const String& request_body,
                     const String& response_body, const var& parsed_response);
 
-    static const int kMaxMessages = 20;
+    static const int kMaxMessages = 40;
 
     struct ChatMessage {
       String role;
