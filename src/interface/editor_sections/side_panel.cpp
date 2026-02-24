@@ -576,7 +576,7 @@ void VitalSidePanel::resized() {
 
     Colour empty_color = findColour(Skin::kBodyText, true);
     empty_color = empty_color.withAlpha(0.5f * empty_color.getFloatAlpha());
-    prompt_editor_->setTextToShowWhenEmpty("Tell me what you want to hear, or what to do next", empty_color);
+    prompt_editor_->setTextToShowWhenEmpty("Tell me what you want to hear, or what to do next...", empty_color);
     prompt_editor_->setColour(CaretComponent::caretColourId, findColour(Skin::kTextEditorCaret, true));
     prompt_editor_->setColour(TextEditor::textColourId, findColour(Skin::kBodyText, true));
     prompt_editor_->setColour(TextEditor::highlightedTextColourId, findColour(Skin::kBodyText, true));

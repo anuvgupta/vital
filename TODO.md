@@ -2,6 +2,8 @@
 
 
 ## Features
+- create new file for api requests on every new chat (rename th eold one if needed incrementally)
+- hide responses from sub-actions during sound design mult-actions but not for user direct multi-actions
 
 ### Open
 
@@ -52,6 +54,7 @@
 
 
 ## Bugs
+- "(preset updated)" showing up in chat window
 
 ### Open
 

@@ -1164,7 +1164,8 @@ void FullInterface::routeAndExecute(const String& message) {
       return;
     }
 
-    // Reset the reroute flag
+    // Capture whether this came from sound design before resetting
+    bool was_sound_design_reroute = is_sound_design_reroute_;
     is_sound_design_reroute_ = false;
 
     if (actions.isEmpty() && pending_save_required_) {
@@ -1204,8 +1205,10 @@ void FullInterface::routeAndExecute(const String& message) {
     pending_actions_ = actions;
     total_actions_ = actions.size();
     current_action_index_ = 0;
+    is_sound_design_multi_action_ = was_sound_design_reroute;
 
-    panel->updateStatusMessage("Breaking it down...");
+    if (!is_sound_design_multi_action_)
+      panel->updateStatusMessage("Breaking it down...");
     executeNextAction();
   });
 }
@@ -1217,6 +1220,7 @@ void FullInterface::executeNextAction(bool replaceExisting) {
     pending_actions_.clear();
     total_actions_ = 0;
     current_action_index_ = 0;
+    is_sound_design_multi_action_ = false;
     api_request_in_flight_ = false;
 
     // Check queued messages
@@ -1231,13 +1235,16 @@ void FullInterface::executeNextAction(bool replaceExisting) {
   }
 
   String action = pending_actions_[current_action_index_];
-  int stepNum = current_action_index_ + 1;
-  String stepMsg = "Step " + String(stepNum) + "/" + String(total_actions_) + ": " + action;
 
-  if (replaceExisting)
-    panel->updateStatusMessage(stepMsg, ChatMessage::kStep);
-  else
-    panel->addMessage(stepMsg, ChatMessage::kStep);
+  if (!is_sound_design_multi_action_) {
+    int stepNum = current_action_index_ + 1;
+    String stepMsg = "Step " + String(stepNum) + "/" + String(total_actions_) + ": " + action;
+
+    if (replaceExisting)
+      panel->updateStatusMessage(stepMsg, ChatMessage::kStep);
+    else
+      panel->addMessage(stepMsg, ChatMessage::kStep);
+  }
 
   current_action_index_++;
 
@@ -1274,7 +1281,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
 
     if (!success) {
       if (is_multi_action) {
-        panel->removeStatusMessage("Breaking it down...");
+        if (is_sound_design_multi_action_)
+          panel->removeStatusMessage("Designing sound...");
+        else
+          panel->removeStatusMessage("Breaking it down...");
         panel->updateStatusMessage("Error: " + response);
       } else
         panel->addResponseMessage(response);
@@ -1282,6 +1292,7 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       pending_actions_.clear();
       total_actions_ = 0;
       current_action_index_ = 0;
+      is_sound_design_multi_action_ = false;
       pending_save_required_ = false;
       pending_preset_name_ = String();
       api_request_in_flight_ = false;
@@ -1313,7 +1324,10 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
             if (is_multi_action) {
               if (current_action_index_ < pending_actions_.size()) {
                 // More steps remaining
-                if (textMessage.isNotEmpty()) {
+                if (is_sound_design_multi_action_) {
+                  // Sound design sub-actions — silently proceed without showing intermediate text
+                  executeNextAction(true);
+                } else if (textMessage.isNotEmpty()) {
                   // Show text output, then add next step as new message below
                   panel->updateStatusMessage(textMessage);
                   executeNextAction(false);
@@ -1324,14 +1338,21 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
                 return;
               }
 
-              // Final step — remove "Breaking it down..." and replace step with result
-              panel->removeStatusMessage("Breaking it down...");
+              // Final step
+              if (is_sound_design_multi_action_) {
+                // Sound design — replace "Designing sound..." with result
+                panel->removeStatusMessage("Designing sound...");
+              } else {
+                // Direct multi-action — remove "Breaking it down..."
+                panel->removeStatusMessage("Breaking it down...");
+              }
               String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
               panel->updateStatusMessage(msg);
 
               pending_actions_.clear();
               total_actions_ = 0;
               current_action_index_ = 0;
+              is_sound_design_multi_action_ = false;
             } else {
               String msg = textMessage.isNotEmpty() ? textMessage : getCompletionPhrase();
               // Single action — show as normal response
@@ -1367,13 +1388,17 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
           }
         }
         if (is_multi_action) {
-          panel->removeStatusMessage("Breaking it down...");
+          if (is_sound_design_multi_action_)
+            panel->removeStatusMessage("Designing sound...");
+          else
+            panel->removeStatusMessage("Breaking it down...");
           panel->updateStatusMessage("Failed to load preset from response.");
         } else
           panel->addResponseMessage("Failed to load preset from response.");
         pending_actions_.clear();
         total_actions_ = 0;
         current_action_index_ = 0;
+        is_sound_design_multi_action_ = false;
         pending_save_required_ = false;
         pending_preset_name_ = String();
         api_request_in_flight_ = false;
@@ -1390,19 +1415,28 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
 
     if (is_multi_action) {
       if (current_action_index_ < pending_actions_.size()) {
-        // More steps — text-only always has text, so show it then add next step below
-        panel->updateStatusMessage(displayText);
-        executeNextAction(false);
+        if (is_sound_design_multi_action_) {
+          // Sound design sub-actions — silently proceed
+          executeNextAction(true);
+        } else {
+          // More steps — text-only always has text, so show it then add next step below
+          panel->updateStatusMessage(displayText);
+          executeNextAction(false);
+        }
         return;
       }
 
-      // Final step — remove "Breaking it down..." and show text
-      panel->removeStatusMessage("Breaking it down...");
+      // Final step
+      if (is_sound_design_multi_action_)
+        panel->removeStatusMessage("Designing sound...");
+      else
+        panel->removeStatusMessage("Breaking it down...");
       panel->updateStatusMessage(displayText);
 
       pending_actions_.clear();
       total_actions_ = 0;
       current_action_index_ = 0;
+      is_sound_design_multi_action_ = false;
     } else {
       panel->addResponseMessage(response);
     }
@@ -1513,6 +1547,7 @@ bool FullInterface::sidePanelRestoreRequested(int message_index) {
   pending_actions_.clear();
   total_actions_ = 0;
   current_action_index_ = 0;
+  is_sound_design_multi_action_ = false;
 
   return true;
 }
@@ -1552,6 +1587,7 @@ void FullInterface::sidePanelCancelEditRequested(const File& checkpoint, const s
   pending_actions_.clear();
   total_actions_ = 0;
   current_action_index_ = 0;
+  is_sound_design_multi_action_ = false;
 
 }
 
@@ -1562,6 +1598,7 @@ void FullInterface::sidePanelClearRequested() {
   pending_actions_.clear();
   total_actions_ = 0;
   current_action_index_ = 0;
+  is_sound_design_multi_action_ = false;
   pending_save_required_ = false;
   pending_preset_name_ = String();
 }
