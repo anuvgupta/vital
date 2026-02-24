@@ -2,17 +2,15 @@
 
 ## Status: Ready for next task
 
-Last completed: Router-inferred preset saving + cancel-edit history restore fix (2026-02-23)
+Last completed: Fix "(preset updated)" echo + separate conversation history from current request (2026-02-23)
 
-### Task 1: Router-inferred preset saving
-- Router tool schema extended with save_required (bool) + preset_name (string)
-- Saves to {user_preset_dir}/Sound Designer/{name}.vital
-- Save-only (no actions) and post-action-completion paths both handled
-- ROUTER_PROMPT.md updated with save routing rules
-- Files: claude_api_client.h/cpp, full_interface.h/cpp, ROUTER_PROMPT.md
+### Task 1: Fix "(preset updated)" placeholder echo
+- Changed placeholder from "(preset updated)" to "Done." in claude_api_client.cpp
+- Committed as 9fb0fc4
 
-### Task 2: Cancel-edit history restore bug
-- truncateHistoryTo() is shrink-only; storing just int size was insufficient
-- Added HistoryEntry struct, getHistorySnapshot(), restoreHistory() to ClaudeApiClient
-- EditModeSnapshot now stores vector<HistoryEntry> instead of int
-- Files: claude_api_client.h/cpp, side_panel.h/cpp
+### Task 2: Separate conversation history from current request
+- Restructured routeMessageAsync and sendMessagesAsync to use XML-tagged sections
+- Tags: <conversation_history>, <current_preset>, <current_request>
+- Updated ROUTER_PROMPT.md and SYSTEM_PROMPT.md for new format
+- Files: claude_api_client.cpp, ROUTER_PROMPT.md, SYSTEM_PROMPT.md
+- Uncommitted — commit message drafted
