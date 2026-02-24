@@ -47,6 +47,7 @@
 - Windows/Linux support for microphone permission handling (currently macOS only via mic_permission_mac.mm)
 - Re-architected side panel: inline action button (mic/send/stop 3-state), voice chat button inside textarea, removed button row
 - Replaced "Ready to create!" intro message with centered logo + tagline intro screen (speech waveform icon + "Talk to your synthesizer")
+- Preset save option from chatbot — router infers save intent, returns save_required + preset_name, saves to Sound Designer folder, shows confirmation in chat
 
 
 
@@ -73,4 +74,5 @@
 - Placeholder text in textarea doesn't wrap when window is shrunk (resized to be smaller) even though actual text in textarea does
 - Integrate with deepgram for voice to text
 - Sometimes prints out json data / examples - fixed?
+- Conversation history not restoring on cancel-edit — `truncateHistoryTo()` is shrink-only; saved int size was useless after truncation. Fixed by storing full history snapshot in EditModeSnapshot
 

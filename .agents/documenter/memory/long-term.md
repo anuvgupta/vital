@@ -45,6 +45,13 @@
 - MSVC quirk: `vector::resize()` instantiates default constructor even when only shrinking; use `erase()` for types without default constructors
 - **Checkpoint file lifecycle invariant**: checkpoint files on disk must only be deleted when the in-memory checkpoint object is permanently removed (not during edit-mode restore where cancel may need to resurrect it). Use `delete_files=false` when removing checkpoints that may be restored by cancel. `exitEditMode()` handles orphan cleanup by diffing snapshot vs current state.
 - Edit mode state must be reset on ALL exit paths: submitMessage, processRecordedSpeech, clearChat, cancelEditMode. Missing any path leaves `edit_mode_=true` blocking future enterEditMode calls.
+- **History snapshot vs size for undo**: `truncateHistoryTo(size)` is a one-way shrink operation. When you need to restore state that may have been truncated, you must save a full copy (snapshot), not just the size. `ClaudeApiClient::getHistorySnapshot()` / `restoreHistory()` provide this via `HistoryEntry` structs.
+
+### Preset Save Pattern
+- Router tool schema includes `save_required` (bool) and `preset_name` (string) alongside actions
+- Save flow: save-only (no actions) saves immediately; post-action saves after all actions complete via pending_save_required_/pending_preset_name_ on FullInterface
+- Presets saved to `{LoadSave::getUserPresetDirectory()}/Sound Designer/{name}.vital`
+- Confirmation shown in chat: "Saved preset as {name}"
 
 ### Multi-Layer Router Pattern
 - User message → router call (Claude tool_use, lightweight, no preset schema) → action list

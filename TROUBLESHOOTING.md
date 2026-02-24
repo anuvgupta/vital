@@ -252,6 +252,12 @@
     - **Solution**: `int cancel_size = (int)(24.0f * size_ratio_);` and similarly for X/Y offset values (`4.0f * size_ratio_`). Apply this pattern to all layout code in `resized()` that positions elements relative to scaled content.
     - File: `src/interface/editor_sections/side_panel.cpp` (around line 647, `resized()` method)
 
+- **`truncateHistoryTo()` is one-way (shrink only) — cannot restore truncated history**:
+    - When cancel-edit needed to restore conversation history after a truncation, the code saved only the history size (an integer) and relied on `truncateHistoryTo(saved_size)` to "undo". But `truncateHistoryTo()` only shrinks — it permanently deletes entries. Saving just the size is useless if the entries are already gone.
+    - **Root cause**: `EditModeSnapshot` stored `saved_api_history_size` (int) instead of the actual history entries. After `truncateHistoryTo()` ran during restore, the entries were permanently lost; cancel could not grow the vector back to the saved size.
+    - **Solution**: Added `HistoryEntry` struct and `getHistorySnapshot()` / `restoreHistory()` methods to `ClaudeApiClient`. `EditModeSnapshot` now stores `vector<HistoryEntry>` (full copy of conversation history). On cancel, `restoreHistory()` replaces the entire history vector. Updated `VitalSidePanel::Listener` interface accordingly.
+    - Files: `src/common/claude_api_client.h/cpp`, `src/interface/editor_sections/side_panel.h/cpp`
+
 - **Multi-action one-shotting from parent message in conversation history**:
     - When multi-action flows split a request into sub-actions (e.g., "blippy jangly synth" → sound design translation → 3 sequential parameter changes), the LLM received the full original message (or translation text) in `conversation_history_` alongside the first sub-action. It read the full scope upfront and completed all steps on the first API call, returning "already done" text for subsequent sub-actions (massive token waste).
     - **Root cause**: `FullInterface::executeNextAction()` called `addToHistory("user", message)` at line 1180 in `full_interface.cpp` before executing sub-actions. This stored the full original message in history, giving the LLM context it shouldn't have for sequential execution.

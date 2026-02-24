@@ -1095,7 +1095,7 @@ void FullInterface::routeAndExecute(const String& message) {
 
   int gen = api_request_generation_;
   ClaudeApiClient::instance().routeMessage(message, [this, panel, message, gen](
-      const StringArray& actions, bool sound_design_required, bool success, const String& error) {
+      const StringArray& actions, bool sound_design_required, bool save_required, const String& preset_name, bool success, const String& error) {
     if (!panel || gen != api_request_generation_) {
       api_request_in_flight_ = false;
       is_sound_design_reroute_ = false;
@@ -1111,6 +1111,12 @@ void FullInterface::routeAndExecute(const String& message) {
       messages.add(message);
       sendApiRequest(messages);
       return;
+    }
+
+    // Store save state from first routing pass only (not from re-routed translations)
+    if (!is_sound_design_reroute_) {
+      pending_save_required_ = save_required;
+      pending_preset_name_ = preset_name;
     }
 
     if (sound_design_required && !is_sound_design_reroute_) {
@@ -1160,6 +1166,23 @@ void FullInterface::routeAndExecute(const String& message) {
 
     // Reset the reroute flag
     is_sound_design_reroute_ = false;
+
+    if (actions.isEmpty() && pending_save_required_) {
+      // Save-only request — no actions to execute, just save immediately
+      savePresetToSoundDesigner(pending_preset_name_);
+      panel->addResponseMessage("Saved preset as " + pending_preset_name_);
+      pending_save_required_ = false;
+      pending_preset_name_ = String();
+      api_request_in_flight_ = false;
+      if (!queued_messages_.isEmpty()) {
+        String next = queued_messages_[0];
+        queued_messages_.remove(0);
+        api_request_in_flight_ = true;
+        panel->addMessage("Thinking...", ChatMessage::kSystem);
+        routeAndExecute(next);
+      }
+      return;
+    }
 
     if (actions.isEmpty()) {
       // No actions and not sound design — fall back to sending the original message
@@ -1259,6 +1282,8 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       pending_actions_.clear();
       total_actions_ = 0;
       current_action_index_ = 0;
+      pending_save_required_ = false;
+      pending_preset_name_ = String();
       api_request_in_flight_ = false;
       queued_messages_.clear();
       return;
@@ -1313,6 +1338,14 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
               panel->addResponseMessage(msg);
             }
 
+            // Save preset if requested by router
+            if (pending_save_required_ && pending_preset_name_.isNotEmpty()) {
+              savePresetToSoundDesigner(pending_preset_name_);
+              panel->addMessage("Saved preset as " + pending_preset_name_, ChatMessage::kSystem);
+              pending_save_required_ = false;
+              pending_preset_name_ = String();
+            }
+
             // Autosave checkpoint for the response
             {
               File cp = saveAutosaveCheckpoint();
@@ -1341,6 +1374,8 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
         pending_actions_.clear();
         total_actions_ = 0;
         current_action_index_ = 0;
+        pending_save_required_ = false;
+        pending_preset_name_ = String();
         api_request_in_flight_ = false;
         queued_messages_.clear();
         return;
@@ -1372,6 +1407,14 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       panel->addResponseMessage(response);
     }
 
+    // Save preset if requested by router
+    if (pending_save_required_ && pending_preset_name_.isNotEmpty()) {
+      savePresetToSoundDesigner(pending_preset_name_);
+      panel->addMessage("Saved preset as " + pending_preset_name_, ChatMessage::kSystem);
+      pending_save_required_ = false;
+      pending_preset_name_ = String();
+    }
+
     // Autosave checkpoint for the text-only response
     {
       File cp = saveAutosaveCheckpoint();
@@ -1390,6 +1433,23 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
       api_request_in_flight_ = false;
     }
   }, preset_json);
+}
+
+void FullInterface::savePresetToSoundDesigner(const String& presetName) {
+  SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
+  if (!gui || !gui->getSynth())
+    return;
+
+  File presetDir = LoadSave::getUserPresetDirectory().getChildFile("Sound Designer");
+  if (!presetDir.exists())
+    presetDir.createDirectory();
+
+  String safeName = presetName.removeCharacters("\\/:*?\"<>|");
+  if (safeName.isEmpty())
+    safeName = "Untitled";
+
+  File presetFile = presetDir.getChildFile(safeName + ".vital");
+  gui->getSynth()->saveToFile(presetFile);
 }
 
 File FullInterface::saveAutosaveCheckpoint() {
@@ -1457,15 +1517,15 @@ bool FullInterface::sidePanelRestoreRequested(int message_index) {
   return true;
 }
 
-int FullInterface::sidePanelGetApiHistorySize() {
-  return ClaudeApiClient::instance().getHistorySize();
+std::vector<ClaudeApiClient::HistoryEntry> FullInterface::sidePanelGetApiHistorySnapshot() {
+  return ClaudeApiClient::instance().getHistorySnapshot();
 }
 
 File FullInterface::sidePanelSaveCheckpoint() {
   return saveAutosaveCheckpoint();
 }
 
-void FullInterface::sidePanelCancelEditRequested(const File& checkpoint, int api_history_size) {
+void FullInterface::sidePanelCancelEditRequested(const File& checkpoint, const std::vector<ClaudeApiClient::HistoryEntry>& history_snapshot) {
   if (!checkpoint.exists()) return;
 
   SynthGuiInterface* gui = findParentComponentOfClass<SynthGuiInterface>();
@@ -1482,8 +1542,8 @@ void FullInterface::sidePanelCancelEditRequested(const File& checkpoint, int api
     // Silently fail — state will remain as-is
   }
 
-  // Restore API history size
-  ClaudeApiClient::instance().truncateHistoryTo(api_history_size);
+  // Restore full API conversation history from snapshot
+  ClaudeApiClient::instance().restoreHistory(history_snapshot);
 
   // Cancel any in-flight API requests and multi-action state
   ++api_request_generation_;
@@ -1502,4 +1562,6 @@ void FullInterface::sidePanelClearRequested() {
   pending_actions_.clear();
   total_actions_ = 0;
   current_action_index_ = 0;
+  pending_save_required_ = false;
+  pending_preset_name_ = String();
 }

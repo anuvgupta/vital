@@ -24,7 +24,7 @@
 class ClaudeApiClient {
   public:
     using ResponseCallback = std::function<void(const String& response, bool success)>;
-    using RouterCallback = std::function<void(const StringArray& actions, bool sound_design_required, bool success, const String& error)>;
+    using RouterCallback = std::function<void(const StringArray& actions, bool sound_design_required, bool save_required, const String& preset_name, bool success, const String& error)>;
 
     static ClaudeApiClient& instance();
 
@@ -59,6 +59,10 @@ class ClaudeApiClient {
     void truncateHistoryTo(int size);
 
     int getHistorySize() const { return (int)conversation_history_.size(); }
+
+    struct HistoryEntry { String role; String content; };
+    std::vector<HistoryEntry> getHistorySnapshot() const;
+    void restoreHistory(const std::vector<HistoryEntry>& snapshot);
 
   private:
     ClaudeApiClient();

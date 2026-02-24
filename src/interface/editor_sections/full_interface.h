@@ -119,9 +119,9 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     void sidePanelButtonClicked() override {}
     void sidePanelMessageSubmitted(const String& message) override;
     bool sidePanelRestoreRequested(int message_index) override;
-    int sidePanelGetApiHistorySize() override;
+    std::vector<ClaudeApiClient::HistoryEntry> sidePanelGetApiHistorySnapshot() override;
     File sidePanelSaveCheckpoint() override;
-    void sidePanelCancelEditRequested(const File& checkpoint, int api_history_size) override;
+    void sidePanelCancelEditRequested(const File& checkpoint, const std::vector<ClaudeApiClient::HistoryEntry>& history_snapshot) override;
     void sidePanelClearRequested() override;
 
     static String getCompletionPhrase();
@@ -181,6 +181,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
 
     void stripBase64DataForLLM(json& state);
     File saveAutosaveCheckpoint();
+    void savePresetToSoundDesigner(const String& presetName);
 
   private:
     bool wavetableEditorsInitialized() {
@@ -244,6 +245,8 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
     StringArray pending_actions_;
     int total_actions_ = 0;
     int current_action_index_ = 0;
+    bool pending_save_required_ = false;
+    String pending_preset_name_;
 
     CriticalSection open_gl_critical_section_;
     OpenGLContext open_gl_context_;

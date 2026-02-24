@@ -68,7 +68,7 @@ struct ChatMessage
 struct EditModeSnapshot {
     std::vector<ChatMessage> saved_messages;
     std::vector<ChatCheckpoint> saved_checkpoints;
-    int saved_api_history_size = 0;
+    std::vector<ClaudeApiClient::HistoryEntry> saved_api_history;
     File saved_synth_checkpoint;
 };
 
@@ -91,9 +91,9 @@ public:
         virtual void sidePanelButtonClicked() = 0;
         virtual void sidePanelMessageSubmitted(const String &message) {}
         virtual bool sidePanelRestoreRequested(int message_index) { return false; }
-        virtual int sidePanelGetApiHistorySize() { return 0; }
+        virtual std::vector<ClaudeApiClient::HistoryEntry> sidePanelGetApiHistorySnapshot() { return {}; }
         virtual File sidePanelSaveCheckpoint() { return File(); }
-        virtual void sidePanelCancelEditRequested(const File& checkpoint, int api_history_size) {}
+        virtual void sidePanelCancelEditRequested(const File& checkpoint, const std::vector<ClaudeApiClient::HistoryEntry>& history_snapshot) {}
         virtual void sidePanelClearRequested() {}
     };
 

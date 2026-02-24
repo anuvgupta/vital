@@ -25,3 +25,11 @@ Macros: macro_control 1-4
 Effects: chorus, compressor, delay, distortion, EQ, flanger, phaser, reverb (each has on/off, dry_wet/mix, and specific params like cutoff, feedback, drive, etc.)
 Modulations: source -> destination (sources: env, lfo, random, macro, velocity, aftertouch, note, mod_wheel, pitch_wheel, stereo, slide, lift)
 Wavetables: Line Source, keyframes, wave_frame position
+
+Save rules:
+- Set save_required=true ONLY when the user explicitly asks to save, store, or keep the preset (e.g. "save this", "store this preset", "keep this sound", "save it as...").
+- When save_required=true, generate a short descriptive preset_name based on the conversation history. Look at what sounds or modifications were discussed and name accordingly (e.g. "Warm Analog Pad", "Dirty 808 Bass", "Plucky Arp Lead"). Use title case, 2-5 words. NEVER use generic names like "Current Preset" or "My Preset" — always derive the name from what was actually built or discussed in the conversation.
+- If the user specifies a name (e.g. "save this as Crunchy Lead"), use their specified name.
+- When save_required=false, set preset_name to an empty string "".
+- If the user asks to save AND requests sound changes, include the actions AND set save_required=true. The save will happen after all actions complete.
+- If the user only asks to save with no sound changes, set actions to an empty array and save_required=true.

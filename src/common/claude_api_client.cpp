@@ -262,6 +262,21 @@ void ClaudeApiClient::truncateHistoryTo(int size) {
     conversation_history_.resize(size);
 }
 
+std::vector<ClaudeApiClient::HistoryEntry> ClaudeApiClient::getHistorySnapshot() const {
+  std::vector<HistoryEntry> snapshot;
+  snapshot.reserve(conversation_history_.size());
+  for (const auto& msg : conversation_history_)
+    snapshot.push_back({ msg.role, msg.content });
+  return snapshot;
+}
+
+void ClaudeApiClient::restoreHistory(const std::vector<HistoryEntry>& snapshot) {
+  conversation_history_.clear();
+  conversation_history_.reserve(snapshot.size());
+  for (const auto& entry : snapshot)
+    conversation_history_.push_back({ entry.role, entry.content });
+}
+
 
 void ClaudeApiClient::splitResponseText(const String& response, String& textOut, String& jsonOut) {
   textOut = String();
@@ -530,7 +545,7 @@ void ClaudeApiClient::addToHistory(const String& role, const String& content) {
 
 void ClaudeApiClient::routeMessage(const String& message, RouterCallback callback) {
   if (!initialized_ || api_key_.empty()) {
-    callback(StringArray(), false, false, "API client not initialized.");
+    callback(StringArray(), false, false, String(), false, "API client not initialized.");
     return;
   }
 
@@ -589,13 +604,29 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
       "Set to true when the user describes a sound non-technically (vibe, texture, genre, instrument) "
       "rather than specific parameters. When true, actions should be empty.");
 
+    DynamicObject::Ptr saveRequiredProp = new DynamicObject();
+    saveRequiredProp->setProperty("type", "boolean");
+    saveRequiredProp->setProperty("description",
+      "Set to true when the user explicitly asks to save the preset, or when the conversation "
+      "context clearly implies they want to keep/store the current sound. Default false.");
+
+    DynamicObject::Ptr presetNameProp = new DynamicObject();
+    presetNameProp->setProperty("type", "string");
+    presetNameProp->setProperty("description",
+      "A short, descriptive preset name derived from the conversation context "
+      "(e.g. 'Warm Analog Pad', 'Dirty 808 Bass'). Required when save_required is true, empty string otherwise.");
+
     DynamicObject::Ptr properties = new DynamicObject();
     properties->setProperty("actions", var(actionsProp.get()));
     properties->setProperty("sound_design_required", var(soundDesignProp.get()));
+    properties->setProperty("save_required", var(saveRequiredProp.get()));
+    properties->setProperty("preset_name", var(presetNameProp.get()));
 
     Array<var> required;
     required.add("actions");
     required.add("sound_design_required");
+    required.add("save_required");
+    required.add("preset_name");
 
     DynamicObject::Ptr inputSchema = new DynamicObject();
     inputSchema->setProperty("type", "object");
@@ -637,7 +668,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
 
   if (!stream) {
     MessageManager::callAsync([callback]() {
-      callback(StringArray(), false, false, "Failed to connect to Claude API.");
+      callback(StringArray(), false, false, String(), false, "Failed to connect to Claude API.");
     });
     return;
   }
@@ -650,7 +681,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
 
   if (!parsedResponse.isObject()) {
     MessageManager::callAsync([callback]() {
-      callback(StringArray(), false, false, "Failed to parse router API response.");
+      callback(StringArray(), false, false, String(), false, "Failed to parse router API response.");
     });
     return;
   }
@@ -660,7 +691,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
     String errorMessage = error.isObject() && error.hasProperty("message")
       ? error["message"].toString() : "Router API error";
     MessageManager::callAsync([callback, errorMessage]() {
-      callback(StringArray(), false, false, errorMessage);
+      callback(StringArray(), false, false, String(), false, errorMessage);
     });
     return;
   }
@@ -669,7 +700,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
   var content = parsedResponse["content"];
   if (!content.isArray()) {
     MessageManager::callAsync([callback]() {
-      callback(StringArray(), false, false, "Unexpected router response format.");
+      callback(StringArray(), false, false, String(), false, "Unexpected router response format.");
     });
     return;
   }
@@ -684,10 +715,18 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
         if (input.hasProperty("sound_design_required"))
           soundDesignRequired = (bool)input["sound_design_required"];
 
+        // Extract save_required and preset_name
+        bool saveRequired = false;
+        String presetName;
+        if (input.hasProperty("save_required"))
+          saveRequired = (bool)input["save_required"];
+        if (input.hasProperty("preset_name"))
+          presetName = input["preset_name"].toString();
+
         if (soundDesignRequired) {
           // Sound design path — no actions needed
-          MessageManager::callAsync([callback]() {
-            callback(StringArray(), true, true, String());
+          MessageManager::callAsync([callback, saveRequired, presetName]() {
+            callback(StringArray(), true, saveRequired, presetName, true, String());
           });
           return;
         }
@@ -701,12 +740,19 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
               actions.add(actionsVar[j].toString());
 
             if (actions.isEmpty()) {
-              MessageManager::callAsync([callback]() {
-                callback(StringArray(), false, false, "Router returned empty actions.");
-              });
+              if (saveRequired) {
+                // Save-only request — no actions, just save
+                MessageManager::callAsync([callback, presetName]() {
+                  callback(StringArray(), false, true, presetName, true, String());
+                });
+              } else {
+                MessageManager::callAsync([callback]() {
+                  callback(StringArray(), false, false, String(), false, "Router returned empty actions.");
+                });
+              }
             } else {
-              MessageManager::callAsync([callback, actions]() {
-                callback(actions, false, true, String());
+              MessageManager::callAsync([callback, actions, saveRequired, presetName]() {
+                callback(actions, false, saveRequired, presetName, true, String());
               });
             }
             return;
@@ -718,7 +764,7 @@ void ClaudeApiClient::routeMessageAsync(const String& message, RouterCallback ca
 
   // No tool_use block found
   MessageManager::callAsync([callback]() {
-    callback(StringArray(), false, false, "Router did not return expected tool_use response.");
+    callback(StringArray(), false, false, String(), false, "Router did not return expected tool_use response.");
   });
 }
 

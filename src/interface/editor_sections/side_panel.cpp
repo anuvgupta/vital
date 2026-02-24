@@ -1423,7 +1423,7 @@ void VitalSidePanel::enterEditMode(int message_index) {
 
   // Save current state via listeners before restoring
   for (Listener* l : listeners_) {
-    edit_snapshot_->saved_api_history_size = l->sidePanelGetApiHistorySize();
+    edit_snapshot_->saved_api_history = l->sidePanelGetApiHistorySnapshot();
     edit_snapshot_->saved_synth_checkpoint = l->sidePanelSaveCheckpoint();
   }
 
@@ -1482,7 +1482,7 @@ void VitalSidePanel::cancelEditMode() {
   // Restore synth state and API history via listener
   for (Listener* l : listeners_)
     l->sidePanelCancelEditRequested(edit_snapshot_->saved_synth_checkpoint,
-                                     edit_snapshot_->saved_api_history_size);
+                                     edit_snapshot_->saved_api_history);
 
   // Clear textbox
 #if !defined(NO_TEXT_ENTRY)
