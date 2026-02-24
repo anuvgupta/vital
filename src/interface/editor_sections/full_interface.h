@@ -129,7 +129,7 @@ class FullInterface : public SynthSection, public AuthenticationSection::Listene
 
     void sendApiRequest(const StringArray& messages);
     void routeAndExecute(const String& message);
-    void executeNextAction(bool replaceExisting = false);
+    void executeNextAction();
 
     void setFocus();
     void notifyChange();

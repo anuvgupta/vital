@@ -1207,13 +1207,15 @@ void FullInterface::routeAndExecute(const String& message) {
     current_action_index_ = 0;
     is_sound_design_multi_action_ = was_sound_design_reroute;
 
-    if (!is_sound_design_multi_action_)
+    if (!is_sound_design_multi_action_) {
       panel->updateStatusMessage("Breaking it down...");
+      panel->addMessage("Thinking...", ChatMessage::kSystem);
+    }
     executeNextAction();
   });
 }
 
-void FullInterface::executeNextAction(bool replaceExisting) {
+void FullInterface::executeNextAction() {
   VitalSidePanel* panel = side_panel_.get();
   if (!panel || current_action_index_ >= pending_actions_.size()) {
     // All actions done
@@ -1235,16 +1237,14 @@ void FullInterface::executeNextAction(bool replaceExisting) {
   }
 
   String action = pending_actions_[current_action_index_];
-
-  if (!is_sound_design_multi_action_) {
-    int stepNum = current_action_index_ + 1;
-    String stepMsg = "Step " + String(stepNum) + "/" + String(total_actions_) + ": " + action;
-
-    if (replaceExisting)
-      panel->updateStatusMessage(stepMsg, ChatMessage::kStep);
-    else
-      panel->addMessage(stepMsg, ChatMessage::kStep);
+  int stepNum = current_action_index_ + 1;
+  String truncated = action;
+  if (action.length() > 50) {
+    int cutoff = action.substring(0, 50).lastIndexOfChar(' ');
+    truncated = action.substring(0, cutoff > 0 ? cutoff : 50) + "...";
   }
+  String stepMsg = "Working on step " + String(stepNum) + " of " + String(total_actions_) + ": " + truncated;
+  panel->updateStatusMessage(stepMsg, ChatMessage::kStep);
 
   current_action_index_++;
 
@@ -1323,18 +1323,8 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
 
             if (is_multi_action) {
               if (current_action_index_ < pending_actions_.size()) {
-                // More steps remaining
-                if (is_sound_design_multi_action_) {
-                  // Sound design sub-actions — silently proceed without showing intermediate text
-                  executeNextAction(true);
-                } else if (textMessage.isNotEmpty()) {
-                  // Show text output, then add next step as new message below
-                  panel->updateStatusMessage(textMessage);
-                  executeNextAction(false);
-                } else {
-                  // No text — silently replace step message with next step
-                  executeNextAction(true);
-                }
+                // More steps remaining — silently proceed to next step
+                executeNextAction();
                 return;
               }
 
@@ -1415,14 +1405,8 @@ void FullInterface::sendApiRequest(const StringArray& messages) {
 
     if (is_multi_action) {
       if (current_action_index_ < pending_actions_.size()) {
-        if (is_sound_design_multi_action_) {
-          // Sound design sub-actions — silently proceed
-          executeNextAction(true);
-        } else {
-          // More steps — text-only always has text, so show it then add next step below
-          panel->updateStatusMessage(displayText);
-          executeNextAction(false);
-        }
+        // More steps remaining — silently proceed to next step
+        executeNextAction();
         return;
       }
 
