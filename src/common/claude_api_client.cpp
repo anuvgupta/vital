@@ -525,14 +525,17 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
 
   String responseText = firstContent["text"].toString();
 
-  // Store only the text portion in history — strip the JSON fence since the preset
-  // state is always re-injected fresh at the start of each turn anyway.
+  // Store only the text portion in history — skip pure preset updates since the
+  // preset state is always re-injected fresh at the start of each turn anyway.
   String textOnly, jsonOnly;
   splitResponseText(responseText, textOnly, jsonOnly);
-  if (jsonOnly.isNotEmpty())
-    addMessage("assistant", textOnly.isNotEmpty() ? textOnly : String("(preset updated)"));
-  else
+  if (jsonOnly.isNotEmpty()) {
+    if (textOnly.isNotEmpty())
+      addMessage("assistant", textOnly);
+    // else: pure preset update — don't add to history
+  } else {
     addMessage("assistant", responseText);
+  }
 
   MessageManager::callAsync([callback, responseText]() {
     callback(responseText, true);
