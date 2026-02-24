@@ -5,7 +5,7 @@
 
 ### Open
 
-- For multi-action requests:  Instead of "Workign on step x of y: <sub-action directive>...", create a progress bar made of x parts, each one fills up based on the avg time that sub-actions take. when i send a request with subactions, we see some progress indicator where 1/3 or 1/4 fills up on each request and when the response comes in we move to the next, it can be 3 thin horizontal bars above or below the chat message, or above the textarea, or it could be a small circle progress indicator next to the latest message.
+- For multi-action requests:  Instead of "Working on step x of y: <sub-action directive>...", create a progress bar made of x parts, each one fills up based on the avg time that sub-actions take. when i send a request with subactions, we see some progress indicator where 1/3 or 1/4 fills up on each request and when the response comes in we move to the next, it can be 3 thin horizontal bars above or below the chat message, or above the textarea, or it could be a small circle progress indicator next to the latest message.
 
 - Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
     - Add examples of synth patches and corresponding descriptions by looking online at vital preset examples, adding and ai description of the sound (from multimodal) and the preset params in nat lang both --> find a way to automate this
