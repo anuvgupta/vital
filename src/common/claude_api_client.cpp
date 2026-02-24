@@ -512,17 +512,38 @@ void ClaudeApiClient::sendMessagesAsync(const StringArray& messages, ResponseCal
     return;
   }
 
-  // Check for error in response
+  // Check for error — fallback to Sonnet on Opus overload
   if (parsedResponse.hasProperty("error")) {
     var error = parsedResponse["error"];
-    String errorMessage = "API Error";
-    if (error.isObject() && error.hasProperty("message"))
-      errorMessage = error["message"].toString();
+    String errorType = error.isObject() && error.hasProperty("type") ? error["type"].toString() : "";
 
-    MessageManager::callAsync([callback, errorMessage]() {
-      callback(errorMessage, false);
-    });
-    return;
+    if (errorType == "overloaded_error" && jsonBody.contains(kModelOpus)) {
+      DBG("ClaudeApiClient: Opus overloaded, retrying with Sonnet");
+      String fallbackBody = jsonBody.replace(kModelOpus, kModelSonnet);
+      URL fallbackUrl(kApiEndpoint);
+      fallbackUrl = fallbackUrl.withPOSTData(fallbackBody);
+      auto fallbackStream = std::unique_ptr<InputStream>(fallbackUrl.createInputStream(
+        true, nullptr, nullptr, headers, kTimeoutMs, nullptr, nullptr, 0, "POST"
+      ));
+      if (fallbackStream) {
+        response = fallbackStream->readEntireStreamAsString();
+        DBG("ClaudeApiClient: Sonnet fallback response: " + response);
+        parsedResponse = JSON::parse(response);
+        logRequest("sendMessage (Sonnet fallback)", fallbackBody, response, parsedResponse);
+      }
+    }
+
+    // If still an error after possible fallback, propagate
+    if (parsedResponse.hasProperty("error")) {
+      var err = parsedResponse["error"];
+      String errorMessage = "API Error";
+      if (err.isObject() && err.hasProperty("message"))
+        errorMessage = err["message"].toString();
+      MessageManager::callAsync([callback, errorMessage]() {
+        callback(errorMessage, false);
+      });
+      return;
+    }
   }
 
   // Extract the text content from the response
@@ -898,15 +919,37 @@ void ClaudeApiClient::sendSoundDesignTranslationAsync(const String& message, Res
     return;
   }
 
+  // Check for error — fallback to Sonnet on Opus overload
   if (parsedResponse.hasProperty("error")) {
     var error = parsedResponse["error"];
-    String errorMessage = "API Error";
-    if (error.isObject() && error.hasProperty("message"))
-      errorMessage = error["message"].toString();
-    MessageManager::callAsync([callback, errorMessage]() {
-      callback(errorMessage, false);
-    });
-    return;
+    String errorType = error.isObject() && error.hasProperty("type") ? error["type"].toString() : "";
+
+    if (errorType == "overloaded_error" && jsonBody.contains(kModelOpus)) {
+      DBG("ClaudeApiClient::sendSoundDesignTranslation: Opus overloaded, retrying with Sonnet");
+      String fallbackBody = jsonBody.replace(kModelOpus, kModelSonnet);
+      URL fallbackUrl(kApiEndpoint);
+      fallbackUrl = fallbackUrl.withPOSTData(fallbackBody);
+      auto fallbackStream = std::unique_ptr<InputStream>(fallbackUrl.createInputStream(
+        true, nullptr, nullptr, headers, kTimeoutMs, nullptr, nullptr, 0, "POST"
+      ));
+      if (fallbackStream) {
+        response = fallbackStream->readEntireStreamAsString();
+        DBG("ClaudeApiClient::sendSoundDesignTranslation: Sonnet fallback response: " + response);
+        parsedResponse = JSON::parse(response);
+        logRequest("soundDesignTranslation (Sonnet fallback)", fallbackBody, response, parsedResponse);
+      }
+    }
+
+    if (parsedResponse.hasProperty("error")) {
+      var err = parsedResponse["error"];
+      String errorMessage = "API Error";
+      if (err.isObject() && err.hasProperty("message"))
+        errorMessage = err["message"].toString();
+      MessageManager::callAsync([callback, errorMessage]() {
+        callback(errorMessage, false);
+      });
+      return;
+    }
   }
 
   if (!parsedResponse.hasProperty("content")) {

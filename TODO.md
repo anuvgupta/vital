@@ -10,8 +10,6 @@
 - Replace emptied SOUND_DESIGN_GUIDE.md (was 296KB SYNTHESIZER_COOKBOOK) with a compact, token-efficient sound design reference
     - Add examples of synth patches and corresponding descriptions by looking online at vital preset examples, adding and ai description of the sound (from multimodal) and the preset params in nat lang both --> find a way to automate this
 
-- Add Sonnet fallback when Opus returns `overloaded_error` — currently all `sendMessage` calls use Opus which frequently hits capacity limits; fall back to Sonnet on overloaded, or let user choose model
-
 ### Long-Term
 
 - Multimodal input to evaluate sound along with the preset for feedback. make it optional ie extended thinking /listening button OR you can just ask it to listen eventually
@@ -54,6 +52,7 @@
 - Preset save option from chatbot — router infers save intent, returns save_required + preset_name, saves to Sound Designer folder, shows confirmation in chat
 - Unified step progress messages — both sound design and user-initiated multi-actions show "Working on step X of Y: [truncated]...", all intermediate responses hidden
 - Create new file for api requests on every new chat (rename th eold one if needed incrementally)
+- Sonnet fallback on Opus overloaded_error — auto-retries once with Sonnet in sendMessagesAsync and sendSoundDesignTranslationAsync
 
 
 

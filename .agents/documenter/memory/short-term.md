@@ -2,11 +2,10 @@
 
 ## Status: Ready for next task
 
-Last completed: Preset name conflict resolution (2026-02-24)
+Last completed: Sonnet fallback on Opus overloaded (2026-02-24)
 
-### Recent Task: Preset name conflict resolution
-- `savePresetToSoundDesigner()` now checks for existing files and appends " (2)", " (3)", etc.
-- Return type changed from void to String so call sites can display the actual saved name
-- 3 call sites updated in full_interface.cpp (save-only, post-multi-action, single-action)
-- Files modified: full_interface.h, full_interface.cpp
-- No bugs encountered
+### Recent Task: Sonnet fallback on Opus overloaded errors
+- `sendMessagesAsync` and `sendSoundDesignTranslationAsync` retry once with Sonnet on `overloaded_error`
+- Nested retry within existing error handling, no new functions
+- Fallback logged separately in API request log
+- File modified: claude_api_client.cpp
