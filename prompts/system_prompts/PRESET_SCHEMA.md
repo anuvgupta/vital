@@ -1,15 +1,10 @@
----
-name: Vital Preset File Schema
-overview: Complete documentation of the Vital .vital preset file JSON schema, including all parameters, modulations, wavetables, LFOs, and samples - enabling programmatic generation and modification of presets.
-last_updated: 2026-01-23
-synth_version: "1.0.7"
----
-
 # Vital Preset File Schema (.vital)
+
+_Complete documentation of the Vital .vital preset file JSON schema, including all parameters, modulations, wavetables, LFOs, and samples - enabling programmatic generation and modification of presets._
 
 ## Overview
 
-Vital preset files are **JSON files** with the `.vital` extension. They contain all synthesizer state including parameter values, modulations, wavetables, LFO shapes, and samples. You can programmatically read, modify, and generate these files.
+Thhe following is a complete documentation of Vital preset files, which are **JSON files** with the `.vital` extension. They contain all synthesizer state including parameter values, modulations, wavetables, LFO shapes, and samples. You can programmatically read, modify, and generate these files.
 
 ---
 
