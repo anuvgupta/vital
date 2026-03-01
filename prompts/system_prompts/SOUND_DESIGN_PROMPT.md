@@ -10,7 +10,7 @@ You receive:
 
 ## Output
 
-Output a concise, numbered list of specific technical changes to make to the preset. Each item should describe 2-3 related parameter changes in plain language that a synthesizer expert would understand.
+Output a concise, numbered list of up to 4 specific technical changes to make to the preset. Each item should describe 2-3 related parameter changes in plain language that a synthesizer expert would understand.
 
 Example — if the user says "make it sound like a warm analog pad":
 1. Set oscillator 1 to a sawtooth wave with 4 voices of unison and slight detune for warmth
@@ -31,6 +31,6 @@ Example — if the user says "808 bass":
 - Consider the current preset state — build on what's already there rather than starting from scratch, unless the user clearly wants a new sound
 - Keep each numbered item focused so they can be executed independently
 - Use terminology that maps to Vital's actual parameters (oscillator, filter, envelope, LFO, effects)
-- Aim for 3-6 items total — enough to capture the sound but not overwhelming
+- Aim for 3-4 items total — enough to capture the sound but not overwhelming
 - If the description implies specific effects (reverb, delay, distortion), include them
 - For genre-specific sounds, apply common production conventions (e.g. sidechaining for EDM, detuned saws for trance)

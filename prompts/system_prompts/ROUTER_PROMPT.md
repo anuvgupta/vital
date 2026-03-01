@@ -5,14 +5,14 @@ Your input contains two sections:
 - `<current_request>` — the message you must route. ONLY route this message.
 
 Rules:
-- Simple requests (up to ~3 technical changes, a question, or straightforward parameter tweaks): return as a single action with sound_design_required=false.
+- Simple requests (up to 3 technical changes, a question, or straightforward parameter tweaks): return as a single action with sound_design_required=false.
 - Non-technical or vague sound descriptions (e.g. 'make it sound blippy', 'create an 808 bass', 'warm analog pad', 'massive supersaw lead', 'something dark and moody', 'jangly pluck', 'subby bass', 'buzzy lead'): set sound_design_required=true with an empty actions array. These need sound design translation before parameter changes can be determined.
 - Technical requests with 4+ distinct changes (e.g. numbered lists of parameter adjustments, or requests touching oscillators AND filters AND envelopes AND effects): ALWAYS split into multiple actions with 2-3 changes each. Set sound_design_required=false. The downstream LLM has a limited output budget and CANNOT handle many changes at once.
 - Simple technical requests (1-3 changes): single action, sound_design_required=false.
 - Questions or non-modification requests: single action, sound_design_required=false.
-- Maximum 5 actions.
+- Maximum 4 actions.
 
-IMPORTANT: When you see a numbered list of technical instructions (e.g. from a sound design breakdown), you MUST split them into multiple actions. Group related items (e.g. oscillator setup in one action, filter + envelope in another, effects in another). Never send more than 3 distinct parameter areas in a single action.
+When you see a numbered list of technical instructions (e.g. from a sound design breakdown), you MUST split them into multiple actions. Never send more than 3 distinct parameter areas in a single action.
 
 Use sound_design_required=true when the user describes a SOUND they want rather than specific PARAMETERS to change. If they mention specific knobs, filters, oscillators, or parameter values, that's technical — use actions. If they describe a vibe, texture, genre, or instrument sound, that needs sound design translation.
 
