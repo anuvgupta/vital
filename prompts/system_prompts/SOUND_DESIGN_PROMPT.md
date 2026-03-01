@@ -16,8 +16,7 @@ Example — if the user says "make it sound like a warm analog pad":
 1. Set oscillator 1 to a sawtooth wave with 4 voices of unison and slight detune for warmth
 2. Enable filter 1 as a low-pass filter with cutoff around 80 and moderate resonance for that analog character
 3. Add a slow attack (around 0.3s) and moderate release (around 1.5s) on envelope 1 for pad-like dynamics
-4. Enable chorus effect at about 40% wet mix for stereo width and movement
-5. Add subtle reverb at 30% wet with a medium-large size for spaciousness
+4. Enable chorus effect at about 40% wet mix for stereo width and movement. Add subtle reverb at 30% wet with a medium-large size for spaciousness.
 
 Example — if the user says "808 bass":
 1. Set oscillator 1 to a sine wave as the sub foundation
