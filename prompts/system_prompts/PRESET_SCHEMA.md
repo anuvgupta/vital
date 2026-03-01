@@ -1116,29 +1116,4 @@ The sample object is stored inside `settings`. Unlike wavetables (which can use 
 
 **Recommendation:** For programmatic preset generation, consider using the Sample oscillator only when you have actual audio files to embed. For synthesized sounds, use the three main oscillators with Line Source wavetables instead.
 
----
-
-## 6. Value Scaling Reference
-
-Different parameters use different scaling modes to convert stored values to actual values:
-
-### Scaling Types
-
-| Type | Formula | Example Parameters |
-|------|---------|-------------------|
-| Linear | `actual = stored` | cutoff, resonance, pan |
-| Quadratic | `actual = stored²` | osc_level, sample_level, unison_detune |
-| Square Root | `actual = √stored` | volume |
-| Exponential | `actual = 2^stored` | frequency, portamento_time, delay_frequency |
-| Quartic | `actual = stored⁴` | env_attack, env_decay, env_release |
-| Indexed | `actual = round(stored)` | polyphony, tempo, style enums |
-
-### Common Parameter Ranges
-
-| Parameter | Stored Range | Actual Range | Conversion |
-|-----------|-------------|--------------|------------|
-| Volume | 0 – 7399.4404 | -80dB to 0dB | `dB = 20 * log10(√(stored / 7399.4404))` |
-| BPM | 0.333 – 5.0 | 20 – 300 BPM | `bpm = stored × 60` |
-| Cutoff | 8 – 136 | MIDI note number | `hz = 440 × 2^((stored - 69) / 12)` |
-| Envelope times | 0 – 2.378 | 0 – 32 seconds | `seconds = stored⁴ × 32` |
 

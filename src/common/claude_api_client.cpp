@@ -48,10 +48,19 @@ bool ClaudeApiClient::initialize() {
   if (!loadSystemPrompt())
     DBG("ClaudeApiClient: Failed to load system prompt");
 
+  if (!loadKnowledgeBase())
+    DBG("ClaudeApiClient: Failed to load knowledge base");
+
   if (!loadPresetSchema())
     DBG("ClaudeApiClient: Failed to load preset schema");
-  else if (system_prompt_.isNotEmpty())
-    system_prompt_ += "\n\n" + preset_schema_;
+
+  // Concatenate: system prompt + knowledge base + preset schema
+  if (system_prompt_.isNotEmpty()) {
+    if (knowledge_base_.isNotEmpty())
+      system_prompt_ += "\n\n" + knowledge_base_;
+    if (preset_schema_.isNotEmpty())
+      system_prompt_ += "\n\n" + preset_schema_;
+  }
 
   if (!loadRouterPrompt())
     DBG("ClaudeApiClient: Failed to load router prompt");
@@ -116,6 +125,31 @@ bool ClaudeApiClient::loadSystemPrompt() {
   system_prompt_ = prompt_file.loadFileAsString().trim();
   DBG("ClaudeApiClient: Loaded system prompt (" + String(system_prompt_.length()) + " chars)");
   return system_prompt_.isNotEmpty();
+}
+
+bool ClaudeApiClient::loadKnowledgeBase() {
+  File executable = File::getSpecialLocation(File::currentExecutableFile);
+  File prompt_file;
+
+  File resources_dir = executable.getParentDirectory().getParentDirectory().getChildFile("Resources");
+  prompt_file = resources_dir.getChildFile("KNOWLEDGE_BASE.md");
+
+  if (!prompt_file.existsAsFile())
+    prompt_file = executable.getParentDirectory().getChildFile("KNOWLEDGE_BASE.md");
+
+  if (!prompt_file.existsAsFile()) {
+    File app_data = LoadSave::getDataDirectory();
+    prompt_file = app_data.getChildFile("KNOWLEDGE_BASE.md");
+  }
+
+  if (!prompt_file.existsAsFile()) {
+    DBG("ClaudeApiClient: Knowledge base file not found");
+    return false;
+  }
+
+  knowledge_base_ = prompt_file.loadFileAsString().trim();
+  DBG("ClaudeApiClient: Loaded knowledge base (" + String(knowledge_base_.length()) + " chars)");
+  return knowledge_base_.isNotEmpty();
 }
 
 bool ClaudeApiClient::loadPresetSchema() {

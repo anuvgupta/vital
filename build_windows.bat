@@ -217,7 +217,7 @@ if defined EXE_PATH (
     set "RESOURCE_SRC=%SCRIPT_DIR%\prompts\system_prompts"
     for %%E in ("%EXE_PATH%") do set "EXE_DIR=%%~dpE"
 
-    for %%F in (SYSTEM_PROMPT.md PRESET_SCHEMA.md ROUTER_PROMPT.md SOUND_DESIGN_PROMPT.md SOUND_DESIGN_GUIDE.md) do (
+    for %%F in (SYSTEM_PROMPT.md KNOWLEDGE_BASE.md PRESET_SCHEMA.md ROUTER_PROMPT.md SOUND_DESIGN_PROMPT.md SOUND_DESIGN_GUIDE.md) do (
         if exist "!RESOURCE_SRC!\%%F" (
             copy /y "!RESOURCE_SRC!\%%F" "!EXE_DIR!%%F" >nul
             echo [+] Copied %%F

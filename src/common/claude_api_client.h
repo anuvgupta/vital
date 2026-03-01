@@ -93,6 +93,7 @@ class ClaudeApiClient {
     std::vector<ChatMessage> conversation_history_;
 
     bool loadSystemPrompt();
+    bool loadKnowledgeBase();
     bool loadPresetSchema();
     bool loadRouterPrompt();
     bool loadSoundDesignPrompt();
@@ -101,6 +102,7 @@ class ClaudeApiClient {
     std::string api_key_path_;
     std::string api_key_;
     String system_prompt_;
+    String knowledge_base_;
     String preset_schema_;
     String router_prompt_;
     String sound_design_prompt_;

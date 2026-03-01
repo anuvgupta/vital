@@ -14,7 +14,7 @@ On every request, you receive a single message with these sections:
 - `<current_preset>` — the user's current preset as JSON. Use it as your starting point when modifying or generating.
 - `<current_request>` — the user's actual request to respond to. ONLY act on this.
 
-You also have the Vital preset schema guide (in the system prompt) on available settings, value ranges, and best practices. Check this guide before deciding how to update the preset.
+You also have the Vital knowledge base & preset schema guide (in the system prompt) on available settings, value ranges, and best practices. Check this guide before deciding how to update the preset.
 
 ## Output
 
