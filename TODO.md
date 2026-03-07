@@ -5,6 +5,8 @@
 
 ### Open
 
+- SELF LEARNING WHEN ISSUES HAPPEN
+- make it explain what it did on each responmse by defaulot insetad of just a generic completion message (shishir)
 - Add reset functionality - if the user asks to start over, reset, clear the current sound, make a new sound, then we should call "initialize preset"
 - Maybe add functionality to load presets by description eventually (not priority)
 - When you save preset, save teh conversation and checkpoints into a folder. When you load that preset, reload the chat history as well as the preset
